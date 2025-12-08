@@ -15,9 +15,10 @@ interface StoredSessionIdentity {
   sessionCode: string;
   participantId: string;
   displayName: string;
+  isObserver: boolean;
 }
 
-const SESSION_STORAGE_KEY = 'poker-points-session';
+const SESSION_STORAGE_KEY_PREFIX = 'poker-points-session-';
 
 @Injectable({
   providedIn: 'root',
@@ -166,12 +167,8 @@ export class GameStateService {
     try {
       await this.signalR.connect();
 
-      const storedIdentity = this.getStoredIdentity();
-      let existingParticipantId: string | undefined;
-
-      if (storedIdentity?.sessionCode === sessionCode.toUpperCase()) {
-        existingParticipantId = storedIdentity.participantId;
-      }
+      const storedIdentity = this.getStoredIdentityForSession(sessionCode);
+      const existingParticipantId = storedIdentity?.participantId;
 
       const participant = await this.signalR.joinSession(
         sessionCode,
@@ -191,6 +188,7 @@ export class GameStateService {
         sessionCode: sessionCode.toUpperCase(),
         participantId: participant.id,
         displayName: participant.displayName,
+        isObserver: participant.isObserver,
       });
 
       // Fetch full game state
@@ -242,8 +240,8 @@ export class GameStateService {
     await this.signalR.nextStory(title);
   }
 
-  async attemptReconnect(): Promise<boolean> {
-    const storedIdentity = this.getStoredIdentity();
+  async attemptReconnect(sessionCode: string): Promise<boolean> {
+    const storedIdentity = this.getStoredIdentityForSession(sessionCode);
     if (!storedIdentity) {
       return false;
     }
@@ -251,7 +249,7 @@ export class GameStateService {
     return this.joinSession(
       storedIdentity.sessionCode,
       storedIdentity.displayName,
-      false
+      storedIdentity.isObserver ?? false
     );
   }
 
@@ -264,28 +262,27 @@ export class GameStateService {
     this._revealedVotes.set(null);
     this._myVote.set(null);
     this._votingResults.set(null);
-    this.clearStoredIdentity();
+    // Note: We intentionally don't clear stored identity here
+    // so users can rejoin with the same name if they come back
   }
 
-  private getStoredIdentity(): StoredSessionIdentity | null {
-    const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
+  private getStorageKey(sessionCode: string): string {
+    return `${SESSION_STORAGE_KEY_PREFIX}${sessionCode.toUpperCase()}`;
+  }
+
+  private storeIdentity(identity: StoredSessionIdentity): void {
+    const key = this.getStorageKey(identity.sessionCode);
+    localStorage.setItem(key, JSON.stringify(identity));
+  }
+
+  getStoredIdentityForSession(sessionCode: string): StoredSessionIdentity | null {
+    const key = this.getStorageKey(sessionCode);
+    const stored = localStorage.getItem(key);
     if (!stored) return null;
     try {
       return JSON.parse(stored) as StoredSessionIdentity;
     } catch {
       return null;
     }
-  }
-
-  private storeIdentity(identity: StoredSessionIdentity): void {
-    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(identity));
-  }
-
-  private clearStoredIdentity(): void {
-    sessionStorage.removeItem(SESSION_STORAGE_KEY);
-  }
-
-  getStoredSessionCode(): string | null {
-    return this.getStoredIdentity()?.sessionCode ?? null;
   }
 }
