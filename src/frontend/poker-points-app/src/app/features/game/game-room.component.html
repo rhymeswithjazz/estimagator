@@ -44,10 +44,59 @@
 
     <!-- Story/Topic Display -->
     <div class="text-center">
-      @if (currentStory(); as story) {
-        <h2 class="text-2xl font-bold text-white">{{ story.title }}</h2>
+      @if (isEditingStory()) {
+        <!-- Story Edit Mode -->
+        <div class="flex items-center justify-center gap-2">
+          <input
+            type="text"
+            [(ngModel)]="storyTitleInput"
+            placeholder="Enter story title..."
+            class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-lg focus:outline-none focus:border-poker-gold w-96"
+            (keyup.enter)="saveStoryTitle()"
+            (keyup.escape)="cancelEditingStory()"
+            autofocus
+          />
+          <button
+            (click)="saveStoryTitle()"
+            class="px-3 py-2 bg-poker-gold text-poker-green rounded-lg hover:bg-yellow-400 transition-colors"
+          >
+            Save
+          </button>
+          <button
+            (click)="cancelEditingStory()"
+            class="px-3 py-2 bg-white/10 text-gray-300 rounded-lg hover:bg-white/20 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      } @else if (currentStory(); as story) {
+        <div class="flex items-center justify-center gap-2">
+          <h2 class="text-2xl font-bold text-white">{{ story.title }}</h2>
+          @if (isOrganizer()) {
+            <button
+              (click)="startEditingStory()"
+              class="p-1 text-gray-400 hover:text-white transition-colors"
+              title="Edit story title"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+          }
+        </div>
       } @else {
-        <h2 class="text-2xl font-bold text-gray-400 italic">No story being estimated</h2>
+        <div class="flex items-center justify-center gap-2">
+          @if (isOrganizer()) {
+            <button
+              (click)="startEditingStory()"
+              class="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+            >
+              + Set Story Title
+            </button>
+          } @else {
+            <h2 class="text-2xl font-bold text-gray-400 italic">No story being estimated</h2>
+          }
+        </div>
       }
     </div>
 
@@ -61,7 +110,7 @@
           <div class="text-center">
             @if (votesRevealed()) {
               <!-- Results Display -->
-              <div class="space-y-4">
+              <div class="space-y-3">
                 @if (votingResults(); as results) {
                   @if (results.isConsensus) {
                     <div class="text-6xl font-bold text-poker-gold animate-pulse">
@@ -69,14 +118,26 @@
                     </div>
                     <div class="text-green-400 font-semibold text-lg">Consensus!</div>
                   } @else {
-                    <div class="text-5xl font-bold text-white">
+                    <div class="text-4xl font-bold text-white">
                       @if (results.average !== null) {
                         Avg: {{ results.average | number:'1.1-1' }}
                       } @else {
                         No numeric votes
                       }
                     </div>
-                    <div class="text-gray-300 text-sm">Votes revealed</div>
+                    <!-- Vote Distribution -->
+                    @if (voteDistribution().length > 0) {
+                      <div class="flex justify-center gap-3 mt-2">
+                        @for (dist of voteDistribution(); track dist.value) {
+                          <div class="flex flex-col items-center">
+                            <div class="w-10 h-14 bg-white rounded-md flex items-center justify-center text-gray-900 font-bold text-lg shadow-md">
+                              {{ dist.value }}
+                            </div>
+                            <div class="text-xs text-gray-300 mt-1">{{ dist.count }}x</div>
+                          </div>
+                        }
+                      </div>
+                    }
                   }
                 }
               </div>
@@ -98,10 +159,48 @@
             } @else {
               <!-- Waiting for votes -->
               <div class="text-gray-400">
-                <div class="text-lg">Waiting for votes...</div>
+                @if (timerRunning()) {
+                  <!-- Timer Display -->
+                  <div class="text-5xl font-bold text-poker-gold mb-2" [class.text-red-400]="timerSeconds()! < 10">
+                    {{ formatTime(timerSeconds()!) }}
+                  </div>
+                  @if (isOrganizer()) {
+                    <button
+                      (click)="stopTimer()"
+                      class="text-sm text-gray-400 hover:text-white"
+                    >
+                      Cancel Timer
+                    </button>
+                  }
+                } @else {
+                  <div class="text-lg">Waiting for votes...</div>
+                }
                 <div class="text-sm mt-2">
                   {{ votedCount() }} / {{ voters().length }} voted
                 </div>
+                <!-- Timer buttons for organizer -->
+                @if (isOrganizer() && !timerRunning()) {
+                  <div class="flex justify-center gap-2 mt-3">
+                    <button
+                      (click)="startTimer(30)"
+                      class="px-3 py-1 text-xs bg-white/10 text-gray-300 rounded hover:bg-white/20 transition-colors"
+                    >
+                      30s
+                    </button>
+                    <button
+                      (click)="startTimer(60)"
+                      class="px-3 py-1 text-xs bg-white/10 text-gray-300 rounded hover:bg-white/20 transition-colors"
+                    >
+                      1m
+                    </button>
+                    <button
+                      (click)="startTimer(120)"
+                      class="px-3 py-1 text-xs bg-white/10 text-gray-300 rounded hover:bg-white/20 transition-colors"
+                    >
+                      2m
+                    </button>
+                  </div>
+                }
               </div>
             }
           </div>
@@ -169,6 +268,12 @@
           class="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
         >
           Reset & Vote Again
+        </button>
+        <button
+          (click)="nextStory()"
+          class="px-6 py-2 bg-poker-gold text-poker-green font-semibold rounded-lg hover:bg-yellow-400 transition-colors"
+        >
+          Next Story
         </button>
       </div>
     }

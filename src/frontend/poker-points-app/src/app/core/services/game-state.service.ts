@@ -71,6 +71,21 @@ export class GameStateService {
     return votersList.length > 0 && votersList.every((v) => voteMap.get(v.id));
   });
 
+  readonly voteDistribution = computed(() => {
+    const votes = this._revealedVotes();
+    if (!votes) return [];
+
+    const counts = new Map<string, number>();
+    for (const vote of votes) {
+      const value = vote.cardValue ?? '?';
+      counts.set(value, (counts.get(value) ?? 0) + 1);
+    }
+
+    return Array.from(counts.entries())
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count);
+  });
+
   constructor() {
     this.subscribeToSignalREvents();
   }

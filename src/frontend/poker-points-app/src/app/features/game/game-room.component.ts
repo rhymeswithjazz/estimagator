@@ -1,14 +1,16 @@
-import { Component, inject, OnInit, OnDestroy, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, computed, signal, effect } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { Participant, Vote } from '../../core/models/session.models';
+import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [DecimalPipe],
+  imports: [DecimalPipe, FormsModule],
   templateUrl: './game-room.component.html',
 })
 export class GameRoomComponent implements OnInit, OnDestroy {
@@ -37,11 +39,70 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly allVotersVoted = this.gameState.allVotersVoted;
   readonly votingResults = this.gameState.votingResults;
   readonly participantVoteMap = this.gameState.participantVoteMap;
+  readonly voteDistribution = this.gameState.voteDistribution;
 
   readonly participantCount = computed(() => this.participants().length);
   readonly votedCount = computed(() =>
     this.voters().filter(v => this.participantVoteMap().get(v.id)).length
   );
+
+  // Story editing state
+  readonly isEditingStory = signal(false);
+  storyTitleInput = '';
+
+  // Timer state
+  readonly timerSeconds = signal<number | null>(null);
+  readonly timerRunning = signal(false);
+  private timerInterval: ReturnType<typeof setInterval> | null = null;
+
+  constructor() {
+    // Watch for consensus and trigger confetti
+    effect(() => {
+      const results = this.votingResults();
+      const revealed = this.votesRevealed();
+      if (results?.isConsensus && revealed) {
+        this.triggerConfetti();
+      }
+    });
+  }
+
+  private triggerConfetti(): void {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+        colors,
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+        colors,
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+
+    // Initial burst from center
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors,
+    });
+
+    frame();
+  }
 
   // Get vote for a specific participant (after reveal)
   getParticipantVote(participantId: string): Vote | undefined {
@@ -128,7 +189,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Cleanup handled by GameStateService if needed
+    this.stopTimer();
   }
 
   async leaveGame(): Promise<void> {
@@ -149,5 +210,66 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   async resetVotes(): Promise<void> {
     if (!this.isOrganizer()) return;
     await this.gameState.resetVotes();
+  }
+
+  startEditingStory(): void {
+    if (!this.isOrganizer()) return;
+    this.storyTitleInput = this.currentStory()?.title ?? '';
+    this.isEditingStory.set(true);
+  }
+
+  async saveStoryTitle(): Promise<void> {
+    if (!this.isOrganizer()) return;
+    const title = this.storyTitleInput.trim();
+    if (title) {
+      await this.gameState.updateStory(title);
+    }
+    this.isEditingStory.set(false);
+  }
+
+  cancelEditingStory(): void {
+    this.isEditingStory.set(false);
+    this.storyTitleInput = '';
+  }
+
+  async nextStory(): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.gameState.nextStory();
+  }
+
+  startTimer(seconds: number = 60): void {
+    if (!this.isOrganizer() || this.votesRevealed()) return;
+
+    this.stopTimer();
+    this.timerSeconds.set(seconds);
+    this.timerRunning.set(true);
+
+    this.timerInterval = setInterval(() => {
+      const current = this.timerSeconds();
+      if (current === null || current <= 1) {
+        this.stopTimer();
+        // Auto-reveal when timer expires
+        if (!this.votesRevealed()) {
+          this.revealVotes();
+        }
+      } else {
+        this.timerSeconds.set(current - 1);
+      }
+    }, 1000);
+  }
+
+  stopTimer(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+    this.timerRunning.set(false);
+    this.timerSeconds.set(null);
+  }
+
+  formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 }
