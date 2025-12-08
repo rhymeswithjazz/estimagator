@@ -1,0 +1,205 @@
+<main class="min-h-screen bg-gradient-to-br from-poker-green to-poker-felt flex flex-col">
+  <!-- Header -->
+  <header class="flex items-center justify-between p-4 border-b border-white/10">
+    <div class="flex items-center gap-4">
+      <h1 class="text-xl font-bold text-white">Agile Poker</h1>
+      <div class="px-3 py-1 bg-white/20 rounded-lg">
+        <span class="font-mono text-poker-gold font-bold tracking-wider">{{ sessionCode() }}</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <!-- Connection Status -->
+      <div class="flex items-center gap-2">
+        <span
+          class="w-2 h-2 rounded-full"
+          [class]="connectionState() === 'connected' ? 'bg-green-400' : connectionState() === 'reconnecting' ? 'bg-yellow-400 animate-pulse' : 'bg-red-400'"
+        ></span>
+        <span class="text-gray-400 text-sm">{{ connectionState() }}</span>
+      </div>
+
+      <!-- Current User -->
+      <div class="text-white">
+        <span class="text-gray-400">Playing as</span>
+        <span class="ml-2 font-semibold">{{ currentParticipant()?.displayName }}</span>
+        @if (isObserver()) {
+          <span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded">Observer</span>
+        }
+        @if (isOrganizer()) {
+          <span class="ml-2 text-xs bg-poker-gold/30 text-poker-gold px-2 py-0.5 rounded">Host</span>
+        }
+      </div>
+
+      <button
+        (click)="leaveGame()"
+        class="px-3 py-1 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+      >
+        Leave
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col p-6 gap-6">
+
+    <!-- Story/Topic Display -->
+    <div class="text-center">
+      @if (currentStory(); as story) {
+        <h2 class="text-2xl font-bold text-white">{{ story.title }}</h2>
+      } @else {
+        <h2 class="text-2xl font-bold text-gray-400 italic">No story being estimated</h2>
+      }
+    </div>
+
+    <!-- Poker Table Area -->
+    <div class="flex-1 flex items-center justify-center">
+      <div class="relative">
+        <!-- The Poker Table -->
+        <div class="w-[600px] h-[350px] bg-poker-felt rounded-[100px] border-8 border-amber-900/80 shadow-2xl flex items-center justify-center relative">
+
+          <!-- Table Center Content -->
+          <div class="text-center">
+            @if (votesRevealed()) {
+              <!-- Results Display -->
+              <div class="space-y-4">
+                @if (votingResults(); as results) {
+                  @if (results.isConsensus) {
+                    <div class="text-6xl font-bold text-poker-gold animate-pulse">
+                      {{ revealedVotes()?.[0]?.cardValue }}
+                    </div>
+                    <div class="text-green-400 font-semibold text-lg">Consensus!</div>
+                  } @else {
+                    <div class="text-5xl font-bold text-white">
+                      @if (results.average !== null) {
+                        Avg: {{ results.average | number:'1.1-1' }}
+                      } @else {
+                        No numeric votes
+                      }
+                    </div>
+                    <div class="text-gray-300 text-sm">Votes revealed</div>
+                  }
+                }
+              </div>
+            } @else if (allVotersVoted()) {
+              <!-- All voted - ready to reveal -->
+              <div class="text-poker-gold text-xl font-semibold animate-pulse">
+                All votes in!
+              </div>
+              @if (isOrganizer()) {
+                <button
+                  (click)="revealVotes()"
+                  class="mt-4 px-6 py-3 bg-poker-gold text-poker-green font-bold rounded-lg hover:bg-yellow-400 transition-colors shadow-lg"
+                >
+                  Reveal Votes
+                </button>
+              } @else {
+                <div class="text-gray-400 text-sm mt-2">Waiting for host to reveal...</div>
+              }
+            } @else {
+              <!-- Waiting for votes -->
+              <div class="text-gray-400">
+                <div class="text-lg">Waiting for votes...</div>
+                <div class="text-sm mt-2">
+                  {{ votedCount() }} / {{ voters().length }} voted
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Participants around the table -->
+          @for (voter of voters(); track voter.id; let i = $index) {
+            <div
+              class="absolute flex flex-col items-center gap-2"
+              [style]="getParticipantPosition(i, voters().length)"
+            >
+              <!-- Card -->
+              <div
+                class="w-14 h-20 rounded-lg flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-300"
+                [class]="getCardClasses(voter)"
+              >
+                @if (votesRevealed()) {
+                  <!-- Revealed vote -->
+                  {{ getParticipantVote(voter.id)?.cardValue ?? '-' }}
+                } @else if (hasParticipantVoted(voter.id)) {
+                  <!-- Face down card -->
+                  <div class="w-10 h-16 bg-gradient-to-br from-blue-700 to-blue-900 rounded border-2 border-blue-400"></div>
+                } @else {
+                  <!-- No vote yet -->
+                  <span class="text-gray-500">?</span>
+                }
+              </div>
+              <!-- Name -->
+              <div
+                class="text-xs font-medium px-2 py-0.5 rounded"
+                [class]="voter.id === currentParticipant()?.id ? 'bg-poker-gold/30 text-poker-gold' : 'bg-white/10 text-white'"
+              >
+                {{ voter.displayName }}
+                @if (voter.isOrganizer) {
+                  <span class="text-poker-gold">*</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Observers Section -->
+        @if (observers().length > 0) {
+          <div class="absolute -right-40 top-1/2 -translate-y-1/2 bg-white/5 rounded-lg p-3">
+            <div class="text-gray-400 text-xs mb-2 uppercase tracking-wider">Observers</div>
+            <div class="space-y-1">
+              @for (observer of observers(); track observer.id) {
+                <div
+                  class="text-sm px-2 py-0.5 rounded"
+                  [class]="observer.isConnected ? 'text-white' : 'text-gray-500'"
+                >
+                  {{ observer.displayName }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Organizer Controls -->
+    @if (isOrganizer() && votesRevealed()) {
+      <div class="flex justify-center gap-4 mb-4">
+        <button
+          (click)="resetVotes()"
+          class="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+        >
+          Reset & Vote Again
+        </button>
+      </div>
+    }
+
+    <!-- Card Deck (for voters only) -->
+    @if (!isObserver()) {
+      <div class="bg-black/20 rounded-xl p-4">
+        <div class="flex justify-center gap-2 flex-wrap">
+          @for (card of deckValues(); track card) {
+            <button
+              (click)="selectCard(card)"
+              [disabled]="!canVote()"
+              class="w-14 h-20 rounded-lg font-bold text-xl transition-all duration-200 border-2 shadow-md"
+              [class]="getSelectedCardClasses(card)"
+            >
+              {{ card }}
+            </button>
+          }
+        </div>
+        @if (hasVoted() && !votesRevealed()) {
+          <div class="text-center mt-3 text-gray-400 text-sm">
+            You voted: <span class="text-poker-gold font-bold">{{ myVote() }}</span>
+            <span class="text-gray-500"> (click another card to change)</span>
+          </div>
+        }
+        @if (votesRevealed()) {
+          <div class="text-center mt-3 text-gray-500 text-sm">
+            Voting locked - waiting for reset
+          </div>
+        }
+      </div>
+    }
+  </div>
+</main>
