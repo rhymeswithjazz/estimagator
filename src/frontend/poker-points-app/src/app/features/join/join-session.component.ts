@@ -24,6 +24,7 @@ export class JoinSessionComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly isLoading = signal(true);
   readonly sessionNotFound = signal(false);
+  readonly returningUser = signal<{ displayName: string; isObserver: boolean } | null>(null);
 
   ngOnInit(): void {
     const code = this.route.snapshot.paramMap.get('code');
@@ -36,6 +37,16 @@ export class JoinSessionComponent implements OnInit {
 
     this.sessionCode.set(code.toUpperCase());
     this.isNewSession.set(isNew);
+
+    // Check if user has previously joined this session
+    const storedIdentity = this.gameState.getStoredIdentityForSession(code);
+    if (storedIdentity) {
+      this.returningUser.set({
+        displayName: storedIdentity.displayName,
+        isObserver: storedIdentity.isObserver,
+      });
+    }
+
     this.validateSession(code);
   }
 
@@ -94,6 +105,37 @@ export class JoinSessionComponent implements OnInit {
 
   toggleObserver(): void {
     this.isObserver.update((v) => !v);
+  }
+
+  async rejoinGame(): Promise<void> {
+    const returning = this.returningUser();
+    if (!returning) return;
+
+    this.isJoining.set(true);
+    this.error.set(null);
+
+    try {
+      const joined = await this.gameState.joinSession(
+        this.sessionCode(),
+        returning.displayName,
+        returning.isObserver
+      );
+
+      if (joined) {
+        this.router.navigate(['/game', this.sessionCode()]);
+      } else {
+        this.error.set('Failed to rejoin. Please try joining as a new user.');
+        this.returningUser.set(null);
+      }
+    } catch (err) {
+      this.error.set('Connection error. Please check your network and try again.');
+    } finally {
+      this.isJoining.set(false);
+    }
+  }
+
+  joinAsNewUser(): void {
+    this.returningUser.set(null);
   }
 
   goBack(): void {
