@@ -1,85 +1,91 @@
-<main class="min-h-screen bg-gradient-to-br from-poker-green to-poker-felt flex flex-col">
-  <!-- Header -->
-  <header class="flex items-center justify-between p-4 border-b border-white/10">
+<main class="h-full bg-white grid grid-rows-[auto_auto_1fr_auto] overflow-hidden">
+  <!-- Row 1: Header -->
+  <header class="bg-white mx-4 mt-4 px-5 py-3 flex items-center justify-between rounded-xl shadow-sm border border-gray-200">
     <div class="flex items-center gap-4">
-      <h1 class="text-xl font-bold text-white">Agile Poker</h1>
-      <div class="px-3 py-1 bg-white/20 rounded-lg">
-        <span class="font-mono text-poker-gold font-bold tracking-wider">{{ sessionCode() }}</span>
+      <h1 class="text-xl font-display font-bold text-poker-green-700">Estimagator</h1>
+      <div class="flex items-center gap-2 px-3 py-1.5 bg-poker-green-50 rounded-lg border border-poker-green-200">
+        <span class="font-mono text-poker-green-700 font-bold tracking-wider text-lg">{{ sessionCode() }}</span>
       </div>
     </div>
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-5">
       <!-- Connection Status -->
       <div class="flex items-center gap-2">
         <span
-          class="w-2 h-2 rounded-full"
-          [class]="connectionState() === 'connected' ? 'bg-green-400' : connectionState() === 'reconnecting' ? 'bg-yellow-400 animate-pulse' : 'bg-red-400'"
+          class="status-dot"
+          [class]="connectionState() === 'connected' ? 'status-dot-connected' : connectionState() === 'reconnecting' ? 'status-dot-reconnecting' : 'status-dot-disconnected'"
         ></span>
-        <span class="text-gray-400 text-sm">{{ connectionState() }}</span>
+        <span class="text-gray-500 text-sm capitalize">{{ connectionState() }}</span>
       </div>
 
       <!-- Current User -->
-      <div class="text-white">
-        <span class="text-gray-400">Playing as</span>
-        <span class="ml-2 font-semibold">{{ currentParticipant()?.displayName }}</span>
-        @if (isObserver()) {
-          <span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded">Observer</span>
-        }
-        @if (isOrganizer()) {
-          <span class="ml-2 text-xs bg-poker-gold/30 text-poker-gold px-2 py-0.5 rounded">Host</span>
-        }
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm">
+          {{ currentParticipant()?.displayName?.charAt(0)?.toUpperCase() }}
+        </div>
+        <div>
+          <div class="text-gray-900 font-medium text-sm">{{ currentParticipant()?.displayName }}</div>
+          <div class="flex items-center gap-1.5">
+            @if (isObserver()) {
+              <span class="badge badge-gray text-[10px] py-0">Observer</span>
+            }
+          </div>
+        </div>
       </div>
 
       <button
         (click)="leaveGame()"
-        class="px-3 py-1 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"
+        class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
       >
-        Leave
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
       </button>
     </div>
   </header>
 
-  <!-- Main Content Area -->
-  <div class="flex-1 flex flex-col p-6 gap-6">
-
-    <!-- Story/Topic Display -->
-    <div class="text-center">
+  <!-- Row 2: Story Title -->
+  <div class="text-center py-4">
       @if (isEditingStory()) {
         <!-- Story Edit Mode -->
-        <div class="flex items-center justify-center gap-2">
+        <div class="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200">
           <input
             type="text"
             [(ngModel)]="storyTitleInput"
-            placeholder="Enter story title..."
-            class="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-lg focus:outline-none focus:border-poker-gold w-96"
+            placeholder="What are we estimating?"
+            class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 text-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-80"
             (keyup.enter)="saveStoryTitle()"
             (keyup.escape)="cancelEditingStory()"
             autofocus
           />
           <button
             (click)="saveStoryTitle()"
-            class="px-3 py-2 bg-poker-gold text-poker-green rounded-lg hover:bg-yellow-400 transition-colors"
+            class="p-2 bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors"
           >
-            Save
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
           </button>
           <button
             (click)="cancelEditingStory()"
-            class="px-3 py-2 bg-white/10 text-gray-300 rounded-lg hover:bg-white/20 transition-colors"
+            class="p-2 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 transition-colors"
           >
-            Cancel
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
       } @else if (currentStory(); as story) {
-        <div class="flex items-center justify-center gap-2">
-          <h2 class="text-2xl font-bold text-white">{{ story.title }}</h2>
+        <div class="inline-flex items-center gap-3">
+          <h2 class="text-2xl font-display font-bold text-gray-900">{{ story.title }}</h2>
           @if (isOrganizer()) {
             <button
               (click)="startEditingStory()"
-              class="p-1 text-gray-400 hover:text-white transition-colors"
+              class="p-1.5 text-gray-400 hover:text-poker-green-600 hover:bg-poker-green-50 rounded-lg transition-all"
               title="Edit story title"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
             </button>
           }
@@ -89,51 +95,68 @@
           @if (isOrganizer()) {
             <button
               (click)="startEditingStory()"
-              class="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+              class="btn-secondary py-2 px-4"
             >
-              + Set Story Title
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Set Story Title
+              </span>
             </button>
           } @else {
-            <h2 class="text-2xl font-bold text-gray-400 italic">No story being estimated</h2>
+            <span class="text-gray-400 italic">Waiting for host to set a story...</span>
           }
         </div>
       }
-    </div>
+  </div>
 
-    <!-- Poker Table Area -->
-    <div class="flex-1 flex items-center justify-center">
-      <div class="relative">
+  <!-- Row 3: Middle Scrollable Area - Poker Table -->
+  <div class="min-h-0 overflow-auto flex items-center justify-center p-4">
+    <div class="relative flex items-center justify-center" style="min-height: 500px; width: 820px;">
         <!-- The Poker Table -->
-        <div class="w-[600px] h-[350px] bg-poker-felt rounded-[100px] border-8 border-amber-900/80 shadow-2xl flex items-center justify-center relative">
+        <div class="w-[620px] h-[360px] poker-table rounded-[100px] border-[10px] border-poker-green-800 shadow-2xl flex items-center justify-center">
+          <!-- Inner felt rim -->
+          <div class="absolute inset-3 rounded-[85px] border-2 border-white/5"></div>
 
           <!-- Table Center Content -->
-          <div class="text-center">
+          <div class="text-center relative z-10">
             @if (votesRevealed()) {
               <!-- Results Display -->
-              <div class="space-y-3">
+              <div class="space-y-4">
                 @if (votingResults(); as results) {
                   @if (results.isConsensus) {
-                    <div class="text-6xl font-bold text-poker-gold animate-pulse">
-                      {{ revealedVotes()?.[0]?.cardValue }}
+                    <div class="relative">
+                      <div class="text-7xl font-display font-bold text-white animate-text-glow" style="-webkit-text-stroke: 2px rgba(0, 0, 0, 0.3);">
+                        {{ revealedVotes()?.[0]?.cardValue }}
+                      </div>
+                      <div class="mt-2 inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full font-semibold">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        Consensus!
+                      </div>
                     </div>
-                    <div class="text-green-400 font-semibold text-lg">Consensus!</div>
                   } @else {
-                    <div class="text-4xl font-bold text-white">
+                    <div>
                       @if (results.average !== null) {
-                        Avg: {{ results.average | number:'1.1-1' }}
+                        <div class="text-white/50 text-sm uppercase tracking-wider mb-1">Average</div>
+                        <div class="text-5xl font-display font-bold text-white">
+                          {{ results.average | number:'1.1-1' }}
+                        </div>
                       } @else {
-                        No numeric votes
+                        <div class="text-white/50">No numeric votes</div>
                       }
                     </div>
                     <!-- Vote Distribution -->
                     @if (voteDistribution().length > 0) {
-                      <div class="flex justify-center gap-3 mt-2">
+                      <div class="flex justify-center gap-2 mt-4">
                         @for (dist of voteDistribution(); track dist.value) {
                           <div class="flex flex-col items-center">
-                            <div class="w-10 h-14 bg-white rounded-md flex items-center justify-center text-gray-900 font-bold text-lg shadow-md">
+                            <div class="playing-card w-11 h-16 flex items-center justify-center text-gray-800 font-bold text-lg">
                               {{ dist.value }}
                             </div>
-                            <div class="text-xs text-gray-300 mt-1">{{ dist.count }}x</div>
+                            <div class="text-xs text-white/60 mt-1.5 font-medium">{{ dist.count }}x</div>
                           </div>
                         }
                       </div>
@@ -143,59 +166,77 @@
               </div>
             } @else if (allVotersVoted()) {
               <!-- All voted - ready to reveal -->
-              <div class="text-poker-gold text-xl font-semibold animate-pulse">
-                All votes in!
+              <div>
+                <div class="text-white text-xl font-semibold mb-2">
+                  <span class="inline-flex items-center gap-2">
+                    <svg class="w-6 h-6 animate-bounce-subtle" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    All votes in!
+                  </span>
+                </div>
+                @if (isOrganizer()) {
+                  <button
+                    (click)="revealVotes()"
+                    class="px-8 py-3 text-lg font-semibold bg-white text-poker-green-700 rounded-xl shadow-lg hover:bg-gray-50 transition-all"
+                  >
+                    Reveal Votes
+                  </button>
+                } @else {
+                  <div class="text-white/50 text-sm">Waiting for host to reveal...</div>
+                }
               </div>
-              @if (isOrganizer()) {
-                <button
-                  (click)="revealVotes()"
-                  class="mt-4 px-6 py-3 bg-poker-gold text-poker-green font-bold rounded-lg hover:bg-yellow-400 transition-colors shadow-lg"
-                >
-                  Reveal Votes
-                </button>
-              } @else {
-                <div class="text-gray-400 text-sm mt-2">Waiting for host to reveal...</div>
-              }
             } @else {
               <!-- Waiting for votes -->
-              <div class="text-gray-400">
+              <div>
                 @if (timerRunning()) {
                   <!-- Timer Display -->
-                  <div class="text-5xl font-bold text-poker-gold mb-2" [class.text-red-400]="timerSeconds()! < 10">
+                  <div
+                    class="text-6xl font-mono font-bold mb-3 transition-colors"
+                    [class]="timerSeconds()! < 10 ? 'text-red-400 animate-pulse' : 'text-white'"
+                  >
                     {{ formatTime(timerSeconds()!) }}
                   </div>
                   @if (isOrganizer()) {
                     <button
                       (click)="stopTimer()"
-                      class="text-sm text-gray-400 hover:text-white"
+                      class="text-sm text-white/50 hover:text-white transition-colors"
                     >
                       Cancel Timer
                     </button>
                   }
                 } @else {
-                  <div class="text-lg">Waiting for votes...</div>
+                  <div class="text-white/70 text-lg mb-1">Waiting for votes...</div>
                 }
-                <div class="text-sm mt-2">
-                  {{ votedCount() }} / {{ voters().length }} voted
+                <div class="flex items-center justify-center gap-3 text-white/70">
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-24 h-2 bg-black/30 rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-white rounded-full transition-all duration-500"
+                        [style.width.%]="voters().length > 0 ? (votedCount() / voters().length) * 100 : 0"
+                      ></div>
+                    </div>
+                  </div>
+                  <span class="font-mono font-medium text-sm text-white">{{ votedCount() }}/{{ voters().length }}</span>
                 </div>
                 <!-- Timer buttons for organizer -->
                 @if (isOrganizer() && !timerRunning()) {
-                  <div class="flex justify-center gap-2 mt-3">
+                  <div class="flex justify-center gap-2 mt-4">
                     <button
                       (click)="startTimer(30)"
-                      class="px-3 py-1 text-xs bg-white/10 text-gray-300 rounded hover:bg-white/20 transition-colors"
+                      class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
                     >
                       30s
                     </button>
                     <button
                       (click)="startTimer(60)"
-                      class="px-3 py-1 text-xs bg-white/10 text-gray-300 rounded hover:bg-white/20 transition-colors"
+                      class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
                     >
                       1m
                     </button>
                     <button
                       (click)="startTimer(120)"
-                      class="px-3 py-1 text-xs bg-white/10 text-gray-300 rounded hover:bg-white/20 transition-colors"
+                      class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
                     >
                       2m
                     </button>
@@ -206,35 +247,36 @@
           </div>
 
           <!-- Participants around the table -->
-          @for (voter of voters(); track voter.id; let i = $index) {
+          @for (voter of sortedVoters(); track voter.id; let i = $index) {
             <div
-              class="absolute flex flex-col items-center gap-2"
-              [style]="getParticipantPosition(i, voters().length)"
+              class="absolute flex flex-col items-center gap-2 transition-all duration-500"
+              [style]="getParticipantPosition(i, sortedVoters().length)"
             >
               <!-- Card -->
               <div
-                class="w-14 h-20 rounded-lg flex items-center justify-center text-xl font-bold shadow-lg transition-all duration-300"
+                class="relative w-16 h-24 rounded-xl flex items-center justify-center text-2xl font-bold transition-all duration-300 overflow-hidden"
                 [class]="getCardClasses(voter)"
               >
                 @if (votesRevealed()) {
                   <!-- Revealed vote -->
-                  {{ getParticipantVote(voter.id)?.cardValue ?? '-' }}
+                  <span class="relative z-10">{{ getParticipantVote(voter.id)?.cardValue ?? '-' }}</span>
                 } @else if (hasParticipantVoted(voter.id)) {
-                  <!-- Face down card -->
-                  <div class="w-10 h-16 bg-gradient-to-br from-blue-700 to-blue-900 rounded border-2 border-blue-400"></div>
+                  <!-- Face down card with pattern -->
+                  <div class="card-back"></div>
                 } @else {
-                  <!-- No vote yet -->
-                  <span class="text-gray-500">?</span>
+                  <!-- No vote yet - empty card placeholder -->
                 }
               </div>
               <!-- Name -->
-              <div
-                class="text-xs font-medium px-2 py-0.5 rounded"
-                [class]="voter.id === currentParticipant()?.id ? 'bg-poker-gold/30 text-poker-gold' : 'bg-white/10 text-white'"
-              >
-                {{ voter.displayName }}
+              <div class="flex flex-col items-center gap-1">
+                <div
+                  class="text-sm font-semibold px-3 py-1 rounded-full max-w-[100px] truncate shadow-md"
+                  [class]="voter.id === currentParticipant()?.id ? 'bg-poker-green-500 text-white' : 'bg-white text-gray-800'"
+                >
+                  {{ voter.displayName }}
+                </div>
                 @if (voter.isOrganizer) {
-                  <span class="text-poker-gold">*</span>
+                  <span class="badge badge-green text-[10px] py-0">Host</span>
                 }
               </div>
             </div>
@@ -243,14 +285,24 @@
 
         <!-- Observers Section -->
         @if (observers().length > 0) {
-          <div class="absolute -right-40 top-1/2 -translate-y-1/2 bg-white/5 rounded-lg p-3">
-            <div class="text-gray-400 text-xs mb-2 uppercase tracking-wider">Observers</div>
+          <div class="absolute -right-44 top-1/2 -translate-y-1/2 bg-white p-3 min-w-[120px] rounded-xl shadow-sm border border-gray-200">
+            <div class="flex items-center gap-1.5 text-gray-500 text-xs mb-2 uppercase tracking-wider font-medium">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Observers
+            </div>
             <div class="space-y-1">
               @for (observer of observers(); track observer.id) {
                 <div
-                  class="text-sm px-2 py-0.5 rounded"
-                  [class]="observer.isConnected ? 'text-white' : 'text-gray-500'"
+                  class="text-sm px-2 py-1 rounded flex items-center gap-2"
+                  [class]="observer.isConnected ? 'text-gray-900' : 'text-gray-400'"
                 >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [class]="observer.isConnected ? 'bg-emerald-500' : 'bg-gray-300'"
+                  ></span>
                   {{ observer.displayName }}
                 </div>
               }
@@ -258,53 +310,73 @@
           </div>
         }
       </div>
-    </div>
+  </div>
 
+  <!-- Row 4: Bottom Area - Controls & Card Deck -->
+  <div class="bg-white border-t border-gray-200 p-4 space-y-3">
     <!-- Organizer Controls -->
     @if (isOrganizer() && votesRevealed()) {
-      <div class="flex justify-center gap-4 mb-4">
+      <div class="flex justify-center gap-3">
         <button
           (click)="resetVotes()"
-          class="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+          class="btn-secondary"
         >
-          Reset & Vote Again
+          <span class="flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Vote Again
+          </span>
         </button>
         <button
           (click)="nextStory()"
-          class="px-6 py-2 bg-poker-gold text-poker-green font-semibold rounded-lg hover:bg-yellow-400 transition-colors"
+          class="btn-primary"
         >
-          Next Story
+          <span class="flex items-center gap-2">
+            Next Story
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </span>
         </button>
       </div>
     }
 
     <!-- Card Deck (for voters only) -->
     @if (!isObserver()) {
-      <div class="bg-black/20 rounded-xl p-4">
-        <div class="flex justify-center gap-2 flex-wrap">
-          @for (card of deckValues(); track card) {
-            <button
-              (click)="selectCard(card)"
-              [disabled]="!canVote()"
-              class="w-14 h-20 rounded-lg font-bold text-xl transition-all duration-200 border-2 shadow-md"
-              [class]="getSelectedCardClasses(card)"
-            >
-              {{ card }}
-            </button>
-          }
-        </div>
-        @if (hasVoted() && !votesRevealed()) {
-          <div class="text-center mt-3 text-gray-400 text-sm">
-            You voted: <span class="text-poker-gold font-bold">{{ myVote() }}</span>
-            <span class="text-gray-500"> (click another card to change)</span>
-          </div>
-        }
-        @if (votesRevealed()) {
-          <div class="text-center mt-3 text-gray-500 text-sm">
-            Voting locked - waiting for reset
-          </div>
+      <div class="flex justify-center gap-2 flex-wrap">
+        @for (card of deckValues(); track card) {
+          <button
+            (click)="selectCard(card)"
+            [disabled]="!canVote()"
+            class="group relative w-14 h-20 rounded-xl font-bold text-xl transition-all duration-200 border-2"
+            [class]="getSelectedCardClasses(card)"
+          >
+            <span class="relative z-10">{{ card }}</span>
+            @if (myVote() === card && !votesRevealed()) {
+              <div class="absolute -top-1 -right-1 w-4 h-4 bg-poker-green-500 rounded-full flex items-center justify-center">
+                <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            }
+          </button>
         }
       </div>
+      @if (hasVoted() && !votesRevealed()) {
+        <div class="text-center text-gray-500 text-sm">
+          Your vote: <span class="text-poker-green-600 font-bold text-base">{{ myVote() }}</span>
+          <span class="text-gray-400 ml-1">(tap another card to change)</span>
+        </div>
+      }
+      @if (votesRevealed()) {
+        <div class="text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          Voting locked - waiting for reset
+        </div>
+      }
     }
   </div>
 </main>

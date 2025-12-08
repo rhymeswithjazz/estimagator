@@ -12,6 +12,7 @@ import confetti from 'canvas-confetti';
   standalone: true,
   imports: [DecimalPipe, FormsModule],
   templateUrl: './game-room.component.html',
+  host: { class: 'block h-full' },
 })
 export class GameRoomComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
@@ -45,6 +46,65 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly votedCount = computed(() =>
     this.voters().filter(v => this.participantVoteMap().get(v.id)).length
   );
+
+  // Expose Math for template
+  readonly Math = Math;
+
+  // Sorted voters: host at top (index 0), current user at bottom (index ~half)
+  readonly sortedVoters = computed(() => {
+    const voters = [...this.voters()];
+    const currentId = this.currentParticipant()?.id;
+
+    if (voters.length <= 1) return voters;
+
+    // Find host and current user
+    const hostIndex = voters.findIndex(v => v.isOrganizer);
+    const currentUserIndex = voters.findIndex(v => v.id === currentId);
+
+    // If no special ordering needed, return as-is
+    if (hostIndex === -1 && currentUserIndex === -1) return voters;
+
+    // Build ordered array: host first, then others, current user at bottom position
+    const result: typeof voters = [];
+    const bottomPosition = Math.floor(voters.length / 2);
+
+    // Get host (or first voter if no host)
+    const host = hostIndex !== -1 ? voters[hostIndex] : null;
+    // Get current user (if not the host)
+    const currentUser = currentUserIndex !== -1 && currentUserIndex !== hostIndex
+      ? voters[currentUserIndex]
+      : null;
+
+    // Get all others
+    const others = voters.filter(v =>
+      v.id !== host?.id && v.id !== currentUser?.id
+    );
+
+    // Place host at position 0 (top)
+    if (host) {
+      result[0] = host;
+    }
+
+    // Place current user at bottom position
+    if (currentUser) {
+      result[bottomPosition] = currentUser;
+    }
+
+    // Fill in others in remaining positions
+    let otherIndex = 0;
+    for (let i = 0; i < voters.length; i++) {
+      if (result[i] === undefined && otherIndex < others.length) {
+        result[i] = others[otherIndex++];
+      }
+    }
+
+    // Handle edge case: if current user IS the host, they stay at top
+    if (host && currentUser === null && currentId === host.id) {
+      // Current user is host, already at top - that's fine
+    }
+
+    return result.filter(v => v !== undefined);
+  });
 
   // Story editing state
   readonly isEditingStory = signal(false);
@@ -118,39 +178,37 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Calculate position for participant around the table
   getParticipantPosition(index: number, total: number): string {
     // Distribute participants evenly around an ellipse
-    // Table dimensions: 600x350, offset for cards (70px from edge)
-    const tableWidth = 600;
-    const tableHeight = 350;
-    const radiusX = tableWidth / 2 + 70;
-    const radiusY = tableHeight / 2 + 70;
+    // Table dimensions: 620x360, offset for cards further from edge
+    const tableWidth = 620;
+    const tableHeight = 360;
+    const radiusX = tableWidth / 2 + 100;
+    const radiusY = tableHeight / 2 + 60;
 
-    // Start from top and go clockwise
-    const startAngle = -Math.PI / 2; // Start at top
+    // Start from bottom and go clockwise
+    const startAngle = Math.PI / 2; // Start at bottom
     const angle = startAngle + (2 * Math.PI * index) / total;
 
     const x = Math.cos(angle) * radiusX;
     const y = Math.sin(angle) * radiusY;
 
     // Position relative to center of table, offset to center the card element
-    return `left: calc(50% + ${x}px - 28px); top: calc(50% + ${y}px - 40px);`;
+    return `left: calc(50% + ${x}px - 32px); top: calc(50% + ${y}px - 48px);`;
   }
 
   // Get CSS classes for participant's card
   getCardClasses(participant: Participant): string {
-    const baseClasses = 'border-2';
-
     if (this.votesRevealed()) {
       // Card revealed - show actual value with styling
-      return `${baseClasses} bg-white text-gray-900 border-gray-300`;
+      return 'bg-white text-gray-800 border-2 border-gray-200 shadow-card';
     }
 
     if (this.hasParticipantVoted(participant.id)) {
-      // Has voted - face down card
-      return `${baseClasses} bg-blue-800 border-blue-400`;
+      // Has voted - face down card (styling handled by card-back class in template)
+      return 'shadow-card';
     }
 
-    // No vote yet
-    return `${baseClasses} bg-gray-700/50 border-gray-600 border-dashed`;
+    // No vote yet - empty card placeholder
+    return 'bg-white border-2 border-dashed border-gray-300 shadow-sm';
   }
 
   // Get CSS classes for selectable card in deck
@@ -159,31 +217,37 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     const isDisabled = !this.canVote();
 
     if (isDisabled) {
-      return 'bg-gray-700 text-gray-500 border-gray-600 cursor-not-allowed opacity-50';
+      return 'bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed';
     }
 
     if (isSelected) {
-      return 'bg-poker-gold text-poker-green border-yellow-400 -translate-y-2 scale-110 shadow-xl';
+      return 'bg-gradient-to-b from-poker-green-400 to-poker-green-600 text-white border-poker-green-300 -translate-y-3 scale-110 shadow-glow-green';
     }
 
-    return 'bg-white text-gray-900 border-gray-300 hover:border-poker-gold hover:-translate-y-1 hover:shadow-lg cursor-pointer';
+    return 'bg-white text-gray-800 border-gray-200 hover:border-poker-green-400 hover:-translate-y-1 hover:shadow-card-hover cursor-pointer';
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const code = this.route.snapshot.paramMap.get('code');
 
-    if (!this.gameState.isInSession()) {
-      // Not in a session, redirect to join page
-      if (code) {
-        this.router.navigate(['/join', code]);
-      } else {
-        this.router.navigate(['/']);
-      }
+    if (!code) {
+      this.router.navigate(['/']);
       return;
     }
 
+    if (!this.gameState.isInSession()) {
+      // Try to reconnect using stored session identity
+      const reconnected = await this.gameState.attemptReconnect(code);
+
+      if (!reconnected) {
+        // Not in a session and couldn't reconnect, redirect to join page
+        this.router.navigate(['/join', code]);
+        return;
+      }
+    }
+
     // Verify we're in the right session
-    if (code && code.toUpperCase() !== this.sessionCode()) {
+    if (code.toUpperCase() !== this.sessionCode()) {
       this.router.navigate(['/join', code]);
     }
   }
