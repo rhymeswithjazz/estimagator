@@ -1,0 +1,102 @@
+<main class="min-h-screen bg-gradient-to-br from-poker-green to-poker-felt flex flex-col items-center justify-center p-8">
+  <div class="text-center max-w-md w-full">
+    <h1 class="text-5xl font-bold text-white mb-2">Agile Poker</h1>
+    <p class="text-xl text-gray-200 mb-10">Real-time story point estimation for agile teams</p>
+
+    <div class="space-y-6">
+      <!-- Create Game Section -->
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+        @if (!showCreateOptions()) {
+          <button
+            (click)="toggleCreateOptions()"
+            class="w-full px-6 py-3 bg-poker-gold text-gray-900 font-semibold rounded-lg shadow-lg hover:bg-yellow-400 transition-colors disabled:opacity-50"
+            [disabled]="isCreating()"
+          >
+            Start New Game
+          </button>
+        } @else {
+          <div class="space-y-4">
+            <h3 class="text-white font-semibold text-lg">Choose Your Deck</h3>
+
+            <div class="space-y-2">
+              @for (deck of deckOptions; track deck.value) {
+                <button
+                  (click)="selectDeck(deck.value)"
+                  class="w-full p-3 rounded-lg text-left transition-all"
+                  [class]="selectedDeck() === deck.value
+                    ? 'bg-poker-gold text-gray-900'
+                    : 'bg-white/20 text-white hover:bg-white/30'"
+                >
+                  <div class="font-semibold">{{ deck.label }}</div>
+                  <div class="text-sm opacity-75">{{ deck.preview }}</div>
+                </button>
+              }
+            </div>
+
+            <div class="flex gap-2">
+              <button
+                (click)="toggleCreateOptions()"
+                class="flex-1 px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                (click)="createSession()"
+                class="flex-1 px-4 py-2 bg-poker-gold text-gray-900 font-semibold rounded-lg hover:bg-yellow-400 transition-colors disabled:opacity-50"
+                [disabled]="isCreating()"
+              >
+                @if (isCreating()) {
+                  Creating...
+                } @else {
+                  Create Game
+                }
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-4">
+        <div class="flex-1 h-px bg-white/30"></div>
+        <span class="text-gray-300 text-sm">or join existing</span>
+        <div class="flex-1 h-px bg-white/30"></div>
+      </div>
+
+      <!-- Join Game Section -->
+      <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6">
+        <form (submit)="joinSession(); $event.preventDefault()" class="space-y-4">
+          <div>
+            <input
+              type="text"
+              [value]="joinCode()"
+              (input)="onJoinCodeInput($event)"
+              placeholder="Enter game code"
+              maxlength="6"
+              class="w-full px-4 py-3 rounded-lg border-2 border-transparent bg-white text-gray-900 text-center text-xl font-mono tracking-widest uppercase focus:border-poker-gold focus:outline-none placeholder:text-gray-400 placeholder:normal-case placeholder:tracking-normal placeholder:text-base placeholder:font-sans"
+            />
+            @if (joinError()) {
+              <p class="mt-2 text-red-300 text-sm">{{ joinError() }}</p>
+            }
+          </div>
+
+          <button
+            type="submit"
+            class="w-full px-6 py-3 bg-white text-poker-green font-semibold rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+            [disabled]="isJoining() || !joinCode()"
+          >
+            @if (isJoining()) {
+              Finding game...
+            } @else {
+              Join Game
+            }
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="absolute bottom-4 text-gray-400 text-sm">
+    Point. Vote. Ship.
+  </footer>
+</main>
