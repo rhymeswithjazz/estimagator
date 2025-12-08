@@ -37,8 +37,14 @@ public class PokerPointsDbContext : DbContext
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.DisplayName).HasMaxLength(100);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
+            entity.Property(e => e.ExternalId).HasMaxLength(255);
+            entity.Property(e => e.ExternalProvider).HasMaxLength(50);
+            entity.Property(e => e.RefreshToken).HasMaxLength(255);
 
             entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasIndex(e => new { e.ExternalProvider, e.ExternalId })
+                .IsUnique()
+                .HasFilter("\"ExternalId\" IS NOT NULL");
         });
     }
 
@@ -78,6 +84,11 @@ public class PokerPointsDbContext : DbContext
                 .WithMany(s => s.Participants)
                 .HasForeignKey(e => e.SessionId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 

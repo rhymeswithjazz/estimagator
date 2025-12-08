@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PokerPoints.Data;
@@ -11,9 +12,11 @@ using PokerPoints.Data;
 namespace PokerPoints.Data.Migrations
 {
     [DbContext(typeof(PokerPointsDbContext))]
-    partial class PokerPointsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251208211038_AddUserAuthFields")]
+    partial class AddUserAuthFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

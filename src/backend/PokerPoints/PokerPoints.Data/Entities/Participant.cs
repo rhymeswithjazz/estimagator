@@ -11,5 +11,9 @@ public class Participant
     public string? ConnectionId { get; set; }
     public DateTime JoinedAt { get; set; }
 
+    // Optional link to authenticated user (null for guests)
+    public Guid? UserId { get; set; }
+    public User? User { get; set; }
+
     public ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }

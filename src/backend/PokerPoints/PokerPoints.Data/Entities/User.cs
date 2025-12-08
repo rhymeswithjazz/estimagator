@@ -8,5 +8,13 @@ public class User
     public string? DisplayName { get; set; }
     public DateTime CreatedAt { get; set; }
 
+    // For Microsoft SSO users, store their external ID
+    public string? ExternalId { get; set; }
+    public string? ExternalProvider { get; set; }
+
+    // Refresh token for JWT auth
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiresAt { get; set; }
+
     public ICollection<Session> Sessions { get; set; } = new List<Session>();
 }
