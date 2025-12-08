@@ -1,4 +1,25 @@
 <main class="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+  <!-- Auth Header -->
+  <header class="absolute top-0 left-0 right-0 p-4 flex justify-end items-center z-20">
+    @if (isAuthenticated()) {
+      <a routerLink="/profile" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+        <span class="text-sm font-medium">{{ user()?.displayName }}</span>
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-500 to-poker-green-700 flex items-center justify-center text-white text-xs font-bold">
+          {{ user()?.displayName?.charAt(0)?.toUpperCase() }}
+        </div>
+      </a>
+    } @else {
+      <div class="flex items-center gap-3">
+        <a routerLink="/login" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+          Sign in
+        </a>
+        <a routerLink="/register" class="btn-primary text-sm py-2 px-4">
+          Sign up
+        </a>
+      </div>
+    }
+  </header>
+
   <!-- Background decorative elements -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
     <div class="absolute -top-40 -right-40 w-80 h-80 bg-poker-green-100 rounded-full blur-3xl"></div>
@@ -27,19 +48,42 @@
     <div class="space-y-5">
       <!-- Create Game Section -->
       <div class="glass-card p-6">
+        @if (createError()) {
+          <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            {{ createError() }}
+          </div>
+        }
         @if (!showCreateOptions()) {
-          <button
-            (click)="toggleCreateOptions()"
-            class="btn-primary w-full text-lg py-4"
-            [disabled]="isCreating()"
-          >
-            <span class="flex items-center justify-center gap-2">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Start New Game
-            </span>
-          </button>
+          @if (isAuthenticated()) {
+            <button
+              (click)="toggleCreateOptions()"
+              class="btn-primary w-full text-lg py-4"
+              [disabled]="isCreating()"
+            >
+              <span class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Start New Game
+              </span>
+            </button>
+          } @else {
+            <a
+              routerLink="/login"
+              [queryParams]="{ returnUrl: '/' }"
+              class="btn-primary w-full text-lg py-4 block text-center"
+            >
+              <span class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Sign in to Start Game
+              </span>
+            </a>
+          }
         } @else {
           <div class="space-y-4">
             <div class="flex items-center justify-between">

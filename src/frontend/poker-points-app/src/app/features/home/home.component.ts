@@ -1,18 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SessionService } from '../../core/services/session.service';
+import { AuthService } from '../../core/services/auth.service';
 import { DeckType, DECK_VALUES } from '../../core/models/session.models';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
   private readonly sessionService = inject(SessionService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly user = this.authService.user;
 
   readonly joinCode = signal('');
   readonly selectedDeck = signal<DeckType>('fibonacci');
@@ -20,6 +25,7 @@ export class HomeComponent {
   readonly isJoining = signal(false);
   readonly joinError = signal<string | null>(null);
   readonly showCreateOptions = signal(false);
+  readonly createError = signal<string | null>(null);
 
   readonly deckOptions: { value: DeckType; label: string; preview: string }[] = [
     { value: 'fibonacci', label: 'Fibonacci', preview: DECK_VALUES.fibonacci.slice(0, 5).join(', ') + '...' },
@@ -28,12 +34,19 @@ export class HomeComponent {
   ];
 
   async createSession(): Promise<void> {
+    if (!this.isAuthenticated()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/' } });
+      return;
+    }
+
     this.isCreating.set(true);
+    this.createError.set(null);
     try {
       const response = await this.sessionService.createSession(this.selectedDeck());
       this.router.navigate(['/join', response.accessCode], { queryParams: { new: 'true' } });
     } catch (err) {
       console.error('Failed to create session:', err);
+      this.createError.set('Failed to create game. Please try again.');
     } finally {
       this.isCreating.set(false);
     }

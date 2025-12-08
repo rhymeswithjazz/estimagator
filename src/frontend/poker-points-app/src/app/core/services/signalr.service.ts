@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -12,6 +12,7 @@ import {
   VotesResetEvent,
   StoryUpdatedEvent,
 } from '../models/session.models';
+import { AuthService } from './auth.service';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
@@ -19,6 +20,7 @@ export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'rec
   providedIn: 'root',
 })
 export class SignalRService {
+  private readonly authService = inject(AuthService);
   private connection: signalR.HubConnection | null = null;
 
   // Connection state as Signal
@@ -43,8 +45,12 @@ export class SignalRService {
 
     this._connectionState.set('connecting');
 
+    const token = this.authService.accessToken();
+
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(environment.hubUrl)
+      .withUrl(environment.hubUrl, {
+        accessTokenFactory: token ? () => token : undefined,
+      })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
           // Exponential backoff: 0, 2s, 4s, 8s, 16s, then 30s max
