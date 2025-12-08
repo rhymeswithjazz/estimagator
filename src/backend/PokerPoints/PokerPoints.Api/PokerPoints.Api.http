@@ -1,0 +1,6 @@
+@PokerPoints.Api_HostAddress = http://localhost:5051
+
+GET {{PokerPoints.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
