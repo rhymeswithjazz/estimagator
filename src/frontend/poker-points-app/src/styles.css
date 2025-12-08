@@ -1,3 +1,252 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Poppins:wght@600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html, body {
+    @apply h-full;
+  }
+
+  body {
+    @apply font-body antialiased;
+    background-color: #ffffff;
+  }
+
+  /* App root and routed components need full height */
+  app-root {
+    @apply block h-full;
+  }
+
+  /* Smoother text rendering */
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Card effect - clean white cards for light theme */
+  .glass-card {
+    @apply bg-white border border-gray-200 rounded-2xl;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Dark card for game room (on green table) */
+  .glass-card-dark {
+    @apply bg-poker-green-800/90 backdrop-blur-md border border-white/10 rounded-2xl;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Primary button with shine effect */
+  .btn-primary {
+    @apply relative overflow-hidden px-6 py-3 bg-gradient-to-b from-poker-green-400 to-poker-green-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200;
+    @apply hover:from-poker-green-300 hover:to-poker-green-500 hover:shadow-glow-green hover:-translate-y-0.5;
+    @apply active:translate-y-0 active:shadow-md;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg;
+  }
+
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full;
+    transition: transform 0.5s ease;
+  }
+
+  .btn-primary:hover::before {
+    @apply translate-x-full;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply px-6 py-3 bg-poker-green-50 text-poker-green-700 font-medium rounded-xl border border-poker-green-200 transition-all duration-200;
+    @apply hover:bg-poker-green-100 hover:border-poker-green-300;
+    @apply active:bg-poker-green-200;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply px-4 py-2 text-gray-500 font-medium rounded-lg transition-all duration-200;
+    @apply hover:text-poker-green-700 hover:bg-poker-green-50;
+    @apply active:bg-poker-green-100;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-4 py-3 bg-gray-50 text-gray-900 rounded-xl border-2 border-gray-200 transition-all duration-200;
+    @apply focus:border-poker-green-500 focus:outline-none focus:ring-4 focus:ring-poker-green-500/20 focus:bg-white;
+    @apply placeholder:text-gray-400;
+  }
+
+  /* Playing card base */
+  .playing-card {
+    @apply relative rounded-xl shadow-card transition-all duration-300 overflow-hidden;
+    @apply border-2 border-white/20;
+    background: linear-gradient(145deg, #ffffff 0%, #f0f0f0 100%);
+  }
+
+  .playing-card::before {
+    content: '';
+    @apply absolute inset-0 bg-card-pattern opacity-50;
+  }
+
+  /* Card back design - elegant cream/ivory style */
+  .card-back {
+    @apply absolute inset-0 rounded-xl;
+    background: linear-gradient(135deg, #f5f0e6 0%, #ebe4d4 50%, #f5f0e6 100%);
+    border: 3px solid #d4c9b5;
+  }
+
+  .card-back::before {
+    content: '';
+    @apply absolute rounded-lg;
+    inset: 4px;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 4px,
+        rgba(63, 118, 2, 0.08) 4px,
+        rgba(63, 118, 2, 0.08) 8px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 4px,
+        rgba(63, 118, 2, 0.08) 4px,
+        rgba(63, 118, 2, 0.08) 8px
+      );
+    border: 2px solid #c9bea8;
+  }
+
+  .card-back::after {
+    content: '';
+    @apply absolute rounded flex items-center justify-center;
+    inset: 10px;
+    background: linear-gradient(135deg, #f8f4ec 0%, #efe9db 50%, #f8f4ec 100%);
+    border: 1px solid #d4c9b5;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Poker table felt - using green accent color */
+  .poker-table {
+    background:
+      radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 70%, rgba(0,0,0,0.2) 0%, transparent 50%),
+      linear-gradient(180deg, #5a9a1a 0%, #3F7602 100%);
+    @apply shadow-table;
+  }
+
+  /* Status badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-gold {
+    @apply bg-poker-gold-100 text-poker-gold-700 border border-poker-gold-300;
+  }
+
+  .badge-green {
+    @apply bg-emerald-100 text-emerald-700 border border-emerald-300;
+  }
+
+  .badge-gray {
+    @apply bg-gray-100 text-gray-600 border border-gray-200;
+  }
+
+  /* Connection status dot */
+  .status-dot {
+    @apply w-2.5 h-2.5 rounded-full;
+  }
+
+  .status-dot-connected {
+    @apply bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)];
+  }
+
+  .status-dot-reconnecting {
+    @apply bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)] animate-pulse;
+  }
+
+  .status-dot-disconnected {
+    @apply bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)];
+  }
+
+  /* Spinner */
+  .spinner {
+    @apply w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin;
+  }
+
+  /* Deck selection card */
+  .deck-option {
+    @apply p-4 rounded-xl text-left transition-all duration-200 border-2;
+    @apply bg-gray-50 border-gray-200 text-gray-900;
+    @apply hover:bg-poker-green-50 hover:border-poker-green-200;
+  }
+
+  .deck-option-selected {
+    @apply bg-poker-green-50 border-poker-green-500 text-gray-900;
+  }
+}
+
+@layer utilities {
+  /* Text gradient */
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-poker-gold-300 via-poker-gold to-poker-gold-600 bg-clip-text text-transparent;
+  }
+
+  /* Shine animation for text */
+  .text-shine {
+    background: linear-gradient(
+      110deg,
+      #f4c430 0%,
+      #fef9e8 45%,
+      #f4c430 55%,
+      #f4c430 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* Subtle shadow for depth */
+  .shadow-depth {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.1),
+      0 2px 4px rgba(0, 0, 0, 0.1),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Selection styling */
+::selection {
+  background-color: rgba(30, 112, 64, 0.2);
+  color: inherit;
+}
