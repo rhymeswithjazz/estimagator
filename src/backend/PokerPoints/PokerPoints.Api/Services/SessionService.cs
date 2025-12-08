@@ -7,13 +7,14 @@ namespace PokerPoints.Api.Services;
 
 public interface ISessionService
 {
-    Task<CreateSessionResponse> CreateSessionAsync(string deckType);
+    Task<CreateSessionResponse> CreateSessionAsync(string deckType, Guid? organizerId = null);
     Task<Session?> GetSessionByCodeAsync(string accessCode);
     Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode);
     Task<GameStateResponse?> GetGameStateAsync(string accessCode);
     Task<Story?> GetOrCreateActiveStoryAsync(Guid sessionId);
     Task<Story?> UpdateStoryTitleAsync(Guid storyId, string title);
     Task<Story?> CompleteStoryAsync(Guid storyId, decimal? finalScore);
+    Task<List<SessionInfoResponse>> GetUserSessionsAsync(Guid userId);
 }
 
 public class SessionService : ISessionService
@@ -26,7 +27,7 @@ public class SessionService : ISessionService
         _db = db;
     }
 
-    public async Task<CreateSessionResponse> CreateSessionAsync(string deckType)
+    public async Task<CreateSessionResponse> CreateSessionAsync(string deckType, Guid? organizerId = null)
     {
         var accessCode = await GenerateUniqueAccessCodeAsync();
 
@@ -34,13 +35,39 @@ public class SessionService : ISessionService
         {
             AccessCode = accessCode,
             DeckType = deckType,
-            IsActive = true
+            IsActive = true,
+            OrganizerId = organizerId
         };
 
         _db.Sessions.Add(session);
         await _db.SaveChangesAsync();
 
         return new CreateSessionResponse(session.Id, session.AccessCode);
+    }
+
+    public async Task<List<SessionInfoResponse>> GetUserSessionsAsync(Guid userId)
+    {
+        var sessions = await _db.Sessions
+            .Include(s => s.Participants)
+            .Include(s => s.Stories)
+            .Where(s => s.OrganizerId == userId || s.Participants.Any(p => p.UserId == userId))
+            .OrderByDescending(s => s.CreatedAt)
+            .Take(20)
+            .ToListAsync();
+
+        return sessions.Select(session =>
+        {
+            var activeStory = session.Stories.FirstOrDefault(s => s.Status == "active");
+            return new SessionInfoResponse(
+                session.Id,
+                session.AccessCode,
+                session.DeckType,
+                session.IsActive,
+                session.CreatedAt,
+                session.Participants.Select(ToParticipantDto).ToList(),
+                activeStory != null ? ToStoryDto(activeStory) : null
+            );
+        }).ToList();
     }
 
     public async Task<Session?> GetSessionByCodeAsync(string accessCode)
