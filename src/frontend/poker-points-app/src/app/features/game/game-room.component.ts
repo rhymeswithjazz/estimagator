@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, computed, signal, effect } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
@@ -10,14 +10,14 @@ import confetti from 'canvas-confetti';
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [DecimalPipe, FormsModule],
+  imports: [DecimalPipe, FormsModule, NgClass],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },
 })
 export class GameRoomComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly gameState = inject(GameStateService);
+  readonly gameState = inject(GameStateService); // public for debug access
   private readonly signalR = inject(SignalRService);
 
   // State from GameStateService
@@ -46,6 +46,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly votedCount = computed(() =>
     this.voters().filter(v => this.participantVoteMap().get(v.id)).length
   );
+
+  // Use compact sizing when more than 10 voters
+  readonly compactMode = computed(() => this.voters().length > 10);
 
   // Expose Math for template
   readonly Math = Math;
@@ -177,22 +180,31 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Calculate position for participant around the table
   getParticipantPosition(index: number, total: number): string {
-    // Distribute participants evenly around an ellipse
-    // Table dimensions: 620x360, offset for cards further from edge
-    const tableWidth = 620;
-    const tableHeight = 360;
-    const radiusX = tableWidth / 2 + 100;
-    const radiusY = tableHeight / 2 + 60;
+    // Distribute participants around the table using a "superellipse" approach
+    // Table is 380x200 rounded rectangle, need extra clearance for cards (~60px) and names (~50px)
+    // Card+name element is ~110px tall (72px card + gap + name + badge)
+    const radiusX = 300; // Horizontal distance from center
+    const radiusY = 215; // Vertical distance from center
 
-    // Start from bottom and go clockwise
-    const startAngle = Math.PI / 2; // Start at bottom
+    // Start from top and go clockwise
+    const startAngle = -Math.PI / 2; // Start at top
     const angle = startAngle + (2 * Math.PI * index) / total;
 
-    const x = Math.cos(angle) * radiusX;
-    const y = Math.sin(angle) * radiusY;
+    // Use superellipse (n=3) for better fit around rounded rectangle
+    // This pushes side positions outward more than a regular ellipse
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+    const n = 3;
+    const superellipseFactor = Math.pow(
+      Math.pow(Math.abs(cosA), n) + Math.pow(Math.abs(sinA), n),
+      -1 / n
+    );
 
-    // Position relative to center of table, offset to center the card element
-    return `left: calc(50% + ${x}px - 32px); top: calc(50% + ${y}px - 48px);`;
+    const x = cosA * radiusX * superellipseFactor;
+    const y = sinA * radiusY * superellipseFactor;
+
+    // Center the element at the calculated position
+    return `left: calc(50% + ${x}px); top: calc(50% + ${y}px); transform: translate(-50%, -50%);`;
   }
 
   // Get CSS classes for participant's card
@@ -221,10 +233,10 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
 
     if (isSelected) {
-      return 'bg-gradient-to-b from-poker-green-400 to-poker-green-600 text-white border-poker-green-300 -translate-y-3 scale-110 shadow-glow-green';
+      return 'bg-gradient-to-b from-poker-green-400 to-poker-green-600 text-white border-poker-green-300 shadow-glow-green';
     }
 
-    return 'bg-white text-gray-800 border-gray-200 hover:border-poker-green-400 hover:-translate-y-1 hover:shadow-card-hover cursor-pointer';
+    return 'bg-white text-gray-800 border-gray-200 hover:border-poker-green-400 hover:shadow-card-hover cursor-pointer';
   }
 
   async ngOnInit(): Promise<void> {

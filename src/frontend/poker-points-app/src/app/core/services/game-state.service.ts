@@ -285,4 +285,38 @@ export class GameStateService {
       return null;
     }
   }
+
+  // DEBUG: Add mock players for UI testing
+  // Call from browser console: ng.getComponent(document.querySelector('app-game-room')).gameState.addMockPlayers(12)
+  addMockPlayers(count: number): void {
+    const names = [
+      'Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank',
+      'Grace', 'Henry', 'Ivy', 'Jack', 'Kate', 'Leo',
+      'Mia', 'Noah', 'Olivia', 'Pete', 'Quinn', 'Rose'
+    ];
+    const current = this._participants();
+    const mockPlayers: Participant[] = [];
+
+    for (let i = 0; i < count && i < names.length; i++) {
+      if (current.some(p => p.displayName === names[i])) continue;
+
+      mockPlayers.push({
+        id: `mock-${i}-${Date.now()}`,
+        displayName: names[i],
+        isOrganizer: false,
+        isObserver: false,
+        isConnected: true,
+      });
+    }
+
+    this._participants.set([...current, ...mockPlayers]);
+    console.log(`Added ${mockPlayers.length} mock players. Total: ${this._participants().length}`);
+  }
+
+  // DEBUG: Remove all mock players
+  removeMockPlayers(): void {
+    const real = this._participants().filter(p => !p.id.startsWith('mock-'));
+    this._participants.set(real);
+    console.log(`Removed mock players. Remaining: ${real.length}`);
+  }
 }
