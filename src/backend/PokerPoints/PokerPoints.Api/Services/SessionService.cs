@@ -15,6 +15,13 @@ public interface ISessionService
     Task<Story?> UpdateStoryTitleAsync(Guid storyId, string title);
     Task<Story?> CompleteStoryAsync(Guid storyId, decimal? finalScore);
     Task<List<SessionInfoResponse>> GetUserSessionsAsync(Guid userId);
+    Task<List<Story>> AddStoriesAsync(Guid sessionId, List<CreateStoryRequest> stories);
+    Task<List<StoryDto>> GetPendingStoriesAsync(Guid sessionId);
+    Task<Story?> ActivateNextStoryAsync(Guid sessionId);
+    Task<Story?> ActivateStoryAsync(Guid storyId);
+    Task<Story?> RestartStoryAsync(Guid storyId);
+    Task<Story?> UpdateStoryAsync(Guid storyId, string title, string? url);
+    Task DeleteStoryAsync(Guid storyId);
 }
 
 public class SessionService : ISessionService
@@ -196,6 +203,106 @@ public class SessionService : ISessionService
         return story;
     }
 
+    public async Task<List<Story>> AddStoriesAsync(Guid sessionId, List<CreateStoryRequest> stories)
+    {
+        var maxSortOrder = await _db.Stories
+            .Where(s => s.SessionId == sessionId)
+            .MaxAsync(s => (int?)s.SortOrder) ?? 0;
+
+        var newStories = stories.Select((req, index) => new Story
+        {
+            SessionId = sessionId,
+            Title = req.Title,
+            Url = req.Url,
+            Status = "pending",
+            SortOrder = maxSortOrder + index + 1
+        }).ToList();
+
+        _db.Stories.AddRange(newStories);
+        await _db.SaveChangesAsync();
+
+        return newStories;
+    }
+
+    public async Task<List<StoryDto>> GetPendingStoriesAsync(Guid sessionId)
+    {
+        // Return all non-active stories (pending and completed) for the queue display
+        var stories = await _db.Stories
+            .Where(s => s.SessionId == sessionId && s.Status != "active")
+            .OrderBy(s => s.SortOrder)
+            .ToListAsync();
+
+        return stories.Select(ToStoryDto).ToList();
+    }
+
+    public async Task<Story?> ActivateNextStoryAsync(Guid sessionId)
+    {
+        var nextStory = await _db.Stories
+            .Where(s => s.SessionId == sessionId && s.Status == "pending")
+            .OrderBy(s => s.SortOrder)
+            .FirstOrDefaultAsync();
+
+        if (nextStory == null) return null;
+
+        nextStory.Status = "active";
+        await _db.SaveChangesAsync();
+
+        return nextStory;
+    }
+
+    public async Task<Story?> ActivateStoryAsync(Guid storyId)
+    {
+        var story = await _db.Stories.FindAsync(storyId);
+        if (story == null) return null;
+
+        story.Status = "active";
+        await _db.SaveChangesAsync();
+
+        return story;
+    }
+
+    public async Task<Story?> RestartStoryAsync(Guid storyId)
+    {
+        var story = await _db.Stories
+            .Include(s => s.Votes)
+            .FirstOrDefaultAsync(s => s.Id == storyId);
+
+        if (story == null) return null;
+
+        // Clear all votes for this story
+        _db.Votes.RemoveRange(story.Votes);
+
+        // Reset story status
+        story.Status = "active";
+        story.FinalScore = null;
+
+        await _db.SaveChangesAsync();
+
+        return story;
+    }
+
+    public async Task<Story?> UpdateStoryAsync(Guid storyId, string title, string? url)
+    {
+        var story = await _db.Stories.FindAsync(storyId);
+        if (story == null) return null;
+
+        story.Title = title;
+        story.Url = url;
+        await _db.SaveChangesAsync();
+
+        return story;
+    }
+
+    public async Task DeleteStoryAsync(Guid storyId)
+    {
+        var story = await _db.Stories.FindAsync(storyId);
+        if (story != null)
+        {
+            _db.Stories.Remove(story);
+            await _db.SaveChangesAsync();
+        }
+    }
+
     private async Task<string> GenerateUniqueAccessCodeAsync()
     {
         var random = new Random();
@@ -222,6 +329,7 @@ public class SessionService : ISessionService
     private static StoryDto ToStoryDto(Story s) => new(
         s.Id,
         s.Title,
+        s.Url,
         s.Status,
         s.FinalScore
     );

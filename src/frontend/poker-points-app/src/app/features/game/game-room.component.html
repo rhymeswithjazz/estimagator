@@ -2,13 +2,38 @@
   <!-- Row 1: Header -->
   <header class="bg-white mx-4 mt-4 px-5 py-3 flex items-center justify-between rounded-xl shadow-sm border border-gray-200">
     <div class="flex items-center gap-4">
-      <h1 class="text-xl font-display font-bold text-poker-green-700">Estimagator</h1>
+      <a routerLink="/" class="flex items-center gap-2">
+        <img src="brand/logo.svg" alt="Estimagator" class="w-8 h-8" />
+        <div class="flex items-center">
+          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none">Estima</span>
+          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none">gator</span>
+        </div>
+      </a>
       <div class="flex items-center gap-2 px-3 py-1.5 bg-poker-green-50 rounded-lg border border-poker-green-200">
         <span class="font-mono text-poker-green-700 font-bold tracking-wider text-lg">{{ sessionCode() }}</span>
       </div>
     </div>
 
-    <div class="flex items-center gap-5">
+        <div class="flex items-center gap-5">
+      <!-- Story Queue Button (Organizer only) -->
+      @if (isOrganizer()) {
+        <button
+          (click)="toggleStoryPanel()"
+          class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+          [class]="isStoryPanelOpen() ? 'bg-poker-green-100 text-poker-green-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+          </svg>
+          Stories
+          @if (storyQueue().length > 0) {
+            <span class="bg-poker-green-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+              {{ storyQueue().length }}
+            </span>
+          }
+        </button>
+      }
+
       <!-- Connection Status -->
       <div class="flex items-center gap-2">
         <span
@@ -45,7 +70,7 @@
   </header>
 
   <!-- Row 2: Middle Scrollable Area - Poker Table -->
-  <div class="min-h-0 overflow-auto flex justify-center items-start py-4">
+  <div class="min-h-0 overflow-auto flex justify-center items-center py-4">
     <div class="relative flex items-center justify-center shrink-0" style="height: 560px; width: 720px;">
         <!-- The Poker Table -->
         <div class="w-[380px] h-[200px] poker-table rounded-[60px] border-[6px] border-poker-green-800 shadow-2xl flex items-center justify-center">
@@ -261,7 +286,8 @@
         <div class="inline-flex items-center gap-2">
           <input
             type="text"
-            [(ngModel)]="storyTitleInput"
+            [ngModel]="storyTitleInput()"
+            (ngModelChange)="storyTitleInput.set($event)"
             placeholder="What are we estimating?"
             class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-64"
             (keyup.enter)="saveStoryTitle()"
@@ -289,6 +315,19 @@
         <div class="inline-flex items-center gap-2">
           <span class="text-gray-500 text-sm">Estimating:</span>
           <span class="font-display font-bold text-gray-900">{{ story.title }}</span>
+          @if (story.url) {
+            <a
+              [href]="story.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-poker-green-600 hover:text-poker-green-700 transition-colors"
+              title="Open story link"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          }
           @if (isOrganizer()) {
             <button
               (click)="startEditingStory()"
@@ -388,3 +427,193 @@
     }
   </div>
 </main>
+
+<!-- Story Management Panel (Organizer only) -->
+@if (isOrganizer() && isStoryPanelOpen()) {
+  <div class="fixed inset-0 z-50 flex justify-end" (click)="toggleStoryPanel()">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/20"></div>
+
+    <!-- Panel -->
+    <div
+      class="relative w-full max-w-md bg-white shadow-2xl flex flex-col h-full"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Panel Header -->
+      <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+        <h2 class="text-lg font-display font-bold text-gray-900">Story Queue</h2>
+        <button
+          (click)="toggleStoryPanel()"
+          class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Panel Content -->
+      <div class="flex-1 overflow-auto p-4 space-y-4">
+        <!-- Add Stories Section -->
+        @if (isAddingStories()) {
+          <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+            <div class="text-sm font-medium text-gray-700">Add Multiple Stories</div>
+            <p class="text-xs text-gray-500">
+              One story per line. Optionally add a URL with a tab or " | " separator.
+            </p>
+            <textarea
+              [ngModel]="newStoriesText()"
+              (ngModelChange)="newStoriesText.set($event)"
+              placeholder="Story 1&#10;Story 2 | https://link.com&#10;Story 3&#9;https://another.link"
+              class="w-full h-32 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 resize-none"
+            ></textarea>
+            <div class="flex gap-2">
+              <button
+                (click)="addBatchStories()"
+                class="flex-1 px-3 py-2 text-sm font-medium bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors"
+              >
+                Add Stories
+              </button>
+              <button
+                (click)="cancelAddStories()"
+                class="px-3 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        } @else {
+          <!-- Quick Add Single Story -->
+          <div class="space-y-2">
+            <input
+              type="text"
+              [ngModel]="newStoryTitle()"
+              (ngModelChange)="newStoryTitle.set($event)"
+              placeholder="Story title..."
+              class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+              (keyup.enter)="addSingleStory()"
+            />
+            <input
+              type="url"
+              [ngModel]="newStoryUrl()"
+              (ngModelChange)="newStoryUrl.set($event)"
+              placeholder="URL (optional)"
+              class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+              (keyup.enter)="addSingleStory()"
+            />
+            <div class="flex gap-2">
+              <button
+                (click)="addSingleStory()"
+                [disabled]="!newStoryTitle().trim()"
+                class="flex-1 px-3 py-2 text-sm font-medium bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Add Story
+              </button>
+              <button
+                (click)="openAddStories()"
+                class="px-3 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                title="Add multiple stories"
+              >
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Story Queue List -->
+        <div class="space-y-2">
+          <div class="text-sm font-medium text-gray-700 flex items-center justify-between">
+            <span>Queued Stories</span>
+            @if (storyQueue().length > 0) {
+              <span class="text-xs text-gray-400">{{ storyQueue().length }} stories</span>
+            }
+          </div>
+
+          @if (storyQueue().length === 0) {
+            <div class="text-center py-8 text-gray-400 text-sm">
+              <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              No stories queued
+            </div>
+          } @else {
+            <div class="space-y-2">
+              @for (story of storyQueue(); track story.id; let i = $index) {
+                <div
+                  class="group border rounded-lg p-3 transition-colors"
+                  [class.bg-white]="story.status === 'pending'"
+                  [class.bg-poker-green-50]="story.status === 'completed'"
+                  [class.border-gray-200]="story.status === 'pending'"
+                  [class.border-poker-green-200]="story.status === 'completed'"
+                  [class.hover:border-poker-green-300]="story.status === 'pending'"
+                >
+                  <div class="flex items-start gap-3">
+                    <span class="text-xs text-gray-400 font-mono mt-0.5">{{ i + 1 }}</span>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2">
+                        <span class="font-medium text-gray-900 truncate">{{ story.title }}</span>
+                        @if (story.status === 'completed' && story.finalScore !== null) {
+                          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-poker-green-100 text-poker-green-800">
+                            {{ story.finalScore }}
+                          </span>
+                        }
+                      </div>
+                      @if (story.url) {
+                        <a
+                          [href]="story.url"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="text-xs text-poker-green-600 hover:text-poker-green-700 truncate block"
+                          (click)="$event.stopPropagation()"
+                        >
+                          {{ story.url }}
+                        </a>
+                      }
+                    </div>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      @if (story.status === 'pending') {
+                        <!-- Start button for pending stories -->
+                        <button
+                          (click)="startStoryFromQueue(story.id)"
+                          class="p-1.5 text-poker-green-600 hover:bg-poker-green-50 rounded transition-colors"
+                          title="Start voting on this story"
+                        >
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </button>
+                      } @else if (story.status === 'completed') {
+                        <!-- Restart button for completed stories -->
+                        <button
+                          (click)="restartStoryFromQueue(story.id)"
+                          class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                          title="Re-vote on this story"
+                        >
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                        </button>
+                      }
+                      <button
+                        (click)="deleteStoryFromQueue(story.id)"
+                        class="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                        title="Remove story"
+                      >
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -116,7 +116,7 @@ public class PokerHub : Hub
             if (story != null)
             {
                 await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                    new StoryDto(story.Id, story.Title, story.Status, story.FinalScore)
+                    new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
                 ));
             }
         }
@@ -246,7 +246,7 @@ public class PokerHub : Hub
         _logger.LogInformation("Story updated: {StoryId} -> {Title}", story.Id, title);
 
         await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-            new StoryDto(story.Id, story.Title, story.Status, story.FinalScore)
+            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
         ));
     }
 
@@ -271,8 +271,16 @@ public class PokerHub : Hub
             await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
         }
 
-        // Create new story
-        var newStory = await _sessionService.GetOrCreateActiveStoryAsync(session.Id);
+        // Try to activate next story from queue first, otherwise create new
+        var newStory = await _sessionService.ActivateNextStoryAsync(session.Id);
+
+        // If no pending stories in queue, create a new empty one
+        if (newStory == null)
+        {
+            newStory = await _sessionService.GetOrCreateActiveStoryAsync(session.Id);
+        }
+
+        // Override title if provided
         if (newStory != null && !string.IsNullOrEmpty(title))
         {
             newStory = await _sessionService.UpdateStoryTitleAsync(newStory.Id, title);
@@ -284,9 +292,164 @@ public class PokerHub : Hub
 
             await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(newStory.Id));
             await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                new StoryDto(newStory.Id, newStory.Title, newStory.Status, newStory.FinalScore)
+                new StoryDto(newStory.Id, newStory.Title, newStory.Url, newStory.Status, newStory.FinalScore)
             ));
+
+            // Notify clients that the queue has changed
+            var updatedQueue = await _sessionService.GetPendingStoriesAsync(session.Id);
+            await Clients.Group(session.AccessCode).SendAsync("StoryQueueUpdated", updatedQueue);
         }
+    }
+
+    public async Task<List<StoryDto>> AddStories(List<CreateStoryRequest> stories)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null)
+        {
+            await Clients.Caller.SendAsync("Error", "Not in a session");
+            return new List<StoryDto>();
+        }
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can add stories");
+            return new List<StoryDto>();
+        }
+
+        var session = participant.Session;
+        var newStories = await _sessionService.AddStoriesAsync(session.Id, stories);
+
+        _logger.LogInformation("Added {Count} stories to session {SessionId}", newStories.Count, session.Id);
+
+        var storyDtos = newStories.Select(s => new StoryDto(s.Id, s.Title, s.Url, s.Status, s.FinalScore)).ToList();
+
+        // Broadcast updated story queue to all participants
+        await Clients.Group(session.AccessCode).SendAsync("StoriesAdded", storyDtos);
+
+        return storyDtos;
+    }
+
+    public async Task<List<StoryDto>> GetStoryQueue()
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return new List<StoryDto>();
+
+        return await _sessionService.GetPendingStoriesAsync(participant.Session.Id);
+    }
+
+    public async Task UpdateStoryDetails(Guid storyId, string title, string? url)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can update stories");
+            return;
+        }
+
+        var story = await _sessionService.UpdateStoryAsync(storyId, title, url);
+        if (story == null) return;
+
+        var session = participant.Session;
+        _logger.LogInformation("Story {StoryId} updated: Title={Title}, Url={Url}", storyId, title, url);
+
+        await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
+            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+        ));
+    }
+
+    public async Task DeleteStory(Guid storyId)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can delete stories");
+            return;
+        }
+
+        await _sessionService.DeleteStoryAsync(storyId);
+
+        var session = participant.Session;
+        _logger.LogInformation("Story {StoryId} deleted from session {SessionCode}", storyId, session.AccessCode);
+
+        await Clients.Group(session.AccessCode).SendAsync("StoryDeleted", storyId);
+    }
+
+    public async Task StartStory(Guid storyId)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can start stories");
+            return;
+        }
+
+        var session = participant.Session;
+        var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
+
+        // Complete current story if exists
+        if (gameState?.CurrentStory != null)
+        {
+            var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
+            await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+        }
+
+        // Activate the selected story
+        var story = await _sessionService.ActivateStoryAsync(storyId);
+        if (story == null) return;
+
+        _logger.LogInformation("Story {StoryId} started from queue", storyId);
+
+        await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(story.Id));
+        await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
+            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+        ));
+
+        // Notify clients that the queue has changed
+        var updatedQueue = await _sessionService.GetPendingStoriesAsync(session.Id);
+        await Clients.Group(session.AccessCode).SendAsync("StoryQueueUpdated", updatedQueue);
+    }
+
+    public async Task RestartStory(Guid storyId)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can restart stories");
+            return;
+        }
+
+        var session = participant.Session;
+        var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
+
+        // Complete current story if exists and it's different from the one we're restarting
+        if (gameState?.CurrentStory != null && gameState.CurrentStory.Id != storyId)
+        {
+            var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
+            await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+        }
+
+        // Restart the story (clears votes and sets to active)
+        var story = await _sessionService.RestartStoryAsync(storyId);
+        if (story == null) return;
+
+        _logger.LogInformation("Story {StoryId} restarted", storyId);
+
+        await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(story.Id));
+        await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
+            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+        ));
+
+        // Notify clients that the queue has changed
+        var updatedQueue = await _sessionService.GetPendingStoriesAsync(session.Id);
+        await Clients.Group(session.AccessCode).SendAsync("StoryQueueUpdated", updatedQueue);
     }
 
     public async Task<GameStateResponse?> GetSessionState()

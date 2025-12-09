@@ -28,6 +28,7 @@ export interface Participant {
 export interface Story {
   id: string;
   title: string;
+  url: string | null;
   status: 'pending' | 'active' | 'completed';
   finalScore: number | null;
 }

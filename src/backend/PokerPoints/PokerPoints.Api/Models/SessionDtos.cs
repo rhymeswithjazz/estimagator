@@ -27,6 +27,9 @@ public record ParticipantDto(
 public record StoryDto(
     Guid Id,
     string Title,
+    string? Url,
     string Status,
     decimal? FinalScore
 );
+
+public record CreateStoryRequest(string Title, string? Url = null);

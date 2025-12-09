@@ -37,6 +37,7 @@ export class GameStateService {
   private readonly _deckType = signal<DeckType>('fibonacci');
   private readonly _myVote = signal<string | null>(null);
   private readonly _votingResults = signal<{ average: number | null; isConsensus: boolean } | null>(null);
+  private readonly _storyQueue = signal<Story[]>([]);
 
   // Read-only public signals
   readonly sessionCode = this._sessionCode.asReadonly();
@@ -48,6 +49,7 @@ export class GameStateService {
   readonly deckType = this._deckType.asReadonly();
   readonly myVote = this._myVote.asReadonly();
   readonly votingResults = this._votingResults.asReadonly();
+  readonly storyQueue = this._storyQueue.asReadonly();
 
   // Computed signals
   readonly isInSession = computed(() => this._sessionCode() !== null && this._currentParticipant() !== null);
@@ -143,6 +145,18 @@ export class GameStateService {
     this.signalR.error$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((message) => {
       console.error('SignalR error:', message);
     });
+
+    this.signalR.storiesAdded$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stories) => {
+      this._storyQueue.update((queue) => [...queue, ...stories]);
+    });
+
+    this.signalR.storyDeleted$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((storyId) => {
+      this._storyQueue.update((queue) => queue.filter((s) => s.id !== storyId));
+    });
+
+    this.signalR.storyQueueUpdated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stories) => {
+      this._storyQueue.set(stories);
+    });
   }
 
   private applyGameState(state: GameState): void {
@@ -197,6 +211,9 @@ export class GameStateService {
         this.applyGameState(gameState);
       }
 
+      // Fetch story queue
+      await this.loadStoryQueue();
+
       return true;
     } catch (err) {
       console.error('Failed to join session:', err);
@@ -240,6 +257,36 @@ export class GameStateService {
     await this.signalR.nextStory(title);
   }
 
+  async addStories(stories: { title: string; url?: string }[]): Promise<Story[]> {
+    if (!this.isOrganizer()) return [];
+    return this.signalR.addStories(stories);
+  }
+
+  async loadStoryQueue(): Promise<void> {
+    const queue = await this.signalR.getStoryQueue();
+    this._storyQueue.set(queue);
+  }
+
+  async updateStoryDetails(storyId: string, title: string, url: string | null): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.updateStoryDetails(storyId, title, url);
+  }
+
+  async deleteStory(storyId: string): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.deleteStory(storyId);
+  }
+
+  async startStory(storyId: string): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.startStory(storyId);
+  }
+
+  async restartStory(storyId: string): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.restartStory(storyId);
+  }
+
   async attemptReconnect(sessionCode: string): Promise<boolean> {
     const storedIdentity = this.getStoredIdentityForSession(sessionCode);
     if (!storedIdentity) {
@@ -263,6 +310,7 @@ export class GameStateService {
     this._myVote.set(null);
     this._votingResults.set(null);
     // Note: We intentionally don't clear stored identity here
+    this._storyQueue.set([]);
     // so users can rejoin with the same name if they come back
   }
 

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy, computed, signal, effect } from '@angular/core';
 import { DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { Participant, Vote } from '../../core/models/session.models';
@@ -10,7 +10,7 @@ import confetti from 'canvas-confetti';
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, NgClass],
+  imports: [DecimalPipe, FormsModule, NgClass, RouterLink],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },
 })
@@ -111,7 +111,15 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Story editing state
   readonly isEditingStory = signal(false);
-  storyTitleInput = '';
+  readonly storyTitleInput = signal('');
+
+  // Story management state
+  readonly storyQueue = this.gameState.storyQueue;
+  readonly isStoryPanelOpen = signal(false);
+  readonly isAddingStories = signal(false);
+  readonly newStoriesText = signal(''); // textarea for batch input
+  readonly newStoryTitle = signal('');
+  readonly newStoryUrl = signal('');
 
   // Timer state
   readonly timerSeconds = signal<number | null>(null);
@@ -290,13 +298,13 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   startEditingStory(): void {
     if (!this.isOrganizer()) return;
-    this.storyTitleInput = this.currentStory()?.title ?? '';
+    this.storyTitleInput.set(this.currentStory()?.title ?? '');
     this.isEditingStory.set(true);
   }
 
   async saveStoryTitle(): Promise<void> {
     if (!this.isOrganizer()) return;
-    const title = this.storyTitleInput.trim();
+    const title = this.storyTitleInput().trim();
     if (title) {
       await this.gameState.updateStory(title);
     }
@@ -305,7 +313,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   cancelEditingStory(): void {
     this.isEditingStory.set(false);
-    this.storyTitleInput = '';
+    this.storyTitleInput.set('');
   }
 
   async nextStory(): Promise<void> {
@@ -347,5 +355,75 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  // Story management methods
+  toggleStoryPanel(): void {
+    this.isStoryPanelOpen.update(open => !open);
+  }
+
+  openAddStories(): void {
+    this.isAddingStories.set(true);
+    this.newStoriesText.set('');
+    this.newStoryTitle.set('');
+    this.newStoryUrl.set('');
+  }
+
+  cancelAddStories(): void {
+    this.isAddingStories.set(false);
+    this.newStoriesText.set('');
+    this.newStoryTitle.set('');
+    this.newStoryUrl.set('');
+  }
+
+  async addSingleStory(): Promise<void> {
+    const title = this.newStoryTitle().trim();
+    if (!title) return;
+
+    const url = this.newStoryUrl().trim() || undefined;
+    await this.gameState.addStories([{ title, url }]);
+
+    this.newStoryTitle.set('');
+    this.newStoryUrl.set('');
+  }
+
+  async addBatchStories(): Promise<void> {
+    const text = this.newStoriesText().trim();
+    if (!text) return;
+
+    // Parse lines - each line is a story, optionally with URL after tab or |
+    const stories = text.split('\n')
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0)
+      .map((line: string) => {
+        // Support formats: "Title" or "Title	URL" or "Title | URL"
+        const tabSplit = line.split('\t');
+        const pipeSplit = line.split(' | ');
+
+        if (tabSplit.length > 1) {
+          return { title: tabSplit[0].trim(), url: tabSplit[1].trim() || undefined };
+        } else if (pipeSplit.length > 1) {
+          return { title: pipeSplit[0].trim(), url: pipeSplit[1].trim() || undefined };
+        }
+        return { title: line };
+      });
+
+    if (stories.length > 0) {
+      await this.gameState.addStories(stories);
+      this.isAddingStories.set(false);
+      this.newStoriesText.set('');
+    }
+  }
+
+  async deleteStoryFromQueue(storyId: string): Promise<void> {
+    await this.gameState.deleteStory(storyId);
+  }
+
+  async startStoryFromQueue(storyId: string): Promise<void> {
+    await this.gameState.startStory(storyId);
+  }
+
+  async restartStoryFromQueue(storyId: string): Promise<void> {
+    await this.gameState.restartStory(storyId);
   }
 }
