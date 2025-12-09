@@ -17,6 +17,25 @@
 
     <!-- Register Form -->
     <div class="glass-card p-6">
+      @if (success()) {
+        <div class="text-center py-4">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-poker-green-100 mb-4">
+            <svg class="h-6 w-6 text-poker-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">Check Your Email</h2>
+          <p class="text-gray-600 mb-6">
+            We've sent a verification link to <span class="font-medium">{{ email() }}</span>. Please check your inbox and click the link to verify your account.
+          </p>
+          <a
+            routerLink="/"
+            class="inline-block bg-poker-green-600 text-white px-6 py-2 rounded-md hover:bg-poker-green-700 transition-colors"
+          >
+            Go to Home
+          </a>
+        </div>
+      } @else {
       <form (submit)="register(); $event.preventDefault()" class="space-y-4">
         @if (error()) {
           <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
@@ -99,6 +118,7 @@
           </a>
         </p>
       </div>
+      }
     </div>
 
     <!-- Back to home -->

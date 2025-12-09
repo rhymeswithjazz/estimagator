@@ -28,9 +28,27 @@ public record UserDto(
     Guid Id,
     string Email,
     string DisplayName,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    bool EmailVerified
 );
 
 public record ExternalLoginRequest(
     [Required] string IdToken
+);
+
+public record VerifyEmailRequest(
+    [Required] string Token
+);
+
+public record ForgotPasswordRequest(
+    [Required][EmailAddress] string Email
+);
+
+public record ResetPasswordRequest(
+    [Required] string Token,
+    [Required][MinLength(6)] string NewPassword
+);
+
+public record ResendVerificationRequest(
+    [Required][EmailAddress] string Email
 );

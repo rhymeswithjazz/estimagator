@@ -40,7 +40,12 @@
         </div>
 
         <div class="text-left">
-          <label class="block text-gray-600 text-sm font-medium mb-2">Password</label>
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-gray-600 text-sm font-medium">Password</label>
+            <a routerLink="/forgot-password" class="text-poker-green-600 hover:text-poker-green-700 text-xs font-medium">
+              Forgot password?
+            </a>
+          </div>
           <input
             type="password"
             [value]="password()"

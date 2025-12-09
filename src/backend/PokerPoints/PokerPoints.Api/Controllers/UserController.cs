@@ -40,7 +40,8 @@ public class UserController : ControllerBase
             Id: user.Id,
             Email: user.Email ?? "",
             DisplayName: user.DisplayName ?? "",
-            CreatedAt: user.CreatedAt
+            CreatedAt: user.CreatedAt,
+            EmailVerified: user.EmailVerified
         ));
     }
 }

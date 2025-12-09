@@ -3,6 +3,7 @@ export interface User {
   email: string;
   displayName: string;
   createdAt: string;
+  emailVerified: boolean;
 }
 
 export interface AuthResponse {
@@ -38,4 +39,21 @@ export interface AuthState {
   expiresAt: Date | null;
   isLoading: boolean;
   error: string | null;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  newPassword: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
 }

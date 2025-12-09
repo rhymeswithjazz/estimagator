@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
+using PokerPoints.Api.Authentication;
 using PokerPoints.Api.Models;
 using PokerPoints.Api.Services;
 
@@ -10,17 +12,20 @@ public class PokerHub : Hub
     private readonly ISessionService _sessionService;
     private readonly IParticipantService _participantService;
     private readonly IVotingService _votingService;
+    private readonly IAuthService _authService;
 
     public PokerHub(
         ILogger<PokerHub> logger,
         ISessionService sessionService,
         IParticipantService participantService,
-        IVotingService votingService)
+        IVotingService votingService,
+        IAuthService authService)
     {
         _logger = logger;
         _sessionService = sessionService;
         _participantService = participantService;
         _votingService = votingService;
+        _authService = authService;
     }
 
     public override async Task OnConnectedAsync()
@@ -48,6 +53,19 @@ public class PokerHub : Hub
         _logger.LogInformation(
             "JoinSession: {SessionCode}, {DisplayName}, Observer={IsObserver}, ExistingId={ExistingId}",
             sessionCode, displayName, isObserver, existingParticipantId);
+
+        // Check if authenticated user has verified email
+        var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(userIdClaim, out var userId))
+        {
+            var user = await _authService.GetUserByIdAsync(userId);
+            if (user != null && !user.EmailVerified)
+            {
+                _logger.LogWarning("Unverified user {UserId} attempted to join session", userId);
+                await Clients.Caller.SendAsync("Error", "Please verify your email address before joining sessions");
+                return null;
+            }
+        }
 
         var session = await _sessionService.GetSessionByCodeAsync(sessionCode);
         if (session == null)

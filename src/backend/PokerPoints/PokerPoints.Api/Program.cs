@@ -18,6 +18,9 @@ var authConfig = builder.Configuration.GetSection("Authentication").Get<AuthConf
     ?? new AuthConfiguration();
 builder.Services.Configure<AuthConfiguration>(builder.Configuration.GetSection("Authentication"));
 
+// Email configuration
+builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("Email"));
+
 // JWT Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -61,6 +64,7 @@ builder.Services.AddAuthorization();
 // Auth services
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Services
 builder.Services.AddScoped<ISessionService, SessionService>();

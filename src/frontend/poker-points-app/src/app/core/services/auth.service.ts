@@ -10,6 +10,10 @@ import {
   RefreshTokenRequest,
   UpdateProfileRequest,
   AuthState,
+  VerifyEmailRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  ResendVerificationRequest,
 } from '../models/auth.models';
 import { SessionInfo } from '../models/session.models';
 
@@ -130,6 +134,46 @@ export class AuthService {
   async getMySessions(): Promise<SessionInfo[]> {
     return firstValueFrom(
       this.http.get<SessionInfo[]>(`${this.apiUrl}/api/sessions/my-sessions`)
+    );
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    const request: VerifyEmailRequest = { token };
+    await firstValueFrom(
+      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/verify-email`, request)
+    );
+
+    // Update user state if authenticated
+    if (this.isAuthenticated()) {
+      const user = this.state().user;
+      if (user) {
+        this.state.update((s) => ({
+          ...s,
+          user: { ...user, emailVerified: true },
+        }));
+        this.saveToStorage();
+      }
+    }
+  }
+
+  async resendVerification(email: string): Promise<void> {
+    const request: ResendVerificationRequest = { email };
+    await firstValueFrom(
+      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/resend-verification`, request)
+    );
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const request: ForgotPasswordRequest = { email };
+    await firstValueFrom(
+      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/forgot-password`, request)
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const request: ResetPasswordRequest = { token, newPassword };
+    await firstValueFrom(
+      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/reset-password`, request)
     );
   }
 

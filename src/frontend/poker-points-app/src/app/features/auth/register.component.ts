@@ -19,6 +19,7 @@ export class RegisterComponent {
   readonly confirmPassword = signal('');
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly success = signal(false);
 
   async register(): Promise<void> {
     if (!this.displayName() || !this.email() || !this.password()) {
@@ -46,7 +47,7 @@ export class RegisterComponent {
         password: this.password(),
       });
 
-      this.router.navigate(['/']);
+      this.success.set(true);
     } catch (err) {
       this.error.set(err instanceof Error ? err.message : 'Registration failed');
     } finally {

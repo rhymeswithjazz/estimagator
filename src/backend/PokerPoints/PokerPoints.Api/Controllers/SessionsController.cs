@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PokerPoints.Api.Authentication;
 using PokerPoints.Api.Models;
 using PokerPoints.Api.Services;
 
@@ -11,10 +12,12 @@ namespace PokerPoints.Api.Controllers;
 public class SessionsController : ControllerBase
 {
     private readonly ISessionService _sessionService;
+    private readonly IAuthService _authService;
 
-    public SessionsController(ISessionService sessionService)
+    public SessionsController(ISessionService sessionService, IAuthService authService)
     {
         _sessionService = sessionService;
+        _authService = authService;
     }
 
     [Authorize]
@@ -22,10 +25,18 @@ public class SessionsController : ControllerBase
     public async Task<ActionResult<CreateSessionResponse>> CreateSession([FromBody] CreateSessionRequest? request)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        Guid? organizerId = Guid.TryParse(userIdClaim, out var userId) ? userId : null;
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var user = await _authService.GetUserByIdAsync(userId);
+        if (user == null)
+            return Unauthorized();
+
+        if (!user.EmailVerified)
+            return StatusCode(403, new { message = "Please verify your email address before creating sessions" });
 
         var deckType = request?.DeckType ?? "fibonacci";
-        var result = await _sessionService.CreateSessionAsync(deckType, organizerId);
+        var result = await _sessionService.CreateSessionAsync(deckType, userId);
         return Created($"/api/sessions/{result.AccessCode}", result);
     }
 
