@@ -315,56 +315,59 @@
       }
     </div>
 
-    <!-- Organizer Controls -->
-    @if (isOrganizer() && votesRevealed()) {
-      <div class="flex justify-center gap-3">
-        <button
-          (click)="resetVotes()"
-          class="btn-secondary"
-        >
-          <span class="flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Vote Again
-          </span>
-        </button>
-        <button
-          (click)="nextStory()"
-          class="btn-primary"
-        >
-          <span class="flex items-center gap-2">
-            Next Story
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </span>
-        </button>
-      </div>
-    }
-
-    <!-- Card Deck (for voters only) -->
+    <!-- Card Deck / Organizer Controls - fixed height to prevent layout shift -->
     @if (!isObserver()) {
-      <div class="flex justify-center gap-1.5 flex-wrap">
-        @for (card of deckValues(); track card) {
-          <button
-            (click)="selectCard(card)"
-            [disabled]="!canVote()"
-            class="group relative w-11 h-14 rounded-lg font-bold text-base transition-all duration-200 border-2"
-            [class]="getSelectedCardClasses(card)"
-          >
-            <span class="relative z-10">{{ card }}</span>
-            @if (myVote() === card && !votesRevealed()) {
-              <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-poker-green-500 rounded-full flex items-center justify-center">
-                <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+      <div class="h-[76px] flex flex-col justify-center">
+        @if (votesRevealed() && isOrganizer()) {
+          <!-- Organizer controls replace card deck when votes are revealed -->
+          <div class="flex justify-center gap-3">
+            <button
+              (click)="resetVotes()"
+              class="btn-secondary"
+            >
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-              </div>
+                Vote Again
+              </span>
+            </button>
+            <button
+              (click)="nextStory()"
+              class="btn-primary"
+            >
+              <span class="flex items-center gap-2">
+                Next Story
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </button>
+          </div>
+        } @else {
+          <!-- Card deck for voting -->
+          <div class="flex justify-center gap-1.5 flex-wrap">
+            @for (card of deckValues(); track card) {
+              <button
+                (click)="selectCard(card)"
+                [disabled]="!canVote()"
+                class="group relative w-11 h-14 rounded-lg font-bold text-base transition-all duration-200 border-2"
+                [class]="getSelectedCardClasses(card)"
+              >
+                <span class="relative z-10">{{ card }}</span>
+                @if (myVote() === card && !votesRevealed()) {
+                  <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-poker-green-500 rounded-full flex items-center justify-center">
+                    <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                }
+              </button>
             }
-          </button>
+          </div>
         }
       </div>
-      <!-- Always reserve space for status message -->
+      <!-- Status message - always present -->
       <div class="text-center text-sm h-5">
         @if (votesRevealed()) {
           <span class="text-gray-400 flex items-center justify-center gap-2">
