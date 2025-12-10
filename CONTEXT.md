@@ -130,6 +130,27 @@ Votes stored immediately but values only broadcast on reveal.
 
 ## Recent Major Changes
 
+### 2025-12-09 - Optional Session Names
+- **What**: Organizers can now name their sessions (e.g., "Sprint 2 Story Review")
+- **Why**: Improves session identification and organization for recurring meetings
+- **Features Added**:
+  - **Optional session name**: New input field when creating a session
+  - **Header display**: Session name replaces access code in header button when set
+  - **Backward compatible**: Sessions without names continue to show the access code
+- **Backend Changes**:
+  - `Session` entity: Added nullable `Name` property
+  - `CreateSessionRequest`: Added optional `Name` parameter
+  - `CreateSessionResponse`: Now includes `Name`
+  - `SessionInfoResponse`: Now includes `Name`
+  - `SessionService.CreateSessionAsync`: Accepts optional name parameter
+- **Frontend Changes**:
+  - `CreateSessionRequest`/`CreateSessionResponse`/`SessionInfo`: Added `name` property
+  - `SessionService.createSession`: Accepts optional name parameter
+  - `HomeComponent`: New session name input field in create game flow
+  - `GameStateService`: New `sessionName` signal
+  - `GameRoomComponent`: Header shows session name when available
+- **Database Migration**: `AddSessionName`
+
 ### 2025-12-09 - Email Verification & Password Reset
 - **What**: Full email-based authentication flow with SMTP support
 - **Why**: Secure user registration with email verification, and self-service password recovery
