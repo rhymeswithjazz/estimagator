@@ -43,6 +43,10 @@ public class PokerPointsDbContext : DbContext
             entity.Property(e => e.EmailVerified).HasDefaultValue(false);
             entity.Property(e => e.EmailVerificationToken).HasMaxLength(255);
             entity.Property(e => e.PasswordResetToken).HasMaxLength(255);
+            entity.Property(e => e.Role)
+                .HasDefaultValue(UserRole.User)
+                .HasConversion<string>()
+                .HasMaxLength(20);
 
             entity.HasIndex(e => e.Email).IsUnique();
             entity.HasIndex(e => new { e.ExternalProvider, e.ExternalId })

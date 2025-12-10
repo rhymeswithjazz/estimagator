@@ -31,8 +31,9 @@ export class HomeComponent {
 
   readonly deckOptions: { value: DeckType; label: string; preview: string }[] = [
     { value: 'fibonacci', label: 'Fibonacci', preview: DECK_VALUES.fibonacci.slice(0, 5).join(', ') + '...' },
-    { value: 'tshirt', label: 'T-Shirt Sizes', preview: DECK_VALUES.tshirt.slice(0, 5).join(', ') + '...' },
+    { value: 'modified', label: 'Modified Fibonacci', preview: DECK_VALUES.modified.slice(0, 6).join(', ') + '...' },
     { value: 'powers', label: 'Powers of 2', preview: DECK_VALUES.powers.slice(0, 5).join(', ') + '...' },
+    { value: 'linear', label: 'Linear (1-10)', preview: DECK_VALUES.linear.slice(0, 5).join(', ') + '...' },
   ];
 
   async createSession(): Promise<void> {

@@ -40,6 +40,7 @@ export class AuthService {
   readonly isLoading = computed(() => this.state().isLoading);
   readonly error = computed(() => this.state().error);
   readonly accessToken = computed(() => this.state().accessToken);
+  readonly isAdmin = computed(() => this.state().user?.role === 'Admin');
 
   constructor() {
     this.loadFromStorage();

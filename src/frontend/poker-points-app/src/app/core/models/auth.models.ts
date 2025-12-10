@@ -4,6 +4,7 @@ export interface User {
   displayName: string;
   createdAt: string;
   emailVerified: boolean;
+  role: 'User' | 'Admin';
 }
 
 export interface AuthResponse {

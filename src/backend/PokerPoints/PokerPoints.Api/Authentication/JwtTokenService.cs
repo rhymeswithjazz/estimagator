@@ -34,6 +34,7 @@ public class JwtTokenService : IJwtTokenService
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email ?? ""),
             new(ClaimTypes.Name, user.DisplayName ?? ""),
+            new(ClaimTypes.Role, user.Role.ToString()),
             new("sub", user.Id.ToString())
         };
 

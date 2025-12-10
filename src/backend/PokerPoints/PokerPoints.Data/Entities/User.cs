@@ -25,5 +25,8 @@ public class User
     public string? PasswordResetToken { get; set; }
     public DateTime? PasswordResetTokenExpiresAt { get; set; }
 
+    // Role for authorization
+    public UserRole Role { get; set; } = UserRole.User;
+
     public ICollection<Session> Sessions { get; set; } = new List<Session>();
 }

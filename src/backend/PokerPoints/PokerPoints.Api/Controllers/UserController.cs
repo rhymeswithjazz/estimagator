@@ -41,7 +41,8 @@ public class UserController : ControllerBase
             Email: user.Email ?? "",
             DisplayName: user.DisplayName ?? "",
             CreatedAt: user.CreatedAt,
-            EmailVerified: user.EmailVerified
+            EmailVerified: user.EmailVerified,
+            Role: user.Role.ToString()
         ));
     }
 }

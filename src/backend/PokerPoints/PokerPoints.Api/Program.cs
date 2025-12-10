@@ -7,6 +7,9 @@ using PokerPoints.Api.Hubs;
 using PokerPoints.Api.Services;
 using PokerPoints.Data;
 
+// Load .env file if present (for local development)
+DotNetEnv.Env.TraversePath().Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
@@ -70,6 +73,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<IVotingService, VotingService>();
+builder.Services.AddScoped<IAdminSeederService, AdminSeederService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // SignalR
 builder.Services.AddSignalR();
@@ -91,11 +96,25 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Apply pending migrations on startup
+// Apply pending migrations and seed admin user on startup
 using (var scope = app.Services.CreateScope())
 {
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var db = scope.ServiceProvider.GetRequiredService<PokerPointsDbContext>();
+
+    logger.LogInformation("Applying database migrations...");
     db.Database.Migrate();
+    logger.LogInformation("Database migrations complete.");
+
+    try
+    {
+        var adminSeeder = scope.ServiceProvider.GetRequiredService<IAdminSeederService>();
+        await adminSeeder.SeedAdminUserAsync();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to seed admin user");
+    }
 }
 
 // CORS must be before routing
@@ -112,4 +131,4 @@ app.MapHub<PokerHub>("/hubs/poker");
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
-app.Run();
+await app.RunAsync();

@@ -12,6 +12,10 @@ version: "3.8"
 #   - EMAIL_FROM_ADDRESS: Sender email address
 #   - EMAIL_BASE_URL: Your production URL (e.g., https://estimagator.yourdomain.com)
 #
+# Optional Environment Variables (Admin seeding):
+#   - ADMIN_EMAIL: Creates an admin user on startup if not exists
+#   - ADMIN_PASSWORD: Password for the admin user
+#
 # Optional Environment Variables:
 #   - FRONTEND_PORT: External port (default: 7117)
 #   - POSTGRES_USER: Database user (default: pokerpoints)
@@ -54,6 +58,8 @@ services:
       - Email__FromAddress=${EMAIL_FROM_ADDRESS}
       - Email__FromName=${EMAIL_FROM_NAME:-Estimagator}
       - Email__BaseUrl=${EMAIL_BASE_URL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
     depends_on:
       postgres:
         condition: service_healthy

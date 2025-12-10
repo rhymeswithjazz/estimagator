@@ -87,12 +87,14 @@ export interface StoryUpdatedEvent {
 }
 
 // Deck configurations
-export type DeckType = 'fibonacci' | 'tshirt' | 'powers';
+export type DeckType = 'fibonacci' | 'modified' | 'powers' | 'linear' | 'tshirt';
 
 export const DECK_VALUES: Record<DeckType, string[]> = {
   fibonacci: ['0', '1', '2', '3', '5', '8', '13', '21', '?', '☕'],
-  tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?', '☕'],
+  modified: ['0', '½', '1', '2', '3', '5', '8', '13', '20', '40', '100', '?', '☕'],
   powers: ['1', '2', '4', '8', '16', '32', '64', '?', '☕'],
+  linear: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '?', '☕'],
+  tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?', '☕'],
 };
 
 // Session history types

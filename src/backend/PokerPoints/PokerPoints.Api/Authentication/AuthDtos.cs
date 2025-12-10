@@ -29,7 +29,8 @@ public record UserDto(
     string Email,
     string DisplayName,
     DateTime CreatedAt,
-    bool EmailVerified
+    bool EmailVerified,
+    string Role
 );
 
 public record ExternalLoginRequest(

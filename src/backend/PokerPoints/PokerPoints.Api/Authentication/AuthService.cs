@@ -225,7 +225,8 @@ public class AuthService : IAuthService
                 Email: user.Email ?? "",
                 DisplayName: user.DisplayName ?? "",
                 CreatedAt: user.CreatedAt,
-                EmailVerified: user.EmailVerified
+                EmailVerified: user.EmailVerified,
+                Role: user.Role.ToString()
             )
         );
     }

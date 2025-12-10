@@ -15,6 +15,24 @@ import { AuthService } from '../../core/services/auth.service';
           <p class="text-gray-500 text-sm">Bite-sized estimation for agile teams</p>
         </div>
 
+        @if (pendingVerification()) {
+          <div class="text-center py-8">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4">
+              <svg class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Verify Your Email</h2>
+            <p class="text-gray-600 mb-6">Click the button below to complete your email verification.</p>
+            <button
+              (click)="confirmVerification()"
+              class="bg-emerald-600 text-white px-6 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+            >
+              Verify My Email
+            </button>
+          </div>
+        }
+
         @if (isLoading()) {
           <div class="text-center py-8">
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent"></div>
@@ -83,7 +101,8 @@ export class VerifyEmailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  isLoading = signal(true);
+  pendingVerification = signal(false);
+  isLoading = signal(false);
   success = signal(false);
   error = signal<string | null>(null);
   canResend = signal(false);
@@ -91,20 +110,31 @@ export class VerifyEmailComponent implements OnInit {
   resendSuccess = signal(false);
 
   private userEmail: string | null = null;
+  private verificationToken: string | null = null;
 
   ngOnInit(): void {
     const token = this.route.snapshot.queryParamMap.get('token');
 
     if (!token) {
-      this.isLoading.set(false);
       this.error.set('No verification token provided');
       return;
     }
 
-    this.verifyEmail(token);
+    // Store token and show confirmation button instead of auto-verifying
+    // This prevents email security scanners (like Microsoft Safe Links) from
+    // auto-verifying accounts when they scan the link
+    this.verificationToken = token;
+    this.pendingVerification.set(true);
+  }
+
+  confirmVerification(): void {
+    if (!this.verificationToken) return;
+    this.pendingVerification.set(false);
+    this.verifyEmail(this.verificationToken);
   }
 
   private async verifyEmail(token: string): Promise<void> {
+    this.isLoading.set(true);
     try {
       await this.authService.verifyEmail(token);
       this.isLoading.set(false);
