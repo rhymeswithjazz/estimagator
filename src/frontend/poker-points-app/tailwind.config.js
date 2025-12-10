@@ -70,6 +70,7 @@ module.exports = {
         'glow': 'glow 2s ease-in-out infinite',
         'text-glow': 'textGlow 2s ease-in-out infinite',
         'spin-slow': 'spin 3s linear infinite',
+        'fade-out': 'fadeOut 1.5s ease-out forwards',
       },
       keyframes: {
         float: {
@@ -91,6 +92,11 @@ module.exports = {
         textGlow: {
           '0%, 100%': { textShadow: '0 0 30px rgba(244, 196, 48, 0.9), 0 0 60px rgba(244, 196, 48, 0.6), 0 0 90px rgba(244, 196, 48, 0.3)' },
           '50%': { textShadow: '0 0 50px rgba(244, 196, 48, 1), 0 0 100px rgba(244, 196, 48, 0.7), 0 0 150px rgba(244, 196, 48, 0.4)' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1' },
+          '70%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
       },
       borderRadius: {
