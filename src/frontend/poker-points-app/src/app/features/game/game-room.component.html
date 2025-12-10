@@ -177,12 +177,26 @@
                     {{ formatTime(timerSeconds()!) }}
                   </div>
                   @if (isOrganizer()) {
-                    <button
-                      (click)="stopTimer()"
-                      class="text-sm text-white/50 hover:text-white transition-colors"
-                    >
-                      Cancel Timer
-                    </button>
+                    <div class="flex items-center justify-center gap-3">
+                      <button
+                        (click)="extendTimer(30)"
+                        class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
+                      >
+                        +30s
+                      </button>
+                      <button
+                        (click)="extendTimer(60)"
+                        class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
+                      >
+                        +1m
+                      </button>
+                      <button
+                        (click)="stopTimer()"
+                        class="px-2 py-1 text-xs text-red-400/70 hover:text-red-400 transition-colors"
+                      >
+                        Stop
+                      </button>
+                    </div>
                   }
                 } @else {
                   <div class="text-white/70 text-lg mb-1">Waiting for votes...</div>

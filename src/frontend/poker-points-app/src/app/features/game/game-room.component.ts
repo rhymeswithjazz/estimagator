@@ -392,6 +392,12 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     this.timerSeconds.set(null);
   }
 
+  extendTimer(seconds: number): void {
+    if (!this.isOrganizer() || !this.timerRunning()) return;
+    const current = this.timerSeconds() ?? 0;
+    this.timerSeconds.set(current + seconds);
+  }
+
   formatTime(seconds: number): string {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
