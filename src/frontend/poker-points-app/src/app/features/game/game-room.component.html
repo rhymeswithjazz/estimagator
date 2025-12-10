@@ -1,6 +1,6 @@
 <main class="h-full bg-white grid grid-rows-[auto_1fr_auto] overflow-hidden">
   <!-- Row 1: Header -->
-  <header class="bg-white mx-4 mt-4 px-5 py-3 flex items-center justify-between rounded-xl shadow-sm border border-gray-200">
+  <header class="bg-white/80 backdrop-blur-md px-5 py-3 flex items-center justify-between border-b border-gray-200">
     <div class="flex items-center gap-4">
       <a routerLink="/" class="flex items-center gap-2">
         <img src="brand/logo.svg" alt="Estimagator" class="w-8 h-8" />
@@ -9,31 +9,29 @@
           <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none">gator</span>
         </div>
       </a>
-      <div class="flex items-center gap-2 px-3 py-1.5 bg-poker-green-50 rounded-lg border border-poker-green-200">
-        <span class="font-mono text-poker-green-700 font-bold tracking-wider text-lg">{{ sessionCode() }}</span>
-      </div>
+      <button
+        (click)="copyShareUrl()"
+        class="relative flex items-center gap-2 px-3 py-1.5 bg-poker-green-50 rounded-lg border border-poker-green-200 hover:bg-poker-green-100 hover:border-poker-green-300 transition-colors cursor-pointer"
+        title="Click to copy invite link"
+      >
+        @if (sessionName()) {
+          <span class="text-poker-green-700 font-semibold text-base">{{ sessionName() }}</span>
+        } @else {
+          <span class="font-mono text-poker-green-700 font-bold tracking-wider text-lg">{{ sessionCode() }}</span>
+        }
+        <svg class="w-4 h-4 text-poker-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+        <!-- Copied overlay -->
+        @if (shareUrlCopied()) {
+          <div class="absolute inset-0 flex items-center justify-center bg-poker-green-500 text-white font-semibold rounded-lg animate-fade-out">
+            Copied!
+          </div>
+        }
+      </button>
     </div>
 
-        <div class="flex items-center gap-5">
-      <!-- Story Queue Button (Organizer only) -->
-      @if (isOrganizer()) {
-        <button
-          (click)="toggleStoryPanel()"
-          class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
-          [class]="isStoryPanelOpen() ? 'bg-poker-green-100 text-poker-green-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'"
-        >
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-          </svg>
-          Stories
-          @if (storyQueue().length > 0) {
-            <span class="bg-poker-green-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
-              {{ storyQueue().length }}
-            </span>
-          }
-        </button>
-      }
-
+    <div class="flex items-center gap-4">
       <!-- Connection Status -->
       <div class="flex items-center gap-2">
         <span
@@ -43,24 +41,47 @@
         <span class="text-gray-500 text-sm capitalize">{{ connectionState() }}</span>
       </div>
 
-      <!-- Current User -->
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm">
-          {{ currentParticipant()?.displayName?.charAt(0)?.toUpperCase() }}
-        </div>
-        <div>
-          <div class="text-gray-900 font-medium text-sm">{{ currentParticipant()?.displayName }}</div>
-          <div class="flex items-center gap-1.5">
+      <!-- Current User - Show dropdown for authenticated, simple display for guests -->
+      @if (authService.isAuthenticated()) {
+        <app-account-dropdown />
+      } @else {
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm">
+            {{ currentParticipant()?.displayName?.charAt(0)?.toUpperCase() }}
+          </div>
+          <div>
+            <div class="text-gray-900 font-medium text-sm">{{ currentParticipant()?.displayName }}</div>
             @if (isObserver()) {
               <span class="badge badge-gray text-[10px] py-0">Observer</span>
             }
           </div>
         </div>
-      </div>
+      }
+
+      <!-- Observer badge for authenticated users -->
+      @if (authService.isAuthenticated() && isObserver()) {
+        <span class="badge badge-gray text-[10px] py-0">Observer</span>
+      }
+
+      <!-- Session Settings Button (Organizer only) -->
+      @if (isOrganizer()) {
+        <button
+          (click)="toggleSettingsPanel()"
+          class="p-2 rounded-lg transition-colors"
+          [class]="isSettingsPanelOpen() ? 'bg-poker-green-100 text-poker-green-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'"
+          title="Session Settings"
+        >
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      }
 
       <button
         (click)="leaveGame()"
         class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+        title="Leave game"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -208,18 +229,21 @@
           @for (voter of sortedVoters(); track voter.id; let i = $index) {
             <div
               class="absolute flex flex-col items-center transition-all duration-500"
-              [class]="compactMode() ? 'gap-1' : 'gap-2'"
+              [class]="sizeMode() === 'compact' ? 'gap-1' : 'gap-2'"
               [style]="getParticipantPosition(i, sortedVoters().length)"
             >
-              <!-- Card -->
+              <!-- Card - size varies by sizeMode: large (56x84), normal (48x72), compact (36x54) -->
               <div
                 class="relative rounded-lg flex items-center justify-center font-bold transition-all duration-300 overflow-hidden"
-                [class.w-12]="!compactMode()"
-                [class.h-[72px]]="!compactMode()"
-                [class.text-xl]="!compactMode()"
-                [class.w-9]="compactMode()"
-                [class.h-[54px]]="compactMode()"
-                [class.text-base]="compactMode()"
+                [class.w-14]="sizeMode() === 'large'"
+                [class.h-[84px]]="sizeMode() === 'large'"
+                [class.text-2xl]="sizeMode() === 'large'"
+                [class.w-12]="sizeMode() === 'normal'"
+                [class.h-[72px]]="sizeMode() === 'normal'"
+                [class.text-xl]="sizeMode() === 'normal'"
+                [class.w-9]="sizeMode() === 'compact'"
+                [class.h-[54px]]="sizeMode() === 'compact'"
+                [class.text-base]="sizeMode() === 'compact'"
                 [ngClass]="getCardClasses(voter)"
               >
                 @if (votesRevealed()) {
@@ -236,7 +260,7 @@
               <div class="flex flex-col items-center gap-0.5">
                 <div
                   class="font-semibold rounded-full truncate shadow-md"
-                  [class]="compactMode() ? 'text-xs px-2 py-0.5 max-w-[80px]' : 'text-sm px-3 py-1 max-w-[100px]'"
+                  [class]="sizeMode() === 'compact' ? 'text-xs px-2 py-0.5 max-w-[80px]' : 'text-sm px-3 py-1 max-w-[110px]'"
                   [ngClass]="voter.id === currentParticipant()?.id ? 'bg-poker-green-500 text-white' : 'bg-white text-gray-800'"
                 >
                   {{ voter.displayName }}
@@ -290,13 +314,22 @@
             (ngModelChange)="storyTitleInput.set($event)"
             placeholder="What are we estimating?"
             class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-64"
-            (keyup.enter)="saveStoryTitle()"
             (keyup.escape)="cancelEditingStory()"
             autofocus
+          />
+          <input
+            type="url"
+            [ngModel]="storyUrlInput()"
+            (ngModelChange)="storyUrlInput.set($event)"
+            placeholder="Link (optional)"
+            class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-48"
+            (keyup.enter)="saveStoryTitle()"
+            (keyup.escape)="cancelEditingStory()"
           />
           <button
             (click)="saveStoryTitle()"
             class="p-1.5 bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors"
+            title="Save"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -305,6 +338,7 @@
           <button
             (click)="cancelEditingStory()"
             class="p-1.5 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 transition-colors"
+            title="Cancel"
           >
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -428,192 +462,7 @@
   </div>
 </main>
 
-<!-- Story Management Panel (Organizer only) -->
-@if (isOrganizer() && isStoryPanelOpen()) {
-  <div class="fixed inset-0 z-50 flex justify-end" (click)="toggleStoryPanel()">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black/20"></div>
-
-    <!-- Panel -->
-    <div
-      class="relative w-full max-w-md bg-white shadow-2xl flex flex-col h-full"
-      (click)="$event.stopPropagation()"
-    >
-      <!-- Panel Header -->
-      <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-        <h2 class="text-lg font-display font-bold text-gray-900">Story Queue</h2>
-        <button
-          (click)="toggleStoryPanel()"
-          class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Panel Content -->
-      <div class="flex-1 overflow-auto p-4 space-y-4">
-        <!-- Add Stories Section -->
-        @if (isAddingStories()) {
-          <div class="bg-gray-50 rounded-lg p-4 space-y-3">
-            <div class="text-sm font-medium text-gray-700">Add Multiple Stories</div>
-            <p class="text-xs text-gray-500">
-              One story per line. Optionally add a URL with a tab or " | " separator.
-            </p>
-            <textarea
-              [ngModel]="newStoriesText()"
-              (ngModelChange)="newStoriesText.set($event)"
-              placeholder="Story 1&#10;Story 2 | https://link.com&#10;Story 3&#9;https://another.link"
-              class="w-full h-32 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 resize-none"
-            ></textarea>
-            <div class="flex gap-2">
-              <button
-                (click)="addBatchStories()"
-                class="flex-1 px-3 py-2 text-sm font-medium bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors"
-              >
-                Add Stories
-              </button>
-              <button
-                (click)="cancelAddStories()"
-                class="px-3 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        } @else {
-          <!-- Quick Add Single Story -->
-          <div class="space-y-2">
-            <input
-              type="text"
-              [ngModel]="newStoryTitle()"
-              (ngModelChange)="newStoryTitle.set($event)"
-              placeholder="Story title..."
-              class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
-              (keyup.enter)="addSingleStory()"
-            />
-            <input
-              type="url"
-              [ngModel]="newStoryUrl()"
-              (ngModelChange)="newStoryUrl.set($event)"
-              placeholder="URL (optional)"
-              class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
-              (keyup.enter)="addSingleStory()"
-            />
-            <div class="flex gap-2">
-              <button
-                (click)="addSingleStory()"
-                [disabled]="!newStoryTitle().trim()"
-                class="flex-1 px-3 py-2 text-sm font-medium bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Add Story
-              </button>
-              <button
-                (click)="openAddStories()"
-                class="px-3 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-                title="Add multiple stories"
-              >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- Story Queue List -->
-        <div class="space-y-2">
-          <div class="text-sm font-medium text-gray-700 flex items-center justify-between">
-            <span>Queued Stories</span>
-            @if (storyQueue().length > 0) {
-              <span class="text-xs text-gray-400">{{ storyQueue().length }} stories</span>
-            }
-          </div>
-
-          @if (storyQueue().length === 0) {
-            <div class="text-center py-8 text-gray-400 text-sm">
-              <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              No stories queued
-            </div>
-          } @else {
-            <div class="space-y-2">
-              @for (story of storyQueue(); track story.id; let i = $index) {
-                <div
-                  class="group border rounded-lg p-3 transition-colors"
-                  [class.bg-white]="story.status === 'pending'"
-                  [class.bg-poker-green-50]="story.status === 'completed'"
-                  [class.border-gray-200]="story.status === 'pending'"
-                  [class.border-poker-green-200]="story.status === 'completed'"
-                  [class.hover:border-poker-green-300]="story.status === 'pending'"
-                >
-                  <div class="flex items-start gap-3">
-                    <span class="text-xs text-gray-400 font-mono mt-0.5">{{ i + 1 }}</span>
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2">
-                        <span class="font-medium text-gray-900 truncate">{{ story.title }}</span>
-                        @if (story.status === 'completed' && story.finalScore !== null) {
-                          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-poker-green-100 text-poker-green-800">
-                            {{ story.finalScore }}
-                          </span>
-                        }
-                      </div>
-                      @if (story.url) {
-                        <a
-                          [href]="story.url"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="text-xs text-poker-green-600 hover:text-poker-green-700 truncate block"
-                          (click)="$event.stopPropagation()"
-                        >
-                          {{ story.url }}
-                        </a>
-                      }
-                    </div>
-                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      @if (story.status === 'pending') {
-                        <!-- Start button for pending stories -->
-                        <button
-                          (click)="startStoryFromQueue(story.id)"
-                          class="p-1.5 text-poker-green-600 hover:bg-poker-green-50 rounded transition-colors"
-                          title="Start voting on this story"
-                        >
-                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </button>
-                      } @else if (story.status === 'completed') {
-                        <!-- Restart button for completed stories -->
-                        <button
-                          (click)="restartStoryFromQueue(story.id)"
-                          class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
-                          title="Re-vote on this story"
-                        >
-                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                          </svg>
-                        </button>
-                      }
-                      <button
-                        (click)="deleteStoryFromQueue(story.id)"
-                        class="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
-                        title="Remove story"
-                      >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- Settings Panel (Organizer only) -->
+@if (isOrganizer() && isSettingsPanelOpen()) {
+  <app-settings-panel (close)="isSettingsPanelOpen.set(false)" />
 }

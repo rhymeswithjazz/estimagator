@@ -1,27 +1,33 @@
 import { Component, inject, OnInit, OnDestroy, computed, signal, effect } from '@angular/core';
-import { DecimalPipe, NgClass } from '@angular/common';
+import { DOCUMENT, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Participant, Vote } from '../../core/models/session.models';
+import { SettingsPanelComponent } from './settings-panel.component';
+import { AccountDropdownComponent } from './account-dropdown.component';
 import confetti from 'canvas-confetti';
 
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, NgClass, RouterLink],
+  imports: [DecimalPipe, FormsModule, NgClass, RouterLink, SettingsPanelComponent, AccountDropdownComponent],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },
 })
 export class GameRoomComponent implements OnInit, OnDestroy {
+  private readonly document = inject(DOCUMENT);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   readonly gameState = inject(GameStateService); // public for debug access
   private readonly signalR = inject(SignalRService);
+  readonly authService = inject(AuthService);
 
   // State from GameStateService
   readonly sessionCode = this.gameState.sessionCode;
+  readonly sessionName = this.gameState.sessionName;
   readonly currentParticipant = this.gameState.currentParticipant;
   readonly participants = this.gameState.participants;
   readonly isOrganizer = this.gameState.isOrganizer;
@@ -47,8 +53,16 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     this.voters().filter(v => this.participantVoteMap().get(v.id)).length
   );
 
-  // Use compact sizing when more than 10 voters
-  readonly compactMode = computed(() => this.voters().length > 10);
+  // Dynamic sizing based on voter count
+  readonly sizeMode = computed(() => {
+    const count = this.voters().length;
+    if (count <= 4) return 'large';
+    if (count <= 10) return 'normal';
+    return 'compact';
+  });
+
+  // Backwards compatibility
+  readonly compactMode = computed(() => this.sizeMode() === 'compact');
 
   // Expose Math for template
   readonly Math = Math;
@@ -112,14 +126,16 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Story editing state
   readonly isEditingStory = signal(false);
   readonly storyTitleInput = signal('');
+  readonly storyUrlInput = signal('');
 
-  // Story management state
+  // Story queue (used for display in footer)
   readonly storyQueue = this.gameState.storyQueue;
-  readonly isStoryPanelOpen = signal(false);
-  readonly isAddingStories = signal(false);
-  readonly newStoriesText = signal(''); // textarea for batch input
-  readonly newStoryTitle = signal('');
-  readonly newStoryUrl = signal('');
+
+  // Settings panel state
+  readonly isSettingsPanelOpen = signal(false);
+
+  // Share link state
+  readonly shareUrlCopied = signal(false);
 
   // Timer state
   readonly timerSeconds = signal<number | null>(null);
@@ -189,10 +205,11 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Calculate position for participant around the table
   getParticipantPosition(index: number, total: number): string {
     // Distribute participants around the table using a "superellipse" approach
-    // Table is 380x200 rounded rectangle, need extra clearance for cards (~60px) and names (~50px)
-    // Card+name element is ~110px tall (72px card + gap + name + badge)
-    const radiusX = 300; // Horizontal distance from center
-    const radiusY = 215; // Vertical distance from center
+    // Table is 380x200 rounded rectangle, need extra clearance for cards and names
+    // Radii vary based on sizeMode: larger cards need less distance, smaller need more
+    const mode = this.sizeMode();
+    const radiusX = mode === 'large' ? 260 : mode === 'normal' ? 300 : 320;
+    const radiusY = mode === 'large' ? 185 : mode === 'normal' ? 215 : 230;
 
     // Start from top and go clockwise
     const startAngle = -Math.PI / 2; // Start at top
@@ -223,8 +240,8 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
 
     if (this.hasParticipantVoted(participant.id)) {
-      // Has voted - face down card (styling handled by card-back class in template)
-      return 'shadow-card';
+      // Has voted - face down card with red background (card-back overlay adds pattern)
+      return 'bg-[#c41e3a] shadow-card';
     }
 
     // No vote yet - empty card placeholder
@@ -298,15 +315,38 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   startEditingStory(): void {
     if (!this.isOrganizer()) return;
-    this.storyTitleInput.set(this.currentStory()?.title ?? '');
+    const story = this.currentStory();
+    this.storyTitleInput.set(story?.title ?? '');
+    this.storyUrlInput.set(story?.url ?? '');
     this.isEditingStory.set(true);
   }
 
   async saveStoryTitle(): Promise<void> {
     if (!this.isOrganizer()) return;
     const title = this.storyTitleInput().trim();
-    if (title) {
-      await this.gameState.updateStory(title);
+    const url = this.storyUrlInput().trim() || null;
+    const storyId = this.currentStory()?.id;
+
+    if (!title) {
+      this.isEditingStory.set(false);
+      return;
+    }
+
+    if (storyId) {
+      // Update existing story
+      await this.gameState.updateStoryDetails(storyId, title, url);
+    } else {
+      // No active story - create a new one via nextStory
+      await this.gameState.nextStory(title);
+      // If there's a URL, update the newly created story
+      if (url) {
+        // Small delay to ensure story is created, then update with URL
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const newStoryId = this.currentStory()?.id;
+        if (newStoryId) {
+          await this.gameState.updateStoryDetails(newStoryId, title, url);
+        }
+      }
     }
     this.isEditingStory.set(false);
   }
@@ -314,6 +354,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   cancelEditingStory(): void {
     this.isEditingStory.set(false);
     this.storyTitleInput.set('');
+    this.storyUrlInput.set('');
   }
 
   async nextStory(): Promise<void> {
@@ -357,73 +398,32 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 
-  // Story management methods
-  toggleStoryPanel(): void {
-    this.isStoryPanelOpen.update(open => !open);
+  // Settings panel methods
+  toggleSettingsPanel(): void {
+    this.isSettingsPanelOpen.update(open => !open);
   }
 
-  openAddStories(): void {
-    this.isAddingStories.set(true);
-    this.newStoriesText.set('');
-    this.newStoryTitle.set('');
-    this.newStoryUrl.set('');
-  }
+  // Share link methods
+  async copyShareUrl(): Promise<void> {
+    const code = this.sessionCode();
+    if (!code) return;
 
-  cancelAddStories(): void {
-    this.isAddingStories.set(false);
-    this.newStoriesText.set('');
-    this.newStoryTitle.set('');
-    this.newStoryUrl.set('');
-  }
+    const shareUrl = `${this.document.location.origin}/join/${code}`;
 
-  async addSingleStory(): Promise<void> {
-    const title = this.newStoryTitle().trim();
-    if (!title) return;
-
-    const url = this.newStoryUrl().trim() || undefined;
-    await this.gameState.addStories([{ title, url }]);
-
-    this.newStoryTitle.set('');
-    this.newStoryUrl.set('');
-  }
-
-  async addBatchStories(): Promise<void> {
-    const text = this.newStoriesText().trim();
-    if (!text) return;
-
-    // Parse lines - each line is a story, optionally with URL after tab or |
-    const stories = text.split('\n')
-      .map((line: string) => line.trim())
-      .filter((line: string) => line.length > 0)
-      .map((line: string) => {
-        // Support formats: "Title" or "Title	URL" or "Title | URL"
-        const tabSplit = line.split('\t');
-        const pipeSplit = line.split(' | ');
-
-        if (tabSplit.length > 1) {
-          return { title: tabSplit[0].trim(), url: tabSplit[1].trim() || undefined };
-        } else if (pipeSplit.length > 1) {
-          return { title: pipeSplit[0].trim(), url: pipeSplit[1].trim() || undefined };
-        }
-        return { title: line };
-      });
-
-    if (stories.length > 0) {
-      await this.gameState.addStories(stories);
-      this.isAddingStories.set(false);
-      this.newStoriesText.set('');
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      this.shareUrlCopied.set(true);
+      setTimeout(() => this.shareUrlCopied.set(false), 1500);
+    } catch {
+      // Fallback for older browsers
+      const textArea = this.document.createElement('textarea');
+      textArea.value = shareUrl;
+      this.document.body.appendChild(textArea);
+      textArea.select();
+      this.document.execCommand('copy');
+      this.document.body.removeChild(textArea);
+      this.shareUrlCopied.set(true);
+      setTimeout(() => this.shareUrlCopied.set(false), 1500);
     }
-  }
-
-  async deleteStoryFromQueue(storyId: string): Promise<void> {
-    await this.gameState.deleteStory(storyId);
-  }
-
-  async startStoryFromQueue(storyId: string): Promise<void> {
-    await this.gameState.startStory(storyId);
-  }
-
-  async restartStoryFromQueue(storyId: string): Promise<void> {
-    await this.gameState.restartStory(storyId);
   }
 }
