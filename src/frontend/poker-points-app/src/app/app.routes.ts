@@ -53,6 +53,12 @@ export const routes: Routes = [
       import('./features/game/game-room.component').then((m) => m.GameRoomComponent),
   },
   {
+    path: 'session/:code/history',
+    loadComponent: () =>
+      import('./features/session/session-history.component').then((m) => m.SessionHistoryComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: '**',
     redirectTo: '',
   },

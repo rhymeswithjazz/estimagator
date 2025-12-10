@@ -1,0 +1,181 @@
+<main class="min-h-screen bg-white flex flex-col items-center p-6 relative overflow-hidden">
+  <!-- Background decorative elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-poker-green-100 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-poker-green-50 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="max-w-4xl w-full relative z-10 pt-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <a routerLink="/profile" class="text-gray-500 hover:text-gray-700 text-sm font-medium inline-flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to profile
+      </a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="glass-card p-12 text-center">
+        <div class="flex items-center justify-center gap-3 text-gray-400">
+          <span class="spinner"></span>
+          Loading session history...
+        </div>
+      </div>
+    } @else if (error()) {
+      <div class="glass-card p-12 text-center">
+        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <p class="text-gray-500">{{ error() }}</p>
+        <a routerLink="/profile" class="text-poker-green-600 hover:text-poker-green-700 text-sm font-medium mt-4 inline-block">
+          Return to profile
+        </a>
+      </div>
+    } @else if (session(); as s) {
+      <!-- Session Header Card -->
+      <div class="glass-card p-6 mb-6">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              @if (s.name) {
+                <h1 class="text-2xl font-display font-bold text-gray-900">{{ s.name }}</h1>
+              } @else {
+                <h1 class="text-2xl font-display font-bold text-gray-900 font-mono tracking-wider">{{ s.accessCode }}</h1>
+              }
+              @if (!s.isActive) {
+                <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                  Ended
+                </span>
+              }
+            </div>
+            <p class="text-gray-500 text-sm">
+              Created {{ formatDate(s.createdAt) }}
+            </p>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-gray-500">Total Points</div>
+            <div class="text-3xl font-bold text-poker-green-600">{{ totalPoints() }}</div>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="flex gap-6 mt-4 pt-4 border-t border-gray-100">
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            {{ s.participants.length }} participant{{ s.participants.length === 1 ? '' : 's' }}
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            </svg>
+            {{ completedStories().length }} stor{{ completedStories().length === 1 ? 'y' : 'ies' }} completed
+          </div>
+          <div class="flex items-center gap-2 text-sm text-gray-600">
+            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+            {{ s.deckType }} deck
+          </div>
+        </div>
+      </div>
+
+      <!-- Participants -->
+      <div class="glass-card p-6 mb-6">
+        <h2 class="text-lg font-display font-bold text-gray-900 mb-4">Participants</h2>
+        <div class="flex flex-wrap gap-2">
+          @for (participant of s.participants; track participant.id) {
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-200">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white text-xs font-bold">
+                {{ participant.displayName.charAt(0).toUpperCase() }}
+              </div>
+              <span class="text-sm font-medium text-gray-700">{{ participant.displayName }}</span>
+              @if (participant.isOrganizer) {
+                <span class="text-xs text-poker-green-600">(organizer)</span>
+              }
+              @if (participant.isObserver) {
+                <span class="text-xs text-gray-400">(observer)</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Stories -->
+      <div class="glass-card p-6">
+        <h2 class="text-lg font-display font-bold text-gray-900 mb-4">Voting History</h2>
+
+        @if (completedStories().length === 0) {
+          <div class="text-center py-8 text-gray-400">
+            <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <p>No stories were completed in this session</p>
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (story of completedStories(); track story.id; let i = $index) {
+              <div class="border border-gray-200 rounded-xl overflow-hidden">
+                <!-- Story Header -->
+                <div class="bg-gray-50 px-4 py-3 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm font-mono text-gray-400">#{{ i + 1 }}</span>
+                    <div>
+                      <h3 class="font-semibold text-gray-900">{{ story.title }}</h3>
+                      @if (story.url) {
+                        <a [href]="story.url" target="_blank" rel="noopener noreferrer" class="text-xs text-poker-green-600 hover:text-poker-green-700 hover:underline inline-flex items-center gap-1">
+                          {{ story.url }}
+                          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      }
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    @if (calculateAverage(story.votes); as avg) {
+                      <div class="text-sm text-gray-500">
+                        Avg: <span class="font-semibold">{{ avg.toFixed(1) }}</span>
+                      </div>
+                    }
+                    <div class="px-3 py-1.5 bg-poker-green-100 text-poker-green-700 font-bold rounded-lg">
+                      {{ story.finalScore ?? '?' }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Votes -->
+                <div class="p-4">
+                  <!-- Vote Distribution -->
+                  <div class="flex flex-wrap gap-2 mb-4">
+                    @for (item of getVoteDistributionArray(story.votes); track item.value) {
+                      <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-poker-green-50 rounded-lg border border-poker-green-200">
+                        <span class="font-bold text-poker-green-700">{{ item.value }}</span>
+                        <span class="text-xs text-poker-green-600">x{{ item.count }}</span>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Individual Votes -->
+                  <div class="border-t border-gray-100 pt-3">
+                    <div class="flex flex-wrap gap-3">
+                      @for (vote of story.votes; track vote.participantId) {
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-gray-600">{{ vote.displayName }}:</span>
+                          <span class="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded">{{ vote.cardValue ?? '?' }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</main>

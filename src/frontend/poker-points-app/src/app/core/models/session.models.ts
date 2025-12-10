@@ -1,20 +1,27 @@
 export interface CreateSessionRequest {
   deckType?: string;
+  name?: string;
 }
 
 export interface CreateSessionResponse {
   sessionId: string;
   accessCode: string;
+  name: string | null;
 }
 
 export interface SessionInfo {
   id: string;
   accessCode: string;
+  name: string | null;
   deckType: string;
   isActive: boolean;
   createdAt: string;
   participants: Participant[];
   currentStory: Story | null;
+}
+
+export interface UserSession extends SessionInfo {
+  isOrganizer: boolean;
 }
 
 export interface Participant {
@@ -87,3 +94,24 @@ export const DECK_VALUES: Record<DeckType, string[]> = {
   tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?', '☕'],
   powers: ['1', '2', '4', '8', '16', '32', '64', '?', '☕'],
 };
+
+// Session history types
+export interface SessionHistoryResponse {
+  id: string;
+  accessCode: string;
+  name: string | null;
+  deckType: string;
+  isActive: boolean;
+  createdAt: string;
+  participants: Participant[];
+  stories: StoryHistory[];
+}
+
+export interface StoryHistory {
+  id: string;
+  title: string;
+  url: string | null;
+  status: 'pending' | 'active' | 'completed';
+  finalScore: number | null;
+  votes: Vote[];
+}

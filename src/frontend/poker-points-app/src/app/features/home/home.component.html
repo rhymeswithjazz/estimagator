@@ -1,14 +1,18 @@
-<main class="min-h-screen bg-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
-  <!-- Auth Header -->
-  <header class="absolute top-0 left-0 right-0 p-4 flex justify-end items-center z-20">
-    @if (isAuthenticated()) {
-      <a routerLink="/profile" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-        <span class="text-sm font-medium">{{ user()?.displayName }}</span>
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-500 to-poker-green-700 flex items-center justify-center text-white text-xs font-bold">
-          {{ user()?.displayName?.charAt(0)?.toUpperCase() }}
+<div class="min-h-screen bg-white flex flex-col relative overflow-hidden">
+  <!-- Header -->
+  @if (isAuthenticated()) {
+    <header class="sticky top-0 px-5 py-3 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md z-20">
+      <div class="flex items-center gap-2">
+        <img src="brand/logo.svg" alt="Estimagator" class="w-8 h-8" />
+        <div class="flex items-center">
+          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none">Estima</span>
+          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none">gator</span>
         </div>
-      </a>
-    } @else {
+      </div>
+      <app-account-dropdown />
+    </header>
+  } @else {
+    <header class="sticky top-0 p-4 flex justify-end items-center bg-white/80 backdrop-blur-md z-20">
       <div class="flex items-center gap-3">
         <a routerLink="/login" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
           Sign in
@@ -17,8 +21,10 @@
           Sign up
         </a>
       </div>
-    }
-  </header>
+    </header>
+  }
+
+  <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
 
   <!-- Background decorative elements -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -86,7 +92,7 @@
         } @else {
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-gray-900 font-semibold text-lg">Choose Your Deck</h3>
+              <h3 class="text-gray-900 font-semibold text-lg">Create New Game</h3>
               <button
                 (click)="toggleCreateOptions()"
                 class="text-gray-400 hover:text-gray-600 transition-colors p-1"
@@ -97,7 +103,21 @@
               </button>
             </div>
 
+            <!-- Optional Session Name -->
+            <div>
+              <label class="block text-gray-600 text-sm font-medium mb-1 text-left">Session Name <span class="text-gray-400">(optional)</span></label>
+              <input
+                type="text"
+                [value]="sessionName()"
+                (input)="onSessionNameInput($event)"
+                placeholder="e.g., Sprint 2 Story Review"
+                maxlength="100"
+                class="input-field text-sm"
+              />
+            </div>
+
             <div class="space-y-2">
+              <label class="block text-gray-600 text-sm font-medium mb-1 text-left">Deck Type</label>
               @for (deck of deckOptions; track deck.value) {
                 <button
                   (click)="selectDeck(deck.value)"
@@ -197,11 +217,12 @@
   </div>
 
   <!-- Footer -->
-  <footer class="absolute bottom-6 text-gray-400 text-sm font-medium">
+  <footer class="mt-auto py-6 text-gray-400 text-sm font-medium">
     <span class="opacity-75">Estimate</span>
     <span class="mx-2 text-poker-green-500">&#9830;</span>
     <span class="opacity-75">Reveal</span>
     <span class="mx-2 text-poker-green-500">&#9830;</span>
     <span class="opacity-75">Ship</span>
   </footer>
-</main>
+  </main>
+</div>

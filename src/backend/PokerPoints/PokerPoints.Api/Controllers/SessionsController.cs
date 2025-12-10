@@ -36,7 +36,8 @@ public class SessionsController : ControllerBase
             return StatusCode(403, new { message = "Please verify your email address before creating sessions" });
 
         var deckType = request?.DeckType ?? "fibonacci";
-        var result = await _sessionService.CreateSessionAsync(deckType, userId);
+        var name = request?.Name;
+        var result = await _sessionService.CreateSessionAsync(deckType, name, userId);
         return Created($"/api/sessions/{result.AccessCode}", result);
     }
 
@@ -62,7 +63,7 @@ public class SessionsController : ControllerBase
 
     [Authorize]
     [HttpGet("my-sessions")]
-    public async Task<ActionResult<List<SessionInfoResponse>>> GetMySessions()
+    public async Task<ActionResult<List<UserSessionResponse>>> GetMySessions()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!Guid.TryParse(userIdClaim, out var userId))
@@ -70,5 +71,35 @@ public class SessionsController : ControllerBase
 
         var sessions = await _sessionService.GetUserSessionsAsync(userId);
         return Ok(sessions);
+    }
+
+    [Authorize]
+    [HttpPost("{code}/deactivate")]
+    public async Task<ActionResult> DeactivateSession(string code)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var success = await _sessionService.DeactivateSessionAsync(code, userId);
+        if (!success)
+            return NotFound(new { error = "Session not found or you are not the organizer" });
+
+        return Ok(new { message = "Session deactivated" });
+    }
+
+    [Authorize]
+    [HttpGet("{code}/history")]
+    public async Task<ActionResult<SessionHistoryResponse>> GetSessionHistory(string code)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var history = await _sessionService.GetSessionHistoryAsync(code, userId);
+        if (history == null)
+            return NotFound(new { error = "Session not found or you don't have access" });
+
+        return Ok(history);
     }
 }

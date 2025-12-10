@@ -6,6 +6,7 @@ public class Session
     public Guid? OrganizerId { get; set; }
     public User? Organizer { get; set; }
     public string AccessCode { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public string DeckType { get; set; } = "fibonacci";
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }

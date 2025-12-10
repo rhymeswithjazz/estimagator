@@ -1,13 +1,14 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SessionService } from '../../core/services/session.service';
 import { GameStateService } from '../../core/services/game-state.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-join-session',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './join-session.component.html',
 })
 export class JoinSessionComponent implements OnInit {
@@ -15,6 +16,7 @@ export class JoinSessionComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly sessionService = inject(SessionService);
   private readonly gameState = inject(GameStateService);
+  private readonly document = inject(DOCUMENT);
 
   readonly sessionCode = signal('');
   readonly displayName = signal('');
@@ -24,7 +26,17 @@ export class JoinSessionComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly isLoading = signal(true);
   readonly sessionNotFound = signal(false);
+  readonly sessionInactive = signal(false);
+  readonly inactiveSessionName = signal<string | null>(null);
   readonly returningUser = signal<{ displayName: string; isObserver: boolean } | null>(null);
+  readonly urlCopied = signal(false);
+
+  readonly joinUrl = computed(() => {
+    const code = this.sessionCode();
+    if (!code) return '';
+    const baseUrl = this.document.location.origin;
+    return `${baseUrl}/join/${code}`;
+  });
 
   ngOnInit(): void {
     const code = this.route.snapshot.paramMap.get('code');
@@ -52,9 +64,12 @@ export class JoinSessionComponent implements OnInit {
 
   private async validateSession(code: string): Promise<void> {
     try {
-      const exists = await this.sessionService.sessionExists(code);
-      if (!exists) {
+      const session = await this.sessionService.getSession(code);
+      if (session === null) {
         this.sessionNotFound.set(true);
+      } else if (!session.isActive) {
+        this.sessionInactive.set(true);
+        this.inactiveSessionName.set(session.name);
       }
     } catch {
       this.sessionNotFound.set(true);
@@ -140,5 +155,25 @@ export class JoinSessionComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  async copyJoinUrl(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.joinUrl());
+      this.urlCopied.set(true);
+      setTimeout(() => this.urlCopied.set(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = this.document.createElement('textarea');
+      textArea.value = this.joinUrl();
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      this.document.body.appendChild(textArea);
+      textArea.select();
+      this.document.execCommand('copy');
+      this.document.body.removeChild(textArea);
+      this.urlCopied.set(true);
+      setTimeout(() => this.urlCopied.set(false), 2000);
+    }
   }
 }

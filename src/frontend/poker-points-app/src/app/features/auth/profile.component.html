@@ -90,16 +90,17 @@
       </div>
     </div>
 
-    <!-- Session History -->
-    <div class="glass-card p-6">
-      <h2 class="text-lg font-display font-bold text-gray-900 mb-4">Recent Sessions</h2>
-
-      @if (isLoadingSessions()) {
+    @if (isLoadingSessions()) {
+      <!-- Loading State -->
+      <div class="glass-card p-6">
         <div class="flex items-center justify-center py-8 text-gray-400">
           <span class="spinner mr-2"></span>
           Loading sessions...
         </div>
-      } @else if (mySessions().length === 0) {
+      </div>
+    } @else if (createdSessions().length === 0 && joinedSessions().length === 0) {
+      <!-- No Sessions -->
+      <div class="glass-card p-6">
         <div class="text-center py-8 text-gray-400">
           <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -109,37 +110,115 @@
             Create your first game
           </a>
         </div>
-      } @else {
-        <div class="space-y-3">
-          @for (session of mySessions(); track session.id) {
-            <a
-              [routerLink]="['/join', session.accessCode]"
-              class="block p-4 rounded-xl bg-gray-50 hover:bg-poker-green-50 border border-gray-200 hover:border-poker-green-200 transition-all"
-            >
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="font-semibold text-gray-900 font-mono">{{ session.accessCode }}</div>
-                  <div class="text-sm text-gray-500">
-                    {{ session.participants.length }} participant{{ session.participants.length === 1 ? '' : 's' }}
-                    <span class="mx-1">&#8226;</span>
-                    {{ formatDate(session.createdAt) }}
+      </div>
+    } @else {
+      <!-- My Sessions (Created) -->
+      @if (createdSessions().length > 0) {
+        <div class="glass-card p-6 mb-6">
+          <h2 class="text-lg font-display font-bold text-gray-900 mb-4">My Sessions</h2>
+          <div class="space-y-3">
+            @for (session of createdSessions(); track session.id) {
+              <div class="relative">
+                <a
+                  [routerLink]="session.isActive ? ['/join', session.accessCode] : ['/session', session.accessCode, 'history']"
+                  class="block p-4 rounded-xl bg-gray-50 hover:bg-poker-green-50 border border-gray-200 hover:border-poker-green-200 transition-all"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex-1 min-w-0">
+                      @if (session.name) {
+                        <div class="font-semibold text-gray-900">{{ session.name }}</div>
+                        <div class="text-xs text-gray-400 font-mono">{{ session.accessCode }}</div>
+                      } @else {
+                        <div class="font-semibold text-gray-900 font-mono">{{ session.accessCode }}</div>
+                      }
+                      <div class="text-sm text-gray-500">
+                        {{ session.participants.length }} participant{{ session.participants.length === 1 ? '' : 's' }}
+                        <span class="mx-1">&#8226;</span>
+                        {{ formatDate(session.createdAt) }}
+                      </div>
+                      @if (session.isActive) {
+                        <button
+                          (click)="endSession($event, session.accessCode)"
+                          class="mt-2 px-3 py-1.5 text-sm font-medium text-red-600 hover:text-white bg-red-50 hover:bg-red-500 border border-red-200 hover:border-red-500 rounded-lg transition-all"
+                          [disabled]="endingSessionCode() === session.accessCode"
+                        >
+                          @if (endingSessionCode() === session.accessCode) {
+                            <span class="flex items-center gap-1.5">
+                              <span class="spinner w-3 h-3"></span>
+                              Ending session...
+                            </span>
+                          } @else {
+                            End Session
+                          }
+                        </button>
+                      }
+                    </div>
+                    <div class="flex items-center gap-2">
+                      @if (session.isActive) {
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700">
+                          Active
+                        </span>
+                      } @else {
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                          Ended
+                        </span>
+                      }
+                      <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-                <div class="flex items-center gap-2">
-                  @if (session.isActive) {
-                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700">
-                      Active
-                    </span>
-                  }
-                  <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+                </a>
               </div>
-            </a>
-          }
+            }
+          </div>
         </div>
       }
-    </div>
+
+      <!-- Joined Sessions -->
+      @if (joinedSessions().length > 0) {
+        <div class="glass-card p-6">
+          <h2 class="text-lg font-display font-bold text-gray-900 mb-4">Joined Sessions</h2>
+          <div class="space-y-3">
+            @for (session of joinedSessions(); track session.id) {
+              <a
+                [routerLink]="session.isActive ? ['/join', session.accessCode] : ['/session', session.accessCode, 'history']"
+                class="block p-4 rounded-xl bg-gray-50 hover:bg-poker-green-50 border border-gray-200 hover:border-poker-green-200 transition-all"
+              >
+                <div class="flex items-center justify-between">
+                  <div>
+                    @if (session.name) {
+                      <div class="font-semibold text-gray-900">{{ session.name }}</div>
+                      <div class="text-xs text-gray-400 font-mono">{{ session.accessCode }}</div>
+                    } @else {
+                      <div class="font-semibold text-gray-900 font-mono">{{ session.accessCode }}</div>
+                    }
+                    <div class="text-sm text-gray-500">
+                      {{ session.participants.length }} participant{{ session.participants.length === 1 ? '' : 's' }}
+                      <span class="mx-1">&#8226;</span>
+                      {{ formatDate(session.createdAt) }}
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    @if (session.isActive) {
+                      <span class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700">
+                        Active
+                      </span>
+                    } @else {
+                      <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        Ended
+                      </span>
+                    }
+                    <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    }
   </div>
 </main>

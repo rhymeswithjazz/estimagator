@@ -15,7 +15,7 @@ import {
   ResetPasswordRequest,
   ResendVerificationRequest,
 } from '../models/auth.models';
-import { SessionInfo } from '../models/session.models';
+import { UserSession } from '../models/session.models';
 
 const AUTH_STORAGE_KEY = 'estimagator-auth';
 
@@ -50,7 +50,7 @@ export class AuthService {
 
     try {
       const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/api/auth/register`, request)
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)
       );
       this.handleAuthSuccess(response);
       return response.user;
@@ -66,7 +66,7 @@ export class AuthService {
 
     try {
       const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/api/auth/login`, request)
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, request)
       );
       this.handleAuthSuccess(response);
       return response.user;
@@ -79,7 +79,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await firstValueFrom(this.http.post(`${this.apiUrl}/api/auth/logout`, {}));
+      await firstValueFrom(this.http.post(`${this.apiUrl}/auth/logout`, {}));
     } catch {
       // Ignore errors on logout
     }
@@ -96,7 +96,7 @@ export class AuthService {
     try {
       const request: RefreshTokenRequest = { refreshToken: currentRefreshToken };
       const response = await firstValueFrom(
-        this.http.post<AuthResponse>(`${this.apiUrl}/api/auth/refresh`, request)
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/refresh`, request)
       );
       this.handleAuthSuccess(response);
       return true;
@@ -113,7 +113,7 @@ export class AuthService {
 
     try {
       const user = await firstValueFrom(
-        this.http.get<User>(`${this.apiUrl}/api/auth/me`)
+        this.http.get<User>(`${this.apiUrl}/auth/me`)
       );
       this.state.update((s) => ({ ...s, user }));
       return user;
@@ -124,23 +124,23 @@ export class AuthService {
 
   async updateProfile(request: UpdateProfileRequest): Promise<User> {
     const response = await firstValueFrom(
-      this.http.put<User>(`${this.apiUrl}/api/user/profile`, request)
+      this.http.put<User>(`${this.apiUrl}/user/profile`, request)
     );
     this.state.update((s) => ({ ...s, user: response }));
     this.saveToStorage();
     return response;
   }
 
-  async getMySessions(): Promise<SessionInfo[]> {
+  async getMySessions(): Promise<UserSession[]> {
     return firstValueFrom(
-      this.http.get<SessionInfo[]>(`${this.apiUrl}/api/sessions/my-sessions`)
+      this.http.get<UserSession[]>(`${this.apiUrl}/sessions/my-sessions`)
     );
   }
 
   async verifyEmail(token: string): Promise<void> {
     const request: VerifyEmailRequest = { token };
     await firstValueFrom(
-      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/verify-email`, request)
+      this.http.post<{ message: string }>(`${this.apiUrl}/auth/verify-email`, request)
     );
 
     // Update user state if authenticated
@@ -159,21 +159,21 @@ export class AuthService {
   async resendVerification(email: string): Promise<void> {
     const request: ResendVerificationRequest = { email };
     await firstValueFrom(
-      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/resend-verification`, request)
+      this.http.post<{ message: string }>(`${this.apiUrl}/auth/resend-verification`, request)
     );
   }
 
   async forgotPassword(email: string): Promise<void> {
     const request: ForgotPasswordRequest = { email };
     await firstValueFrom(
-      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/forgot-password`, request)
+      this.http.post<{ message: string }>(`${this.apiUrl}/auth/forgot-password`, request)
     );
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
     const request: ResetPasswordRequest = { token, newPassword };
     await firstValueFrom(
-      this.http.post<{ message: string }>(`${this.apiUrl}/api/auth/reset-password`, request)
+      this.http.post<{ message: string }>(`${this.apiUrl}/auth/reset-password`, request)
     );
   }
 

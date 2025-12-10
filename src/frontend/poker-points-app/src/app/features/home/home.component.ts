@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DeckType, DECK_VALUES } from '../../core/models/session.models';
+import { AccountDropdownComponent } from '../game/account-dropdown.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, AccountDropdownComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
@@ -25,6 +26,7 @@ export class HomeComponent {
   readonly isJoining = signal(false);
   readonly joinError = signal<string | null>(null);
   readonly showCreateOptions = signal(false);
+  readonly sessionName = signal('');
   readonly createError = signal<string | null>(null);
 
   readonly deckOptions: { value: DeckType; label: string; preview: string }[] = [
@@ -42,7 +44,8 @@ export class HomeComponent {
     this.isCreating.set(true);
     this.createError.set(null);
     try {
-      const response = await this.sessionService.createSession(this.selectedDeck());
+      const name = this.sessionName().trim() || undefined;
+      const response = await this.sessionService.createSession(this.selectedDeck(), name);
       this.router.navigate(['/join', response.accessCode], { queryParams: { new: 'true' } });
     } catch (err) {
       console.error('Failed to create session:', err);
@@ -84,6 +87,11 @@ export class HomeComponent {
 
   toggleCreateOptions(): void {
     this.showCreateOptions.update((v) => !v);
+  }
+
+  onSessionNameInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.sessionName.set(input.value);
   }
 
   selectDeck(deck: DeckType): void {

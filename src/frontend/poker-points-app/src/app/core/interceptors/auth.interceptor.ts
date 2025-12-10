@@ -10,9 +10,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Don't add auth header to auth endpoints (except logout and me)
   const isAuthEndpoint =
-    req.url.includes('/api/auth/') &&
-    !req.url.includes('/api/auth/logout') &&
-    !req.url.includes('/api/auth/me');
+    req.url.includes('/auth/') &&
+    !req.url.includes('/auth/logout') &&
+    !req.url.includes('/auth/me');
 
   if (!token || isAuthEndpoint) {
     return next(req);
@@ -26,7 +26,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('/api/auth/refresh')) {
+      if (error.status === 401 && !req.url.includes('/auth/refresh')) {
         // Try to refresh the token
         return from(authService.refreshToken()).pipe(
           switchMap((success) => {
