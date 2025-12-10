@@ -207,10 +207,21 @@ public class PokerHub : Hub
 
         var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
 
-        _logger.LogInformation("Votes revealed for story {StoryId}: Average={Average}, Consensus={IsConsensus}",
+        // Auto-complete the story on reveal
+        var completedStory = await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+
+        _logger.LogInformation("Votes revealed and story completed {StoryId}: Average={Average}, Consensus={IsConsensus}",
             gameState.CurrentStory.Id, result.Average, result.IsConsensus);
 
         await Clients.Group(session.AccessCode).SendAsync("VotesRevealed", result);
+
+        // Notify clients that story is now completed
+        if (completedStory != null)
+        {
+            await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
+                new StoryDto(completedStory.Id, completedStory.Title, completedStory.Url, completedStory.Status, completedStory.FinalScore)
+            ));
+        }
     }
 
     public async Task ResetVotes()
@@ -232,11 +243,20 @@ public class PokerHub : Hub
             return;
         }
 
-        await _votingService.ResetVotesAsync(gameState.CurrentStory.Id);
+        // Restart story: clears votes AND sets status back to "active"
+        var story = await _sessionService.RestartStoryAsync(gameState.CurrentStory.Id);
 
-        _logger.LogInformation("Votes reset for story {StoryId}", gameState.CurrentStory.Id);
+        _logger.LogInformation("Story restarted (votes reset, status active) for story {StoryId}", gameState.CurrentStory.Id);
 
         await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(gameState.CurrentStory.Id));
+
+        // Notify clients that story status changed back to active
+        if (story != null)
+        {
+            await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
+                new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+            ));
+        }
     }
 
     public async Task UpdateStory(string title)

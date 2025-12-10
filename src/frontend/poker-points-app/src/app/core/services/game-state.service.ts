@@ -29,6 +29,7 @@ export class GameStateService {
 
   // Core game state signals
   private readonly _sessionCode = signal<string | null>(null);
+  private readonly _sessionName = signal<string | null>(null);
   private readonly _currentParticipant = signal<Participant | null>(null);
   private readonly _participants = signal<Participant[]>([]);
   private readonly _currentStory = signal<Story | null>(null);
@@ -41,6 +42,7 @@ export class GameStateService {
 
   // Read-only public signals
   readonly sessionCode = this._sessionCode.asReadonly();
+  readonly sessionName = this._sessionName.asReadonly();
   readonly currentParticipant = this._currentParticipant.asReadonly();
   readonly participants = this._participants.asReadonly();
   readonly currentStory = this._currentStory.asReadonly();
@@ -136,6 +138,23 @@ export class GameStateService {
 
     this.signalR.storyUpdated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this._currentStory.set(event.story);
+
+      // Update story queue based on status changes
+      if (event.story.status === 'completed') {
+        // Add completed story to queue if not already there
+        this._storyQueue.update((queue) => {
+          const exists = queue.some((s) => s.id === event.story.id);
+          if (exists) {
+            // Update existing entry
+            return queue.map((s) => (s.id === event.story.id ? event.story : s));
+          }
+          // Add to queue (completed stories appear at end)
+          return [...queue, event.story];
+        });
+      } else if (event.story.status === 'active') {
+        // Remove from queue when story becomes active (e.g., via Vote Again)
+        this._storyQueue.update((queue) => queue.filter((s) => s.id !== event.story.id));
+      }
     });
 
     this.signalR.sessionState$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((state) => {
@@ -165,6 +184,7 @@ export class GameStateService {
     this._voteStatuses.set(state.voteStatuses);
     this._revealedVotes.set(state.revealedVotes);
     this._deckType.set(state.session.deckType as DeckType);
+    this._sessionName.set(state.session.name);
 
     if (state.revealedVotes) {
       const myParticipant = this._currentParticipant();
@@ -302,6 +322,7 @@ export class GameStateService {
 
   private clearSessionState(): void {
     this._sessionCode.set(null);
+    this._sessionName.set(null);
     this._currentParticipant.set(null);
     this._participants.set([]);
     this._currentStory.set(null);
