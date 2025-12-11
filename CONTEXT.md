@@ -45,7 +45,10 @@ poker-points/
 │           │   │   ├── interceptors/   # HTTP interceptors
 │           │   │   ├── models/         # TypeScript interfaces
 │           │   │   └── services/       # SignalR, GameState, Session, Auth
+│           │   ├── shared/
+│           │   │   └── components/     # Reusable UI components (modals)
 │           │   └── features/
+│           │       ├── admin/          # Admin panel (dashboard, users, sessions)
 │           │       ├── auth/           # Login, Register, Profile
 │           │       ├── home/           # Landing page
 │           │       ├── join/           # Join session page
@@ -66,6 +69,7 @@ poker-points/
   - `RefreshToken`, `RefreshTokenExpiresAt` for JWT refresh
   - `EmailVerified`, `EmailVerificationToken`, `EmailVerificationTokenExpiresAt` for email verification
   - `PasswordResetToken`, `PasswordResetTokenExpiresAt` for password reset
+  - `Role` (UserRole enum: User, Admin) for authorization
 - **Session**: A poker room with access code, linked to organizer User
 - **Participant**: Users in a session (guest or authenticated via `UserId` FK)
 - **Story**: Topics being estimated
@@ -129,6 +133,36 @@ Angular Signals for UI state, RxJS for SignalR event streams.
 Votes stored immediately but values only broadcast on reveal.
 
 ## Recent Major Changes
+
+### 2025-12-10 - Admin Panel
+- **What**: Full admin panel for user and session management
+- **Why**: Enables administrators to manage users, view sessions, and perform administrative tasks
+- **Features Added**:
+  - **User roles**: Admin and User roles with JWT claims
+  - **Admin dashboard**: Overview with user/session statistics
+  - **User management**: List, search, edit, delete users; resend verification emails
+  - **Session management**: List, search, view details, delete sessions
+  - **Admin seeding**: Auto-creates admin user on first startup via environment variables
+  - **Custom modals**: Replaced native browser dialogs with styled confirmation/alert modals
+- **Backend Changes**:
+  - `UserRole` enum: Admin, User roles
+  - `User` entity: Added `Role` property
+  - `AdminController`: CRUD endpoints for users and sessions
+  - `AdminService`: Business logic for admin operations
+  - `AdminSeederService`: Creates initial admin user from `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars
+  - JWT tokens now include role claims for authorization
+- **Frontend Changes**:
+  - `admin.guard.ts`: Protects admin routes by checking user role
+  - `admin.service.ts`: API client for admin endpoints
+  - `admin/` feature: Dashboard, user list, user edit, session list, session detail components
+  - `ConfirmModalComponent`: Reusable confirmation dialog with danger/primary styles
+  - `AlertModalComponent`: Reusable alert dialog with error/success/info styles
+  - `ModalService`: Promise-based service for showing modals programmatically
+  - Account dropdown shows "Admin" link for admin users
+- **Environment Variables**:
+  - `ADMIN_EMAIL`: Email for auto-seeded admin account
+  - `ADMIN_PASSWORD`: Password for auto-seeded admin account
+- **Database Migration**: `AddUserRole`
 
 ### 2025-12-09 - Optional Session Names
 - **What**: Organizers can now name their sessions (e.g., "Sprint 2 Story Review")
@@ -362,7 +396,8 @@ Votes stored immediately but values only broadcast on reveal.
 | 7 | Complete | User Authentication (JWT + mock provider) |
 | 8 | Pending | Microsoft SSO integration |
 | 9 | Complete | UI Polish (light/dark mode deferred) |
-| 10 | Pending | Containerization & Deployment |
+| 10 | Complete | Admin Panel (user/session management) |
+| 11 | Pending | Containerization & Deployment |
 
 ## API Endpoints
 
@@ -379,6 +414,19 @@ Votes stored immediately but values only broadcast on reveal.
 | `POST /api/auth/resend-verification` | No | Resend verification email |
 | `POST /api/auth/forgot-password` | No | Request password reset email |
 | `POST /api/auth/reset-password` | No | Reset password with token |
+
+### Admin Endpoints (Admin role required)
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/admin/stats` | Dashboard statistics (user count, session count, etc.) |
+| `GET /api/admin/users` | List users with pagination and search |
+| `GET /api/admin/users/{id}` | Get user details with sessions |
+| `PUT /api/admin/users/{id}` | Update user (displayName, role, emailVerified) |
+| `DELETE /api/admin/users/{id}` | Delete user (cannot delete admins) |
+| `POST /api/admin/users/{id}/resend-verification` | Resend verification email |
+| `GET /api/admin/sessions` | List sessions with pagination and filters |
+| `GET /api/admin/sessions/{id}` | Get session details with participants/stories |
+| `DELETE /api/admin/sessions/{id}` | Delete session |
 
 ### Session Endpoints
 | Endpoint | Auth | Description |
