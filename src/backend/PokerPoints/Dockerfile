@@ -15,7 +15,7 @@ COPY . .
 RUN dotnet publish PokerPoints.Api/PokerPoints.Api.csproj -c Release -o /app/publish
 
 # Runtime stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 WORKDIR /app
 
 # Create non-root user for security
