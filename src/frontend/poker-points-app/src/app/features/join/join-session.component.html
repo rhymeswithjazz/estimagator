@@ -207,26 +207,82 @@
               }
             </div>
 
-            <!-- Observer Toggle -->
-            <div class="flex items-center justify-center gap-4 py-2">
-              <button
-                type="button"
-                (click)="toggleObserver()"
-                class="relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-poker-green-500/50"
-                [class]="isObserver() ? 'bg-poker-green-500' : 'bg-gray-300'"
-                role="switch"
-                [attr.aria-checked]="isObserver()"
-              >
-                <span
-                  class="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300"
-                  [class]="isObserver() ? 'left-8' : 'left-1'"
-                ></span>
-              </button>
-              <div class="text-left">
-                <span class="text-gray-900 font-medium">Join as observer</span>
-                <p class="text-gray-500 text-xs">Watch without voting</p>
+            @if (isNewSession()) {
+              <!-- Role Selection for New Sessions -->
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 text-left mb-3">Your role</label>
+                <div class="grid grid-cols-1 gap-2">
+                  <button
+                    type="button"
+                    (click)="selectRole('host-voter')"
+                    class="role-button"
+                    [class.role-button-selected]="selectedRole() === 'host-voter'"
+                    [class.role-button-unselected]="selectedRole() !== 'host-voter'"
+                  >
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 mt-0.5">
+                        @if (selectedRole() === 'host-voter') {
+                          <svg class="w-5 h-5 text-poker-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                          </svg>
+                        } @else {
+                          <div class="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                        }
+                      </div>
+                      <div class="text-left flex-1">
+                        <div class="font-semibold text-gray-900">Host & Vote</div>
+                        <div class="text-sm text-gray-500">Run the session and participate in voting</div>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="selectRole('host-observer')"
+                    class="role-button"
+                    [class.role-button-selected]="selectedRole() === 'host-observer'"
+                    [class.role-button-unselected]="selectedRole() !== 'host-observer'"
+                  >
+                    <div class="flex items-start gap-3">
+                      <div class="flex-shrink-0 mt-0.5">
+                        @if (selectedRole() === 'host-observer') {
+                          <svg class="w-5 h-5 text-poker-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                          </svg>
+                        } @else {
+                          <div class="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                        }
+                      </div>
+                      <div class="text-left flex-1">
+                        <div class="font-semibold text-gray-900">Host Only (Observer)</div>
+                        <div class="text-sm text-gray-500">Facilitate without voting (perfect for Scrum Masters)</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
               </div>
-            </div>
+            } @else {
+              <!-- Observer Toggle for Existing Sessions -->
+              <div class="flex items-center justify-center gap-4 py-2">
+                <button
+                  type="button"
+                  (click)="toggleObserver()"
+                  class="relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-poker-green-500/50"
+                  [class]="isObserver() ? 'bg-poker-green-500' : 'bg-gray-300'"
+                  role="switch"
+                  [attr.aria-checked]="isObserver()"
+                >
+                  <span
+                    class="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300"
+                    [class]="isObserver() ? 'left-8' : 'left-1'"
+                  ></span>
+                </button>
+                <div class="text-left">
+                  <span class="text-gray-900 font-medium">Join as observer</span>
+                  <p class="text-gray-500 text-xs">Watch without voting</p>
+                </div>
+              </div>
+            }
 
             <!-- Join Button -->
             <button

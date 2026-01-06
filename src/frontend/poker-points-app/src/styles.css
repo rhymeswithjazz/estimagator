@@ -209,6 +209,21 @@
   .deck-option-selected {
     @apply bg-poker-green-50 border-poker-green-500 text-gray-900;
   }
+
+  /* Role selection button */
+  .role-button {
+    @apply p-4 rounded-xl text-left transition-all duration-200 border-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-poker-green-500/50;
+  }
+
+  .role-button-selected {
+    @apply bg-poker-green-50 border-poker-green-500;
+  }
+
+  .role-button-unselected {
+    @apply bg-gray-50 border-gray-200;
+    @apply hover:bg-poker-green-50/50 hover:border-poker-green-300;
+  }
 }
 
 @layer utilities {

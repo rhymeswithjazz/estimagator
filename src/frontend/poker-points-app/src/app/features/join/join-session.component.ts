@@ -21,6 +21,7 @@ export class JoinSessionComponent implements OnInit {
   readonly sessionCode = signal('');
   readonly displayName = signal('');
   readonly isObserver = signal(false);
+  readonly selectedRole = signal<'host-voter' | 'host-observer'>('host-voter');
   readonly isJoining = signal(false);
   readonly isNewSession = signal(false);
   readonly error = signal<string | null>(null);
@@ -94,10 +95,15 @@ export class JoinSessionComponent implements OnInit {
     this.error.set(null);
 
     try {
+      // For new sessions, use selected role; for existing sessions, use toggle
+      const isObserver = this.isNewSession()
+        ? this.selectedRole() === 'host-observer'
+        : this.isObserver();
+
       const joined = await this.gameState.joinSession(
         this.sessionCode(),
         name,
-        this.isObserver()
+        isObserver
       );
 
       if (joined) {
@@ -120,6 +126,10 @@ export class JoinSessionComponent implements OnInit {
 
   toggleObserver(): void {
     this.isObserver.update((v) => !v);
+  }
+
+  selectRole(role: 'host-voter' | 'host-observer'): void {
+    this.selectedRole.set(role);
   }
 
   async rejoinGame(): Promise<void> {
