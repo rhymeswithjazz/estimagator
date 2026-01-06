@@ -1,0 +1,63 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+          cache-dependency-path: src/frontend/poker-points-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: src/frontend/poker-points-app
+        run: npm ci
+
+      - name: Run linter
+        working-directory: src/frontend/poker-points-app
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run tests
+        working-directory: src/frontend/poker-points-app
+        run: npm test -- --run --coverage
+        env:
+          NODE_ENV: test
+
+      - name: Build
+        working-directory: src/frontend/poker-points-app
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: src/frontend/poker-points-app/coverage/coverage-final.json
+          flags: frontend
+        continue-on-error: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: src/frontend/poker-points-app/dist/
+          retention-days: 7

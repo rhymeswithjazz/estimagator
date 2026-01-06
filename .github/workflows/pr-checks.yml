@@ -1,0 +1,83 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pokerpoints
+          POSTGRES_PASSWORD: pokerpoints
+          POSTGRES_DB: pokerpoints_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore and build
+        working-directory: src/backend/PokerPoints
+        run: |
+          dotnet restore
+          dotnet build --no-restore --configuration Release
+
+      - name: Run tests
+        working-directory: src/backend/PokerPoints
+        run: dotnet test --no-build --configuration Release
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=pokerpoints_test;Username=pokerpoints;Password=pokerpoints"
+
+  frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+          cache-dependency-path: src/frontend/poker-points-app/package-lock.json
+
+      - name: Install and test
+        working-directory: src/frontend/poker-points-app
+        run: |
+          npm ci
+          npm run lint
+          npm test -- --run
+          npm run build
+
+  all-checks-passed:
+    name: All Checks Passed
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check if all jobs succeeded
+        if: needs.backend.result != 'success' || needs.frontend.result != 'success'
+        run: |
+          echo "One or more checks failed"
+          exit 1
+
+      - name: All checks passed
+        run: echo "All PR checks passed successfully!"

@@ -1,0 +1,69 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pokerpoints
+          POSTGRES_PASSWORD: pokerpoints
+          POSTGRES_DB: pokerpoints_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+
+      - name: Restore dependencies
+        working-directory: src/backend/PokerPoints
+        run: dotnet restore
+
+      - name: Format check
+        working-directory: src/backend/PokerPoints
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+        continue-on-error: true
+
+      - name: Build
+        working-directory: src/backend/PokerPoints
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests
+        working-directory: src/backend/PokerPoints
+        run: dotnet test --no-build --configuration Release --logger "trx" --collect:"XPlat Code Coverage"
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=pokerpoints_test;Username=pokerpoints;Password=pokerpoints"
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: '**/coverage.cobertura.xml'
+          flags: backend
+        continue-on-error: true
