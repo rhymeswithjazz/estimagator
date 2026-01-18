@@ -92,7 +92,7 @@ jobs:
         run: dotnet test ${{ matrix.test-project.path }} --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: src/backend/PokerPoints/${{ matrix.test-project.path }}/TestResults/*/coverage.cobertura.xml
           flags: backend-${{ matrix.test-project.name }}
@@ -122,7 +122,7 @@ jobs:
         run: npm run test:coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: src/frontend/poker-points-app/coverage/lcov.info
           flags: frontend
