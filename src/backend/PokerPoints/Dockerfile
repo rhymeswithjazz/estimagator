@@ -7,8 +7,8 @@ COPY PokerPoints.sln .
 COPY PokerPoints.Api/PokerPoints.Api.csproj PokerPoints.Api/
 COPY PokerPoints.Data/PokerPoints.Data.csproj PokerPoints.Data/
 
-# Restore dependencies
-RUN dotnet restore
+# Restore dependencies (only production projects, not test projects)
+RUN dotnet restore PokerPoints.Api/PokerPoints.Api.csproj
 
 # Copy remaining source and build
 COPY . .
