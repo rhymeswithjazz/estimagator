@@ -33,98 +33,13 @@ jobs:
     name: Send Notification
     runs-on: ubuntu-latest
     steps:
-      - name: Determine status emoji and color
-        id: status
+      - name: Log notification details
         run: |
-          case "${{ inputs.status }}" in
-            success)
-              echo "emoji=✅" >> $GITHUB_OUTPUT
-              echo "color=#36a64f" >> $GITHUB_OUTPUT
-              echo "text=Success" >> $GITHUB_OUTPUT
-              ;;
-            failure)
-              echo "emoji=❌" >> $GITHUB_OUTPUT
-              echo "color=#ff0000" >> $GITHUB_OUTPUT
-              echo "text=Failed" >> $GITHUB_OUTPUT
-              ;;
-            cancelled)
-              echo "emoji=⏹️" >> $GITHUB_OUTPUT
-              echo "color=#ffa500" >> $GITHUB_OUTPUT
-              echo "text=Cancelled" >> $GITHUB_OUTPUT
-              ;;
-            *)
-              echo "emoji=ℹ️" >> $GITHUB_OUTPUT
-              echo "color=#808080" >> $GITHUB_OUTPUT
-              echo "text=Unknown" >> $GITHUB_OUTPUT
-              ;;
-          esac
-
-      - name: Send Slack notification
-        if: secrets.SLACK_WEBHOOK_URL != ''
-        run: |
-          curl -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
-            -H 'Content-Type: application/json' \
-            -d @- <<SLACK_EOF
-          {
-            "attachments": [
-              {
-                "color": "${{ steps.status.outputs.color }}",
-                "blocks": [
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "${{ steps.status.outputs.emoji }} *${{ inputs.workflow_name }}*: ${{ steps.status.outputs.text }}"
-                    }
-                  },
-                  {
-                    "type": "section",
-                    "fields": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Branch:*\n${{ inputs.branch }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Status:*\n${{ steps.status.outputs.text }}"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "*Commit:*\n${{ inputs.commit_message }}"
-                    }
-                  },
-                  {
-                    "type": "actions",
-                    "elements": [
-                      {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "View Workflow Run"
-                        },
-                        "url": "${{ inputs.run_url }}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-SLACK_EOF
-
-      - name: Log notification sent
-        if: secrets.SLACK_WEBHOOK_URL != ''
-        run: |
-          echo "📬 Slack notification sent for ${{ inputs.workflow_name }}"
+          echo "Workflow: ${{ inputs.workflow_name }}"
           echo "Status: ${{ inputs.status }}"
           echo "Branch: ${{ inputs.branch }}"
-
-      - name: Skip notification (webhook not configured)
-        if: secrets.SLACK_WEBHOOK_URL == ''
-        run: |
-          echo "⚠️ Slack webhook not configured, skipping notification"
-          echo "To enable notifications, set the SLACK_WEBHOOK_URL secret"
+          echo "Commit: ${{ inputs.commit_message }}"
+          echo "Run URL: ${{ inputs.run_url }}"
+          echo ""
+          echo "Note: Slack notifications not yet implemented"
+          echo "Set SLACK_WEBHOOK_URL secret to enable Slack notifications"
