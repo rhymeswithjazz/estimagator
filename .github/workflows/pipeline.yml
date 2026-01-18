@@ -1,0 +1,358 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '22.x'
+  DOCKER_USERNAME: rhymeswithjazz
+  API_IMAGE: rhymeswithjazz/estimagator-api
+  FRONTEND_IMAGE: rhymeswithjazz/estimagator-frontend
+
+jobs:
+  # ============================================================================
+  # STAGE 1: VALIDATE
+  # ============================================================================
+  validate:
+    name: Validate Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check .NET formatting
+        working-directory: src/backend/PokerPoints
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+
+      - name: Check TypeScript/Angular formatting
+        working-directory: src/frontend/poker-points-app
+        run: |
+          npm ci
+          npx prettier --check "src/**/*.{ts,html,css,scss}"
+
+  # ============================================================================
+  # STAGE 2: BUILD & TEST (Parallel)
+  # ============================================================================
+  backend-tests:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        test-project:
+          - name: Api.Tests
+            path: PokerPoints.Api.Tests
+          - name: Data.Tests
+            path: PokerPoints.Data.Tests
+          - name: Integration.Tests
+            path: PokerPoints.Integration.Tests
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        working-directory: src/backend/PokerPoints
+        run: dotnet restore
+
+      - name: Build
+        working-directory: src/backend/PokerPoints
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Run ${{ matrix.test-project.name }}
+        working-directory: src/backend/PokerPoints
+        run: dotnet test ${{ matrix.test-project.path }} --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: src/backend/PokerPoints/${{ matrix.test-project.path }}/TestResults/*/coverage.cobertura.xml
+          flags: backend-${{ matrix.test-project.name }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true
+
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: src/frontend/poker-points-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: src/frontend/poker-points-app
+        run: npm ci
+
+      - name: Run tests with coverage
+        working-directory: src/frontend/poker-points-app
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: src/frontend/poker-points-app/coverage/lcov.info
+          flags: frontend
+          token: ${{ secrets.CODECOV_TOKEN }}
+        continue-on-error: true
+
+      - name: Build
+        working-directory: src/frontend/poker-points-app
+        run: npm run build
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Scan backend dependencies
+        working-directory: src/backend/PokerPoints
+        run: |
+          dotnet restore
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+          if grep -E "(Critical|High)" vulnerability-report.txt; then
+            echo "❌ Critical or High severity vulnerabilities found!"
+            exit 1
+          fi
+
+      - name: Scan frontend dependencies
+        working-directory: src/frontend/poker-points-app
+        run: |
+          npm ci
+          npm audit --audit-level=high
+
+  # ============================================================================
+  # STAGE 3: BUILD ARTIFACTS (Only on main/tags)
+  # ============================================================================
+  build-artifacts:
+    name: Build Artifacts
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, security-scan]
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      calver: ${{ steps.version.outputs.calver }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Generate version tags
+        id: version
+        run: |
+          # CalVer: YYYY.MM.DD
+          CALVER=$(date +'%Y.%m.%d')
+          echo "calver=${CALVER}" >> $GITHUB_OUTPUT
+
+          # SemVer from git tag or branch-SHA
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION="0.0.0-${GITHUB_REF_NAME}-${GITHUB_SHA:0:7}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+
+          echo "📦 Version: ${VERSION}"
+          echo "📅 CalVer: ${CALVER}"
+
+      - name: Build backend
+        working-directory: src/backend/PokerPoints
+        run: dotnet publish PokerPoints.Api -c Release -o publish
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: backend-${{ steps.version.outputs.version }}
+          path: src/backend/PokerPoints/publish/
+          retention-days: 7
+
+      - name: Build frontend
+        working-directory: src/frontend/poker-points-app
+        run: npm ci && npm run build
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: frontend-${{ steps.version.outputs.version }}
+          path: src/frontend/poker-points-app/dist/
+          retention-days: 7
+
+  # ============================================================================
+  # STAGE 4: DOCKER BUILD & PUSH (Only on main/tags)
+  # ============================================================================
+  docker-build-push:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    needs: build-artifacts
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Generate Docker metadata (API)
+        id: meta-api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.API_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ needs.build-artifacts.outputs.calver }}
+            type=sha,prefix={{branch}}-
+
+      - name: Generate Docker metadata (Frontend)
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.FRONTEND_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ needs.build-artifacts.outputs.calver }}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: src/backend/PokerPoints
+          file: src/backend/PokerPoints/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-api.outputs.tags }}
+          labels: ${{ steps.meta-api.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.API_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.API_IMAGE }}:buildcache,mode=max
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: src/frontend/poker-points-app
+          file: src/frontend/poker-points-app/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
+
+      - name: Image digest summary
+        run: |
+          echo "### 🐳 Docker Images Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**API Image:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta-api.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Frontend Image:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta-frontend.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # STAGE 5: DEPLOYMENT (Manual approval for production)
+  # ============================================================================
+  deploy-notification:
+    name: Deployment Ready
+    runs-on: ubuntu-latest
+    needs: docker-build-push
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Deployment notification
+        run: |
+          echo "### 🚀 Deployment Ready" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Docker images have been built and pushed successfully." >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ needs.build-artifacts.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "CalVer: ${{ needs.build-artifacts.outputs.calver }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To deploy:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Update Portainer stack with new image tags" >> $GITHUB_STEP_SUMMARY
+          echo "2. Or trigger automated deployment workflow (coming in Phase 4)" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # NOTIFICATIONS
+  # ============================================================================
+  notify-failure:
+    name: Notify on Failure
+    needs: [validate, backend-tests, frontend-tests, security-scan, build-artifacts, docker-build-push]
+    if: failure()
+    uses: ./.github/workflows/notify.yml
+    with:
+      status: 'failure'
+      workflow_name: 'CI/CD Pipeline'
+      run_url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      branch: ${{ github.ref_name }}
+      commit_message: ${{ github.event.head_commit.message }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

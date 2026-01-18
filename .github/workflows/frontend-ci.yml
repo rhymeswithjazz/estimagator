@@ -33,7 +33,6 @@ jobs:
       - name: Run tests
         working-directory: src/frontend/poker-points-app
         run: npm test
-        continue-on-error: true
         env:
           NODE_ENV: test
 

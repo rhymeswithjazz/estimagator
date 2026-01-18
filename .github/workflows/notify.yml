@@ -1,0 +1,125 @@
+name: Notification Workflow
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        description: 'Build status (success, failure, cancelled)'
+        required: true
+        type: string
+      workflow_name:
+        description: 'Name of the workflow'
+        required: true
+        type: string
+      run_url:
+        description: 'URL to the workflow run'
+        required: true
+        type: string
+      branch:
+        description: 'Branch name'
+        required: false
+        type: string
+        default: 'unknown'
+      commit_message:
+        description: 'Commit message'
+        required: false
+        type: string
+        default: 'No commit message'
+    secrets:
+      SLACK_WEBHOOK_URL:
+        description: 'Slack webhook URL for notifications'
+        required: false
+
+jobs:
+  notify:
+    name: Send Notification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set notification color
+        id: color
+        run: |
+          if [ "${{ inputs.status }}" == "success" ]; then
+            echo "color=#36a64f" >> $GITHUB_OUTPUT
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.status }}" == "failure" ]; then
+            echo "color=#ff0000" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+          else
+            echo "color=#ffa500" >> $GITHUB_OUTPUT
+            echo "emoji=⚠️" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack notification
+        if: secrets.SLACK_WEBHOOK_URL != ''
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "${{ steps.color.outputs.color }}",
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "${{ steps.color.outputs.emoji }} ${{ inputs.workflow_name }} - ${{ inputs.status }}",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch:*\n${{ inputs.branch }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Status:*\n${{ inputs.status }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Commit:*\n${{ inputs.commit_message }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Author:*\n${{ github.actor }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "actions",
+                      "elements": [
+                        {
+                          "type": "button",
+                          "text": {
+                            "type": "plain_text",
+                            "text": "View Run",
+                            "emoji": true
+                          },
+                          "url": "${{ inputs.run_url }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+
+      - name: Log notification
+        run: |
+          echo "### ${{ steps.color.outputs.emoji }} Notification Sent" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** ${{ inputs.workflow_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ${{ inputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ inputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ inputs.commit_message }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -z "${{ secrets.SLACK_WEBHOOK_URL }}" ]; then
+            echo "⚠️ Slack webhook not configured. Set SLACK_WEBHOOK_URL secret to enable Slack notifications." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Slack notification sent successfully" >> $GITHUB_STEP_SUMMARY
+          fi

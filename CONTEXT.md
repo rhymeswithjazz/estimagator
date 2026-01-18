@@ -116,6 +116,189 @@ npm start  # Runs on http://localhost:4200
 | SignalR Hub | ws://localhost:5051/hubs/poker |
 | Angular Dev | http://localhost:4200 |
 
+## Deployment
+
+### Environments
+
+**Production:**
+- URL: `https://estimagator.rhymeswithjazz.com`
+- Port: 7117
+- Docker tags: `:latest`, `:main`, CalVer (e.g., `:2026.01.17`)
+- Database: `pokerpoints`
+- Stack file: `docker/stack.yml`
+
+**Staging:**
+- URL: `https://staging.estimagator.rhymeswithjazz.com` (if configured)
+- Port: 7118
+- Docker tags: `:develop`
+- Database: `pokerpoints_staging`
+- Stack file: `docker/stack.staging.yml`
+
+### Automated Deployment
+
+Deployments are automated via GitHub Actions:
+
+1. **Staging** - Auto-deploys from `develop` branch:
+   ```
+   Push to develop → Build & Test → Docker Build → Deploy to Staging
+   ```
+
+2. **Production** - Manual approval required from `main` branch or git tags:
+   ```
+   Push to main/tag → Build & Test → Docker Build → Manual Approval → Deploy to Production
+   ```
+
+### Manual Deployment via Portainer
+
+1. Navigate to Portainer: Stacks → estimagator
+2. Update the stack YAML if needed
+3. Update image tags in environment variables or stack file:
+   ```yaml
+   image: rhymeswithjazz/estimagator-api:2026.01.17
+   image: rhymeswithjazz/estimagator-frontend:2026.01.17
+   ```
+4. Click "Update the stack"
+5. Wait for health checks to pass (~30 seconds)
+
+### Health Checks
+
+**Backend Health Endpoint:**
+```bash
+curl https://estimagator.rhymeswithjazz.com/health
+```
+
+Expected response: HTTP 200 with `Healthy` status
+
+**Frontend:**
+```bash
+curl https://estimagator.rhymeswithjazz.com/
+```
+
+Should return Angular index.html
+
+### Smoke Tests
+
+Post-deployment validation script tests critical flows:
+
+```bash
+./scripts/smoke-test.sh https://estimagator.rhymeswithjazz.com
+```
+
+Tests:
+1. ✅ Health endpoint responds (HTTP 200)
+2. ✅ Frontend loads successfully
+3. ✅ API session endpoint responds
+4. ✅ SignalR hub negotiates connection
+5. ✅ Static assets load
+6. ✅ HTTPS redirect configured
+
+### Rollback Procedure
+
+If a deployment causes issues, roll back using Docker image tags:
+
+**Quick Rollback Steps:**
+
+1. **Identify Last Working Version**
+   - Check DockerHub tags: https://hub.docker.com/r/rhymeswithjazz/estimagator-api/tags
+   - Look at git tags for semantic versions (e.g., `v1.0.0`)
+   - Or use CalVer tags from previous deployment (e.g., `2026.01.16`)
+
+2. **Update Portainer Stack**
+   - Go to Portainer → Stacks → estimagator → Editor
+   - Change image tags to previous version:
+     ```yaml
+     services:
+       api:
+         image: rhymeswithjazz/estimagator-api:2026.01.16  # Previous version
+       frontend:
+         image: rhymeswithjazz/estimagator-frontend:2026.01.16
+     ```
+
+3. **Redeploy Stack**
+   - Click "Update the stack"
+   - Portainer will pull the old images and recreate containers
+
+4. **Verify Rollback**
+   - Wait 30 seconds for containers to start
+   - Check health endpoint: `curl https://estimagator.rhymeswithjazz.com/health`
+   - Run smoke tests: `./scripts/smoke-test.sh https://estimagator.rhymeswithjazz.com`
+   - Test critical user flows manually
+
+5. **Investigate and Fix**
+   - Review logs in Portainer: Containers → estimagator-api → Logs
+   - Check GitHub Actions for build/test failures
+   - Create hotfix branch from last working commit if needed
+
+**Database Rollback (if migration causes issues):**
+
+1. **Connect to database container:**
+   ```bash
+   docker exec -it estimagator-db psql -U pokerpoints -d pokerpoints
+   ```
+
+2. **Check migration history:**
+   ```sql
+   SELECT * FROM "__EFMigrationsHistory" ORDER BY "MigrationId" DESC LIMIT 5;
+   ```
+
+3. **Rollback specific migration** (if needed):
+   ```bash
+   # From local dev environment with access to production DB
+   dotnet ef database update PreviousMigrationName --connection "Host=your-server;..."
+   ```
+   ⚠️ **WARNING:** Database rollbacks are risky. Always backup first!
+
+**Alternative: Use Git Tags for Versioned Deployments**
+
+Create tagged releases for safer deployments:
+
+1. **Create release tag:**
+   ```bash
+   git tag -a v1.2.0 -m "Release version 1.2.0"
+   git push origin v1.2.0
+   ```
+
+2. **GitHub Actions automatically builds tagged version**
+   - Images tagged as `:v1.2.0`, `:1.2`, `:latest`
+
+3. **Deploy specific version:**
+   ```yaml
+   image: rhymeswithjazz/estimagator-api:v1.2.0
+   ```
+
+4. **Rollback to previous tag:**
+   ```yaml
+   image: rhymeswithjazz/estimagator-api:v1.1.0
+   ```
+
+**Best Practices:**
+- Always tag stable releases before deploying to production
+- Keep at least 3 previous versions available on DockerHub
+- Test deployments in staging environment first
+- Monitor logs and metrics after deployment
+- Document known issues and workarounds
+
+### Monitoring
+
+**Container Logs:**
+```bash
+# Via Portainer UI
+Containers → estimagator-api → Logs → Last 100 lines
+
+# Via Docker CLI
+docker logs estimagator-api --tail 100 --follow
+```
+
+**Database Connection:**
+```bash
+docker exec -it estimagator-db psql -U pokerpoints -d pokerpoints
+```
+
+**Resource Usage:**
+```bash
+docker stats estimagator-api estimagator-frontend estimagator-db
+```
+
 ## Architecture Decisions
 
 ### Hybrid Authentication Model

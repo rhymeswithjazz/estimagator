@@ -23,6 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Generate CalVer tag
+        id: calver
+        run: |
+          CALVER=$(date +'%Y.%m.%d')
+          echo "tag=${CALVER}" >> $GITHUB_OUTPUT
+          echo "📅 CalVer tag: ${CALVER}"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -33,7 +40,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Extract metadata for API
         id: meta-api
@@ -46,6 +53,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ steps.calver.outputs.tag }}
             type=sha,prefix={{branch}}-
 
       - name: Extract metadata for Frontend
@@ -59,6 +67,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ steps.calver.outputs.tag }}
             type=sha,prefix={{branch}}-
 
       - name: Build and push API image
