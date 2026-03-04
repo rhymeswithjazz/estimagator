@@ -104,8 +104,10 @@ public class PokerHub : Hub
             }
         }
 
-        // Determine if this is the first participant (becomes organizer)
-        var isOrganizer = session.Participants.Count == 0;
+        // Determine if this participant is the session organizer
+        var isOrganizer = session.OrganizerId.HasValue
+            ? session.OrganizerId == userId  // Match session creator
+            : session.Participants.Count == 0;  // Fallback for legacy sessions without a creator
 
         var participant = await _participantService.JoinSessionAsync(
             session.Id,
