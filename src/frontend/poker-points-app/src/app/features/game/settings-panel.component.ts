@@ -25,7 +25,13 @@ import { SessionService } from '../../core/services/session.service';
             (click)="close.emit()"
             class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -37,13 +43,27 @@ import { SessionService } from '../../core/services/session.service';
           @if (isOrganizer()) {
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                <div
+                  class="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                    />
                   </svg>
                   Story Queue
                   @if (storyQueue().length > 0) {
-                    <span class="bg-poker-green-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                    <span
+                      class="bg-poker-green-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center"
+                    >
                       {{ storyQueue().length }}
                     </span>
                   }
@@ -110,8 +130,18 @@ import { SessionService } from '../../core/services/session.service';
                       class="px-3 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
                       title="Add multiple stories"
                     >
-                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -129,8 +159,18 @@ import { SessionService } from '../../core/services/session.service';
 
                 @if (storyQueue().length === 0) {
                   <div class="text-center py-6 text-gray-400 text-sm">
-                    <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                      class="w-8 h-8 mx-auto mb-2 opacity-50"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                     No stories queued
                   </div>
@@ -149,9 +189,13 @@ import { SessionService } from '../../core/services/session.service';
                           <span class="text-xs text-gray-400 font-mono mt-0.5">{{ i + 1 }}</span>
                           <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
-                              <span class="font-medium text-gray-900 truncate">{{ story.title }}</span>
+                              <span class="font-medium text-gray-900 truncate">{{
+                                story.title
+                              }}</span>
                               @if (story.status === 'completed' && story.finalScore !== null) {
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-poker-green-100 text-poker-green-800">
+                                <span
+                                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-poker-green-100 text-poker-green-800"
+                                >
                                   {{ story.finalScore }}
                                 </span>
                               }
@@ -168,16 +212,32 @@ import { SessionService } from '../../core/services/session.service';
                               </a>
                             }
                           </div>
-                          <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div
+                            class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
                             @if (story.status === 'pending') {
                               <button
                                 (click)="startStoryFromQueue(story.id)"
                                 class="p-1.5 text-poker-green-600 hover:bg-poker-green-50 rounded transition-colors"
                                 title="Start voting on this story"
                               >
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <svg
+                                  class="w-4 h-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                  />
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
                                 </svg>
                               </button>
                             } @else if (story.status === 'completed') {
@@ -186,8 +246,18 @@ import { SessionService } from '../../core/services/session.service';
                                 class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
                                 title="Re-vote on this story"
                               >
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                <svg
+                                  class="w-4 h-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                  />
                                 </svg>
                               </button>
                             }
@@ -196,8 +266,18 @@ import { SessionService } from '../../core/services/session.service';
                               class="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
                               title="Remove story"
                             >
-                              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="2"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
                               </svg>
                             </button>
                           </div>
@@ -209,16 +289,26 @@ import { SessionService } from '../../core/services/session.service';
               </div>
             </div>
           }
-
-
         </div>
 
         <!-- Danger Zone Footer (always at bottom, organizer only) -->
         @if (isOrganizer()) {
           <div class="p-4 border-t border-gray-200 space-y-3 bg-white">
-            <div class="flex items-center gap-2 text-sm font-semibold text-red-600 uppercase tracking-wider">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <div
+              class="flex items-center gap-2 text-sm font-semibold text-red-600 uppercase tracking-wider"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
               </svg>
               Danger Zone
             </div>
@@ -226,7 +316,8 @@ import { SessionService } from '../../core/services/session.service';
             @if (showDeactivateConfirm()) {
               <div class="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
                 <p class="text-sm text-red-800">
-                  Are you sure you want to end this session? The join link will stop working and participants won't be able to rejoin.
+                  Are you sure you want to end this session? The join link will stop working and
+                  participants won't be able to rejoin.
                 </p>
                 <div class="flex gap-2">
                   <button
@@ -236,7 +327,9 @@ import { SessionService } from '../../core/services/session.service';
                   >
                     @if (isDeactivating()) {
                       <span class="flex items-center justify-center gap-2">
-                        <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        <span
+                          class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+                        ></span>
                         Ending...
                       </span>
                     } @else {
@@ -257,8 +350,18 @@ import { SessionService } from '../../core/services/session.service';
                 (click)="showDeactivateConfirm.set(true)"
                 class="w-full px-4 py-2.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors flex items-center justify-center gap-2"
               >
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                  />
                 </svg>
                 End Session
               </button>

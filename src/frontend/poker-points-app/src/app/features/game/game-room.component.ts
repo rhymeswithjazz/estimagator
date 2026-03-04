@@ -13,7 +13,14 @@ import confetti from 'canvas-confetti';
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [DecimalPipe, FormsModule, NgClass, RouterLink, SettingsPanelComponent, AccountDropdownComponent],
+  imports: [
+    DecimalPipe,
+    FormsModule,
+    NgClass,
+    RouterLink,
+    SettingsPanelComponent,
+    AccountDropdownComponent,
+  ],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },
 })
@@ -49,8 +56,8 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly voteDistribution = this.gameState.voteDistribution;
 
   readonly participantCount = computed(() => this.participants().length);
-  readonly votedCount = computed(() =>
-    this.voters().filter(v => this.participantVoteMap().get(v.id)).length
+  readonly votedCount = computed(
+    () => this.voters().filter((v) => this.participantVoteMap().get(v.id)).length,
   );
 
   // Dynamic sizing based on voter count
@@ -75,8 +82,8 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     if (voters.length <= 1) return voters;
 
     // Find host and current user
-    const hostIndex = voters.findIndex(v => v.isOrganizer);
-    const currentUserIndex = voters.findIndex(v => v.id === currentId);
+    const hostIndex = voters.findIndex((v) => v.isOrganizer);
+    const currentUserIndex = voters.findIndex((v) => v.id === currentId);
 
     // If no special ordering needed, return as-is
     if (hostIndex === -1 && currentUserIndex === -1) return voters;
@@ -88,14 +95,11 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     // Get host (or first voter if no host)
     const host = hostIndex !== -1 ? voters[hostIndex] : null;
     // Get current user (if not the host)
-    const currentUser = currentUserIndex !== -1 && currentUserIndex !== hostIndex
-      ? voters[currentUserIndex]
-      : null;
+    const currentUser =
+      currentUserIndex !== -1 && currentUserIndex !== hostIndex ? voters[currentUserIndex] : null;
 
     // Get all others
-    const others = voters.filter(v =>
-      v.id !== host?.id && v.id !== currentUser?.id
-    );
+    const others = voters.filter((v) => v.id !== host?.id && v.id !== currentUser?.id);
 
     // Place host at position 0 (top)
     if (host) {
@@ -120,7 +124,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       // Current user is host, already at top - that's fine
     }
 
-    return result.filter(v => v !== undefined);
+    return result.filter((v) => v !== undefined);
   });
 
   // Story editing state
@@ -194,7 +198,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Get vote for a specific participant (after reveal)
   getParticipantVote(participantId: string): Vote | undefined {
     const votes = this.revealedVotes();
-    return votes?.find(v => v.participantId === participantId);
+    return votes?.find((v) => v.participantId === participantId);
   }
 
   // Check if participant has voted (before reveal)
@@ -222,7 +226,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     const n = 3;
     const superellipseFactor = Math.pow(
       Math.pow(Math.abs(cosA), n) + Math.pow(Math.abs(sinA), n),
-      -1 / n
+      -1 / n,
     );
 
     const x = cosA * radiusX * superellipseFactor;
@@ -341,7 +345,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       // If there's a URL, update the newly created story
       if (url) {
         // Small delay to ensure story is created, then update with URL
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         const newStoryId = this.currentStory()?.id;
         if (newStoryId) {
           await this.gameState.updateStoryDetails(newStoryId, title, url);
@@ -406,7 +410,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Settings panel methods
   toggleSettingsPanel(): void {
-    this.isSettingsPanelOpen.update(open => !open);
+    this.isSettingsPanelOpen.update((open) => !open);
   }
 
   // Share link methods

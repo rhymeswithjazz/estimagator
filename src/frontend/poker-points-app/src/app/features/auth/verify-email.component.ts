@@ -17,13 +17,27 @@ import { AuthService } from '../../core/services/auth.service';
 
         @if (pendingVerification()) {
           <div class="text-center py-8">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4">
-              <svg class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4"
+            >
+              <svg
+                class="h-6 w-6 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                ></path>
               </svg>
             </div>
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Verify Your Email</h2>
-            <p class="text-gray-600 mb-6">Click the button below to complete your email verification.</p>
+            <p class="text-gray-600 mb-6">
+              Click the button below to complete your email verification.
+            </p>
             <button
               (click)="confirmVerification()"
               class="bg-emerald-600 text-white px-6 py-2 rounded-md hover:bg-emerald-700 transition-colors"
@@ -35,20 +49,36 @@ import { AuthService } from '../../core/services/auth.service';
 
         @if (isLoading()) {
           <div class="text-center py-8">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent"></div>
+            <div
+              class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-emerald-600 border-t-transparent"
+            ></div>
             <p class="mt-4 text-gray-600">Verifying your email...</p>
           </div>
         }
 
         @if (success()) {
           <div class="text-center py-8">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4">
-              <svg class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4"
+            >
+              <svg
+                class="h-6 w-6 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
               </svg>
             </div>
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Email Verified!</h2>
-            <p class="text-gray-600 mb-6">Your email has been successfully verified. You can now access all features.</p>
+            <p class="text-gray-600 mb-6">
+              Your email has been successfully verified. You can now access all features.
+            </p>
             <a
               routerLink="/"
               class="inline-block bg-emerald-600 text-white px-6 py-2 rounded-md hover:bg-emerald-700 transition-colors"
@@ -60,9 +90,21 @@ import { AuthService } from '../../core/services/auth.service';
 
         @if (error()) {
           <div class="text-center py-8">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
+            >
+              <svg
+                class="h-6 w-6 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
               </svg>
             </div>
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Verification Failed</h2>

@@ -41,10 +41,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             }
             return throwError(() => error);
           }),
-          catchError(() => throwError(() => error))
+          catchError(() => throwError(() => error)),
         );
       }
       return throwError(() => error);
-    })
+    }),
   );
 };

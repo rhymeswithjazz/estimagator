@@ -1,226 +1,295 @@
 <div class="min-h-screen bg-white flex flex-col relative overflow-hidden">
   <!-- Header -->
   @if (isAuthenticated()) {
-    <header class="sticky top-0 px-5 py-3 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md z-20">
+    <header
+      class="sticky top-0 px-5 py-3 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md z-20"
+    >
       <div class="flex items-center gap-2">
         <img src="brand/logo.svg" alt="Estimagator" class="w-8 h-8" />
         <div class="flex items-center">
-          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none">Estima</span>
-          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none">gator</span>
+          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none"
+            >Estima</span
+          >
+          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none"
+            >gator</span
+          >
         </div>
       </div>
       <app-account-dropdown />
     </header>
   } @else {
-    <header class="sticky top-0 p-4 flex justify-end items-center bg-white/80 backdrop-blur-md z-20">
+    <header
+      class="sticky top-0 p-4 flex justify-end items-center bg-white/80 backdrop-blur-md z-20"
+    >
       <div class="flex items-center gap-3">
-        <a routerLink="/login" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+        <a
+          routerLink="/login"
+          class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"
+        >
           Sign in
         </a>
-        <a routerLink="/register" class="btn-primary text-sm py-2 px-4">
-          Sign up
-        </a>
+        <a routerLink="/register" class="btn-primary text-sm py-2 px-4"> Sign up </a>
       </div>
     </header>
   }
 
   <main class="flex-1 flex flex-col items-center justify-center p-6 relative">
-
-  <!-- Background decorative elements -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-poker-green-100 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-poker-green-50 rounded-full blur-3xl"></div>
-  </div>
-
-  <div class="text-center max-w-md w-full relative z-10">
-    <!-- Logo / Brand -->
-    <div class="mb-10">
-      <img
-        src="brand/logo.svg"
-        alt="Estimagator - friendly alligator mascot"
-        class="w-28 h-28 mx-auto mb-4 drop-shadow-lg"
-      />
-      <h1 class="text-5xl font-display font-bold tracking-tight">
-        <span class="text-gray-900 tracking-tighter leading-none">Estima</span><span class="text-poker-green-600 italic tracking-wider leading-none">gator</span>
-      </h1>
-      <p class="text-lg text-gray-500 font-medium mt-3">
-        Bite-sized estimation for agile teams
-      </p>
+    <!-- Background decorative elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute -top-40 -right-40 w-80 h-80 bg-poker-green-100 rounded-full blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 w-96 h-96 bg-poker-green-50 rounded-full blur-3xl"
+      ></div>
     </div>
 
-    <div class="space-y-5">
-      <!-- Create Game Section -->
-      <div class="glass-card p-6">
-        @if (createError()) {
-          <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
-            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-            {{ createError() }}
-          </div>
-        }
-        @if (!showCreateOptions()) {
-          @if (isAuthenticated()) {
-            <button
-              (click)="toggleCreateOptions()"
-              class="btn-primary w-full text-lg py-4"
-              [disabled]="isCreating()"
+    <div class="text-center max-w-md w-full relative z-10">
+      <!-- Logo / Brand -->
+      <div class="mb-10">
+        <img
+          src="brand/logo.svg"
+          alt="Estimagator - friendly alligator mascot"
+          class="w-28 h-28 mx-auto mb-4 drop-shadow-lg"
+        />
+        <h1 class="text-5xl font-display font-bold tracking-tight">
+          <span class="text-gray-900 tracking-tighter leading-none">Estima</span
+          ><span class="text-poker-green-600 italic tracking-wider leading-none">gator</span>
+        </h1>
+        <p class="text-lg text-gray-500 font-medium mt-3">Bite-sized estimation for agile teams</p>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Create Game Section -->
+        <div class="glass-card p-6">
+          @if (createError()) {
+            <div
+              class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2"
             >
-              <span class="flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Start New Game
-              </span>
-            </button>
-          } @else {
-            <a
-              routerLink="/login"
-              [queryParams]="{ returnUrl: '/' }"
-              class="btn-primary w-full text-lg py-4 block text-center"
-            >
-              <span class="flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Sign in to Start Game
-              </span>
-            </a>
+              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              {{ createError() }}
+            </div>
           }
-        } @else {
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-gray-900 font-semibold text-lg">Create New Game</h3>
+          @if (!showCreateOptions()) {
+            @if (isAuthenticated()) {
               <button
                 (click)="toggleCreateOptions()"
-                class="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                class="btn-primary w-full text-lg py-4"
+                [disabled]="isCreating()"
               >
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <span class="flex items-center justify-center gap-2">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  Start New Game
+                </span>
+              </button>
+            } @else {
+              <a
+                routerLink="/login"
+                [queryParams]="{ returnUrl: '/' }"
+                class="btn-primary w-full text-lg py-4 block text-center"
+              >
+                <span class="flex items-center justify-center gap-2">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  Sign in to Start Game
+                </span>
+              </a>
+            }
+          } @else {
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-gray-900 font-semibold text-lg">Create New Game</h3>
+                <button
+                  (click)="toggleCreateOptions()"
+                  class="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Optional Session Name -->
+              <div>
+                <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
+                  >Session Name <span class="text-gray-400">(optional)</span></label
+                >
+                <input
+                  type="text"
+                  [value]="sessionName()"
+                  (input)="onSessionNameInput($event)"
+                  placeholder="e.g., Sprint 2 Story Review"
+                  maxlength="100"
+                  class="input-field text-sm"
+                />
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
+                  >Deck Type</label
+                >
+                @for (deck of deckOptions; track deck.value) {
+                  <button
+                    (click)="selectDeck(deck.value)"
+                    class="w-full p-4 rounded-xl text-left transition-all duration-200 border-2 flex items-center gap-3"
+                    [class]="
+                      selectedDeck() === deck.value
+                        ? 'bg-poker-green-50 border-poker-green-500'
+                        : 'bg-gray-50 border-gray-200 hover:bg-poker-green-50 hover:border-poker-green-200'
+                    "
+                  >
+                    <div class="flex-1">
+                      <div class="font-semibold text-gray-900">{{ deck.label }}</div>
+                      <div class="text-sm text-gray-500 font-mono">{{ deck.preview }}</div>
+                    </div>
+                    <div
+                      class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                      [class]="
+                        selectedDeck() === deck.value
+                          ? 'border-poker-green-500 bg-poker-green-500'
+                          : 'border-gray-300'
+                      "
+                    >
+                      @if (selectedDeck() === deck.value) {
+                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      }
+                    </div>
+                  </button>
+                }
+              </div>
+
+              <button
+                (click)="createSession()"
+                class="btn-primary w-full"
+                [disabled]="isCreating()"
+              >
+                @if (isCreating()) {
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="spinner"></span>
+                    Creating...
+                  </span>
+                } @else {
+                  Create Game
+                }
               </button>
             </div>
+          }
+        </div>
 
-            <!-- Optional Session Name -->
+        <!-- Divider -->
+        <div class="flex items-center gap-4 py-1">
+          <div
+            class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"
+          ></div>
+          <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">or join</span>
+          <div
+            class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"
+          ></div>
+        </div>
+
+        <!-- Join Game Section -->
+        <div class="glass-card p-6">
+          <form (submit)="joinSession(); $event.preventDefault()" class="space-y-4">
             <div>
-              <label class="block text-gray-600 text-sm font-medium mb-1 text-left">Session Name <span class="text-gray-400">(optional)</span></label>
+              <label class="block text-gray-600 text-sm font-medium mb-2 text-left"
+                >Game Code</label
+              >
               <input
                 type="text"
-                [value]="sessionName()"
-                (input)="onSessionNameInput($event)"
-                placeholder="e.g., Sprint 2 Story Review"
-                maxlength="100"
-                class="input-field text-sm"
+                [value]="joinCode()"
+                (input)="onJoinCodeInput($event)"
+                placeholder="ABC123"
+                maxlength="6"
+                class="input-field text-center text-2xl font-mono tracking-[0.3em] uppercase"
               />
-            </div>
-
-            <div class="space-y-2">
-              <label class="block text-gray-600 text-sm font-medium mb-1 text-left">Deck Type</label>
-              @for (deck of deckOptions; track deck.value) {
-                <button
-                  (click)="selectDeck(deck.value)"
-                  class="w-full p-4 rounded-xl text-left transition-all duration-200 border-2 flex items-center gap-3"
-                  [class]="selectedDeck() === deck.value
-                    ? 'bg-poker-green-50 border-poker-green-500'
-                    : 'bg-gray-50 border-gray-200 hover:bg-poker-green-50 hover:border-poker-green-200'"
-                >
-                  <div class="flex-1">
-                    <div class="font-semibold text-gray-900">{{ deck.label }}</div>
-                    <div class="text-sm text-gray-500 font-mono">{{ deck.preview }}</div>
-                  </div>
-                  <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center"
-                       [class]="selectedDeck() === deck.value
-                         ? 'border-poker-green-500 bg-poker-green-500'
-                         : 'border-gray-300'">
-                    @if (selectedDeck() === deck.value) {
-                      <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                      </svg>
-                    }
-                  </div>
-                </button>
+              @if (joinError()) {
+                <p class="mt-2 text-red-500 text-sm flex items-center gap-1.5">
+                  <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  {{ joinError() }}
+                </p>
               }
             </div>
 
             <button
-              (click)="createSession()"
-              class="btn-primary w-full"
-              [disabled]="isCreating()"
+              type="submit"
+              class="btn-secondary w-full"
+              [disabled]="isJoining() || !joinCode()"
             >
-              @if (isCreating()) {
+              @if (isJoining()) {
                 <span class="flex items-center justify-center gap-2">
                   <span class="spinner"></span>
-                  Creating...
+                  Finding game...
                 </span>
               } @else {
-                Create Game
+                <span class="flex items-center justify-center gap-2">
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Join Game
+                </span>
               }
             </button>
-          </div>
-        }
-      </div>
-
-      <!-- Divider -->
-      <div class="flex items-center gap-4 py-1">
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-        <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">or join</span>
-        <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-      </div>
-
-      <!-- Join Game Section -->
-      <div class="glass-card p-6">
-        <form (submit)="joinSession(); $event.preventDefault()" class="space-y-4">
-          <div>
-            <label class="block text-gray-600 text-sm font-medium mb-2 text-left">Game Code</label>
-            <input
-              type="text"
-              [value]="joinCode()"
-              (input)="onJoinCodeInput($event)"
-              placeholder="ABC123"
-              maxlength="6"
-              class="input-field text-center text-2xl font-mono tracking-[0.3em] uppercase"
-            />
-            @if (joinError()) {
-              <p class="mt-2 text-red-500 text-sm flex items-center gap-1.5">
-                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-                {{ joinError() }}
-              </p>
-            }
-          </div>
-
-          <button
-            type="submit"
-            class="btn-secondary w-full"
-            [disabled]="isJoining() || !joinCode()"
-          >
-            @if (isJoining()) {
-              <span class="flex items-center justify-center gap-2">
-                <span class="spinner"></span>
-                Finding game...
-              </span>
-            } @else {
-              <span class="flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                </svg>
-                Join Game
-              </span>
-            }
-          </button>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Footer -->
-  <footer class="mt-auto py-6 text-gray-400 text-sm font-medium">
-    <span class="opacity-75">Estimate</span>
-    <span class="mx-2 text-poker-green-500">&#9830;</span>
-    <span class="opacity-75">Reveal</span>
-    <span class="mx-2 text-poker-green-500">&#9830;</span>
-    <span class="opacity-75">Ship</span>
-  </footer>
+    <!-- Footer -->
+    <footer class="mt-auto py-6 text-gray-400 text-sm font-medium">
+      <span class="opacity-75">Estimate</span>
+      <span class="mx-2 text-poker-green-500">&#9830;</span>
+      <span class="opacity-75">Reveal</span>
+      <span class="mx-2 text-poker-green-500">&#9830;</span>
+      <span class="opacity-75">Ship</span>
+    </footer>
   </main>
 </div>

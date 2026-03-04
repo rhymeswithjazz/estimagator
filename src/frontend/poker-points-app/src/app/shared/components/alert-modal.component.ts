@@ -21,23 +21,59 @@ import { AlertModalConfig } from '../../core/services/modal.service';
           <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
             @switch (config().style) {
               @case ('error') {
-                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <div
+                  class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
                   </svg>
                 </div>
               }
               @case ('success') {
-                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                <div
+                  class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    ></path>
                   </svg>
                 </div>
               }
               @default {
-                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <div
+                  class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
                   </svg>
                 </div>
               }
@@ -64,19 +100,31 @@ import { AlertModalConfig } from '../../core/services/modal.service';
       </div>
     }
   `,
-  styles: [`
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes zoom-in-95 {
-      from { transform: scale(0.95); }
-      to { transform: scale(1); }
-    }
-    .animate-in {
-      animation: fade-in 0.2s ease-out, zoom-in-95 0.2s ease-out;
-    }
-  `],
+  styles: [
+    `
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes zoom-in-95 {
+        from {
+          transform: scale(0.95);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+      .animate-in {
+        animation:
+          fade-in 0.2s ease-out,
+          zoom-in-95 0.2s ease-out;
+      }
+    `,
+  ],
 })
 export class AlertModalComponent {
   readonly isOpen = input.required<boolean>();

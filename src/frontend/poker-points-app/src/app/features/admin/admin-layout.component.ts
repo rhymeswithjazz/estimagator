@@ -18,7 +18,9 @@ import { AlertModalComponent } from '../../shared/components/alert-modal.compone
               <a routerLink="/" class="flex items-center text-xl font-bold text-emerald-600">
                 Estimagator
               </a>
-              <span class="ml-4 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full font-medium">
+              <span
+                class="ml-4 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full font-medium"
+              >
                 Admin
               </span>
             </div>

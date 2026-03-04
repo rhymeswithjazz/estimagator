@@ -19,7 +19,9 @@ import { AdminUserDetail } from '../../core/models/admin.models';
 
       @if (isLoading()) {
         <div class="text-center py-8">
-          <div class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
+          <div
+            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+          ></div>
         </div>
       } @else if (user()) {
         <div class="bg-white shadow rounded-lg p-6">
@@ -126,7 +128,9 @@ import { AdminUserDetail } from '../../core/models/admin.models';
                       <span class="text-gray-500">{{ session.name }}</span>
                     }
                     @if (session.isOrganizer) {
-                      <span class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-800 rounded font-medium">
+                      <span
+                        class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-800 rounded font-medium"
+                      >
                         Organizer
                       </span>
                     }

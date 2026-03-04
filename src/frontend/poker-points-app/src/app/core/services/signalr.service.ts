@@ -158,7 +158,7 @@ export class SignalRService {
     sessionCode: string,
     displayName: string,
     isObserver: boolean,
-    existingParticipantId?: string
+    existingParticipantId?: string,
   ): Promise<Participant | null> {
     if (!this.connection) {
       throw new Error('Not connected to SignalR hub');
@@ -168,7 +168,7 @@ export class SignalRService {
       sessionCode,
       displayName,
       isObserver,
-      existingParticipantId ?? null
+      existingParticipantId ?? null,
     );
   }
 

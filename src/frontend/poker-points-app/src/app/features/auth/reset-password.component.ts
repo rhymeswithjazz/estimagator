@@ -18,9 +18,21 @@ import { AuthService } from '../../core/services/auth.service';
 
         @if (!token) {
           <div class="text-center py-8">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4"
+            >
+              <svg
+                class="h-6 w-6 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
               </svg>
             </div>
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Invalid Link</h2>
@@ -35,9 +47,7 @@ import { AuthService } from '../../core/services/auth.service';
         } @else if (!success()) {
           <div>
             <h2 class="text-xl font-semibold text-center mb-2">Set New Password</h2>
-            <p class="text-gray-600 text-center text-sm mb-6">
-              Enter your new password below.
-            </p>
+            <p class="text-gray-600 text-center text-sm mb-6">Enter your new password below.</p>
 
             <form (ngSubmit)="onSubmit()" class="space-y-4">
               <div>
@@ -88,9 +98,21 @@ import { AuthService } from '../../core/services/auth.service';
           </div>
         } @else {
           <div class="text-center py-4">
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4">
-              <svg class="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            <div
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4"
+            >
+              <svg
+                class="h-6 w-6 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
               </svg>
             </div>
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Password Reset!</h2>
@@ -126,10 +148,7 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   isValid(): boolean {
-    return (
-      this.password().length >= 6 &&
-      this.password() === this.confirmPassword()
-    );
+    return this.password().length >= 6 && this.password() === this.confirmPassword();
   }
 
   async onSubmit(): Promise<void> {

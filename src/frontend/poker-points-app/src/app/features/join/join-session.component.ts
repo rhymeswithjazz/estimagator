@@ -100,11 +100,7 @@ export class JoinSessionComponent implements OnInit {
         ? this.selectedRole() === 'host-observer'
         : this.isObserver();
 
-      const joined = await this.gameState.joinSession(
-        this.sessionCode(),
-        name,
-        isObserver
-      );
+      const joined = await this.gameState.joinSession(this.sessionCode(), name, isObserver);
 
       if (joined) {
         this.router.navigate(['/game', this.sessionCode()]);
@@ -143,7 +139,7 @@ export class JoinSessionComponent implements OnInit {
       const joined = await this.gameState.joinSession(
         this.sessionCode(),
         returning.displayName,
-        returning.isObserver
+        returning.isObserver,
       );
 
       if (joined) {

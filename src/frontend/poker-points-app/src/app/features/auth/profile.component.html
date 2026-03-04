@@ -1,14 +1,21 @@
 <main class="min-h-screen bg-white flex flex-col items-center p-6 relative overflow-hidden">
   <!-- Background decorative elements -->
   <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-poker-green-100 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-poker-green-50 rounded-full blur-3xl"></div>
+    <div
+      class="absolute -top-40 -right-40 w-80 h-80 bg-poker-green-100 rounded-full blur-3xl"
+    ></div>
+    <div
+      class="absolute -bottom-40 -left-40 w-96 h-96 bg-poker-green-50 rounded-full blur-3xl"
+    ></div>
   </div>
 
   <div class="max-w-2xl w-full relative z-10 pt-8">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
-      <a routerLink="/" class="text-gray-500 hover:text-gray-700 text-sm font-medium inline-flex items-center gap-1">
+      <a
+        routerLink="/"
+        class="text-gray-500 hover:text-gray-700 text-sm font-medium inline-flex items-center gap-1"
+      >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
@@ -19,7 +26,11 @@
         class="text-gray-500 hover:text-red-600 text-sm font-medium inline-flex items-center gap-1 transition-colors"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
         </svg>
         Sign out
       </button>
@@ -29,7 +40,9 @@
     <div class="glass-card p-8 mb-6">
       <div class="flex items-start gap-6">
         <!-- Avatar -->
-        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-poker-green-500 to-poker-green-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+        <div
+          class="w-20 h-20 rounded-full bg-gradient-to-br from-poker-green-500 to-poker-green-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg"
+        >
           {{ initials() }}
         </div>
 
@@ -44,8 +57,18 @@
               (click)="startEditing()"
               class="text-poker-green-600 hover:text-poker-green-700 text-sm font-medium inline-flex items-center gap-1"
             >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
               </svg>
               Edit profile
             </button>
@@ -62,11 +85,7 @@
                 />
               </div>
               <div class="flex gap-3">
-                <button
-                  type="submit"
-                  class="btn-primary"
-                  [disabled]="isSaving()"
-                >
+                <button type="submit" class="btn-primary" [disabled]="isSaving()">
                   @if (isSaving()) {
                     <span class="flex items-center gap-2">
                       <span class="spinner"></span>
@@ -76,11 +95,7 @@
                     Save changes
                   }
                 </button>
-                <button
-                  type="button"
-                  (click)="cancelEditing()"
-                  class="btn-secondary"
-                >
+                <button type="button" (click)="cancelEditing()" class="btn-secondary">
                   Cancel
                 </button>
               </div>
@@ -102,11 +117,24 @@
       <!-- No Sessions -->
       <div class="glass-card p-6">
         <div class="text-center py-8 text-gray-400">
-          <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          <svg
+            class="w-12 h-12 mx-auto mb-3 opacity-50"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
           </svg>
           <p>No sessions yet</p>
-          <a routerLink="/" class="text-poker-green-600 hover:text-poker-green-700 text-sm font-medium mt-2 inline-block">
+          <a
+            routerLink="/"
+            class="text-poker-green-600 hover:text-poker-green-700 text-sm font-medium mt-2 inline-block"
+          >
             Create your first game
           </a>
         </div>
@@ -120,7 +148,11 @@
             @for (session of createdSessions(); track session.id) {
               <div class="relative">
                 <a
-                  [routerLink]="session.isActive ? ['/join', session.accessCode] : ['/session', session.accessCode, 'history']"
+                  [routerLink]="
+                    session.isActive
+                      ? ['/join', session.accessCode]
+                      : ['/session', session.accessCode, 'history']
+                  "
                   class="block p-4 rounded-xl bg-gray-50 hover:bg-poker-green-50 border border-gray-200 hover:border-poker-green-200 transition-all"
                 >
                   <div class="flex items-center justify-between">
@@ -129,10 +161,14 @@
                         <div class="font-semibold text-gray-900">{{ session.name }}</div>
                         <div class="text-xs text-gray-400 font-mono">{{ session.accessCode }}</div>
                       } @else {
-                        <div class="font-semibold text-gray-900 font-mono">{{ session.accessCode }}</div>
+                        <div class="font-semibold text-gray-900 font-mono">
+                          {{ session.accessCode }}
+                        </div>
                       }
                       <div class="text-sm text-gray-500">
-                        {{ session.participants.length }} participant{{ session.participants.length === 1 ? '' : 's' }}
+                        {{ session.participants.length }} participant{{
+                          session.participants.length === 1 ? '' : 's'
+                        }}
                         <span class="mx-1">&#8226;</span>
                         {{ formatDate(session.createdAt) }}
                       </div>
@@ -155,15 +191,25 @@
                     </div>
                     <div class="flex items-center gap-2">
                       @if (session.isActive) {
-                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700">
+                        <span
+                          class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700"
+                        >
                           Active
                         </span>
                       } @else {
-                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                        <span
+                          class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600"
+                        >
                           Ended
                         </span>
                       }
-                      <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <svg
+                        class="w-5 h-5 text-gray-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -182,7 +228,11 @@
           <div class="space-y-3">
             @for (session of joinedSessions(); track session.id) {
               <a
-                [routerLink]="session.isActive ? ['/join', session.accessCode] : ['/session', session.accessCode, 'history']"
+                [routerLink]="
+                  session.isActive
+                    ? ['/join', session.accessCode]
+                    : ['/session', session.accessCode, 'history']
+                "
                 class="block p-4 rounded-xl bg-gray-50 hover:bg-poker-green-50 border border-gray-200 hover:border-poker-green-200 transition-all"
               >
                 <div class="flex items-center justify-between">
@@ -191,25 +241,39 @@
                       <div class="font-semibold text-gray-900">{{ session.name }}</div>
                       <div class="text-xs text-gray-400 font-mono">{{ session.accessCode }}</div>
                     } @else {
-                      <div class="font-semibold text-gray-900 font-mono">{{ session.accessCode }}</div>
+                      <div class="font-semibold text-gray-900 font-mono">
+                        {{ session.accessCode }}
+                      </div>
                     }
                     <div class="text-sm text-gray-500">
-                      {{ session.participants.length }} participant{{ session.participants.length === 1 ? '' : 's' }}
+                      {{ session.participants.length }} participant{{
+                        session.participants.length === 1 ? '' : 's'
+                      }}
                       <span class="mx-1">&#8226;</span>
                       {{ formatDate(session.createdAt) }}
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
                     @if (session.isActive) {
-                      <span class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700">
+                      <span
+                        class="px-2 py-1 text-xs font-medium rounded-full bg-poker-green-100 text-poker-green-700"
+                      >
                         Active
                       </span>
                     } @else {
-                      <span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600">
+                      <span
+                        class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600"
+                      >
                         Ended
                       </span>
                     }
-                    <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg
+                      class="w-5 h-5 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                     </svg>
                   </div>

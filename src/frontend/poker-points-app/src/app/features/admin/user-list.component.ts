@@ -25,27 +25,61 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
 
       @if (isLoading()) {
         <div class="text-center py-8">
-          <div class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
+          <div
+            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+          ></div>
         </div>
       } @else {
         <div class="bg-white shadow rounded-lg overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Display Name</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verified</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sessions</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Email
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Display Name
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Role
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Verified
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Sessions
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Created
+                </th>
+                <th
+                  class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               @for (user of users(); track user.id) {
                 <tr class="hover:bg-gray-50">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.displayName }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ user.email }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ user.displayName }}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span
                       class="px-2 py-1 text-xs rounded-full font-medium"
@@ -64,8 +98,12 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
                       <span class="text-red-600 text-sm">No</span>
                     }
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.sessionCount }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(user.createdAt) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ user.sessionCount }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(user.createdAt) }}
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <a
                       [routerLink]="['/admin/users', user.id]"
@@ -77,9 +115,7 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="7" class="px-6 py-8 text-center text-gray-500">
-                    No users found
-                  </td>
+                  <td colspan="7" class="px-6 py-8 text-center text-gray-500">No users found</td>
                 </tr>
               }
             </tbody>
@@ -91,8 +127,7 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
             <div class="flex justify-between items-center">
               <p class="text-sm text-gray-700">
                 Showing {{ (r.page - 1) * r.pageSize + 1 }} to
-                {{ min(r.page * r.pageSize, r.totalCount) }} of
-                {{ r.totalCount }} users
+                {{ min(r.page * r.pageSize, r.totalCount) }} of {{ r.totalCount }} users
               </p>
               <div class="flex space-x-2">
                 <button

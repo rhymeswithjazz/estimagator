@@ -18,7 +18,10 @@ export class SessionService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/sessions`;
 
-  async createSession(deckType: DeckType = 'fibonacci', name?: string): Promise<CreateSessionResponse> {
+  async createSession(
+    deckType: DeckType = 'fibonacci',
+    name?: string,
+  ): Promise<CreateSessionResponse> {
     const request: CreateSessionRequest = { deckType, name };
     return firstValueFrom(this.http.post<CreateSessionResponse>(this.apiUrl, request));
   }
@@ -62,7 +65,7 @@ export class SessionService {
   async getSessionHistory(code: string): Promise<SessionHistoryResponse | null> {
     try {
       return await firstValueFrom(
-        this.http.get<SessionHistoryResponse>(`${this.apiUrl}/${code}/history`)
+        this.http.get<SessionHistoryResponse>(`${this.apiUrl}/${code}/history`),
       );
     } catch {
       return null;

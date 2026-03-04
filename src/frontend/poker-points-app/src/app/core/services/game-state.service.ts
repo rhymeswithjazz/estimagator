@@ -37,7 +37,9 @@ export class GameStateService {
   private readonly _revealedVotes = signal<Vote[] | null>(null);
   private readonly _deckType = signal<DeckType>('fibonacci');
   private readonly _myVote = signal<string | null>(null);
-  private readonly _votingResults = signal<{ average: number | null; isConsensus: boolean } | null>(null);
+  private readonly _votingResults = signal<{ average: number | null; isConsensus: boolean } | null>(
+    null,
+  );
   private readonly _storyQueue = signal<Story[]>([]);
 
   // Read-only public signals
@@ -54,7 +56,9 @@ export class GameStateService {
   readonly storyQueue = this._storyQueue.asReadonly();
 
   // Computed signals
-  readonly isInSession = computed(() => this._sessionCode() !== null && this._currentParticipant() !== null);
+  readonly isInSession = computed(
+    () => this._sessionCode() !== null && this._currentParticipant() !== null,
+  );
   readonly isOrganizer = computed(() => this._currentParticipant()?.isOrganizer ?? false);
   readonly isObserver = computed(() => this._currentParticipant()?.isObserver ?? false);
   readonly canVote = computed(() => !this.isObserver() && this._revealedVotes() === null);
@@ -108,7 +112,7 @@ export class GameStateService {
 
     this.signalR.userLeft$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this._participants.update((list) =>
-        list.map((p) => (p.id === event.participantId ? { ...p, isConnected: false } : p))
+        list.map((p) => (p.id === event.participantId ? { ...p, isConnected: false } : p)),
       );
     });
 
@@ -117,7 +121,7 @@ export class GameStateService {
         const existing = statuses.find((s) => s.participantId === event.participantId);
         if (existing) {
           return statuses.map((s) =>
-            s.participantId === event.participantId ? { ...s, hasVoted: true } : s
+            s.participantId === event.participantId ? { ...s, hasVoted: true } : s,
           );
         }
         return [...statuses, { participantId: event.participantId, hasVoted: true }];
@@ -173,9 +177,11 @@ export class GameStateService {
       this._storyQueue.update((queue) => queue.filter((s) => s.id !== storyId));
     });
 
-    this.signalR.storyQueueUpdated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((stories) => {
-      this._storyQueue.set(stories);
-    });
+    this.signalR.storyQueueUpdated$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((stories) => {
+        this._storyQueue.set(stories);
+      });
   }
 
   private applyGameState(state: GameState): void {
@@ -197,7 +203,11 @@ export class GameStateService {
     }
   }
 
-  async joinSession(sessionCode: string, displayName: string, isObserver: boolean): Promise<boolean> {
+  async joinSession(
+    sessionCode: string,
+    displayName: string,
+    isObserver: boolean,
+  ): Promise<boolean> {
     try {
       await this.signalR.connect();
 
@@ -208,7 +218,7 @@ export class GameStateService {
         sessionCode,
         displayName,
         isObserver,
-        existingParticipantId
+        existingParticipantId,
       );
 
       if (!participant) {
@@ -316,7 +326,7 @@ export class GameStateService {
     return this.joinSession(
       storedIdentity.sessionCode,
       storedIdentity.displayName,
-      storedIdentity.isObserver ?? false
+      storedIdentity.isObserver ?? false,
     );
   }
 
@@ -359,15 +369,30 @@ export class GameStateService {
   // Call from browser console: ng.getComponent(document.querySelector('app-game-room')).gameState.addMockPlayers(12)
   addMockPlayers(count: number): void {
     const names = [
-      'Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank',
-      'Grace', 'Henry', 'Ivy', 'Jack', 'Kate', 'Leo',
-      'Mia', 'Noah', 'Olivia', 'Pete', 'Quinn', 'Rose'
+      'Alice',
+      'Bob',
+      'Charlie',
+      'Diana',
+      'Eve',
+      'Frank',
+      'Grace',
+      'Henry',
+      'Ivy',
+      'Jack',
+      'Kate',
+      'Leo',
+      'Mia',
+      'Noah',
+      'Olivia',
+      'Pete',
+      'Quinn',
+      'Rose',
     ];
     const current = this._participants();
     const mockPlayers: Participant[] = [];
 
     for (let i = 0; i < count && i < names.length; i++) {
-      if (current.some(p => p.displayName === names[i])) continue;
+      if (current.some((p) => p.displayName === names[i])) continue;
 
       mockPlayers.push({
         id: `mock-${i}-${Date.now()}`,
@@ -384,7 +409,7 @@ export class GameStateService {
 
   // DEBUG: Remove all mock players
   removeMockPlayers(): void {
-    const real = this._participants().filter(p => !p.id.startsWith('mock-'));
+    const real = this._participants().filter((p) => !p.id.startsWith('mock-'));
     this._participants.set(real);
     console.log(`Removed mock players. Remaining: ${real.length}`);
   }

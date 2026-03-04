@@ -24,13 +24,9 @@ export class ProfileComponent implements OnInit {
   readonly isLoadingSessions = signal(false);
   readonly endingSessionCode = signal<string | null>(null);
 
-  readonly createdSessions = computed(() =>
-    this.allSessions().filter((s) => s.isOrganizer)
-  );
+  readonly createdSessions = computed(() => this.allSessions().filter((s) => s.isOrganizer));
 
-  readonly joinedSessions = computed(() =>
-    this.allSessions().filter((s) => !s.isOrganizer)
-  );
+  readonly joinedSessions = computed(() => this.allSessions().filter((s) => !s.isOrganizer));
 
   readonly initials = computed(() => {
     const name = this.user()?.displayName || '';
@@ -71,9 +67,7 @@ export class ProfileComponent implements OnInit {
       if (success) {
         // Update the session in the list
         this.allSessions.update((sessions) =>
-          sessions.map((s) =>
-            s.accessCode === accessCode ? { ...s, isActive: false } : s
-          )
+          sessions.map((s) => (s.accessCode === accessCode ? { ...s, isActive: false } : s)),
         );
       }
     } finally {

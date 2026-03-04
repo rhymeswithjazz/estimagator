@@ -54,19 +54,31 @@ export interface ConfirmModalConfig {
       </div>
     }
   `,
-  styles: [`
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes zoom-in-95 {
-      from { transform: scale(0.95); }
-      to { transform: scale(1); }
-    }
-    .animate-in {
-      animation: fade-in 0.2s ease-out, zoom-in-95 0.2s ease-out;
-    }
-  `],
+  styles: [
+    `
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes zoom-in-95 {
+        from {
+          transform: scale(0.95);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+      .animate-in {
+        animation:
+          fade-in 0.2s ease-out,
+          zoom-in-95 0.2s ease-out;
+      }
+    `,
+  ],
 })
 export class ConfirmModalComponent {
   readonly isOpen = input.required<boolean>();

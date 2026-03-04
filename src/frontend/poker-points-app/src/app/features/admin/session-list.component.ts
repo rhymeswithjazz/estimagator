@@ -34,28 +34,68 @@ import { AdminSession, PagedResult } from '../../core/models/admin.models';
 
       @if (isLoading()) {
         <div class="text-center py-8">
-          <div class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
+          <div
+            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+          ></div>
         </div>
       } @else {
         <div class="bg-white shadow rounded-lg overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deck</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stories</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Code
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Name
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Organizer
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Deck
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Status
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Participants
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Stories
+                </th>
+                <th
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Created
+                </th>
+                <th
+                  class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               @for (session of sessions(); track session.id) {
                 <tr class="hover:bg-gray-50">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-mono font-medium text-gray-900">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm font-mono font-medium text-gray-900"
+                  >
                     {{ session.accessCode }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -98,9 +138,7 @@ import { AdminSession, PagedResult } from '../../core/models/admin.models';
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="9" class="px-6 py-8 text-center text-gray-500">
-                    No sessions found
-                  </td>
+                  <td colspan="9" class="px-6 py-8 text-center text-gray-500">No sessions found</td>
                 </tr>
               }
             </tbody>
@@ -112,8 +150,7 @@ import { AdminSession, PagedResult } from '../../core/models/admin.models';
             <div class="flex justify-between items-center">
               <p class="text-sm text-gray-700">
                 Showing {{ (r.page - 1) * r.pageSize + 1 }} to
-                {{ min(r.page * r.pageSize, r.totalCount) }} of
-                {{ r.totalCount }} sessions
+                {{ min(r.page * r.pageSize, r.totalCount) }} of {{ r.totalCount }} sessions
               </p>
               <div class="flex space-x-2">
                 <button
@@ -156,13 +193,12 @@ export class SessionListComponent implements OnInit {
   async loadSessions(): Promise<void> {
     this.isLoading.set(true);
     try {
-      const isActive =
-        this.statusFilter() === 'all' ? undefined : this.statusFilter() === 'active';
+      const isActive = this.statusFilter() === 'all' ? undefined : this.statusFilter() === 'active';
       const result = await this.adminService.getSessions(
         1,
         20,
         this.search() || undefined,
-        isActive
+        isActive,
       );
       this.result.set(result);
       this.sessions.set(result.items);
@@ -174,13 +210,12 @@ export class SessionListComponent implements OnInit {
   async loadPage(page: number): Promise<void> {
     this.isLoading.set(true);
     try {
-      const isActive =
-        this.statusFilter() === 'all' ? undefined : this.statusFilter() === 'active';
+      const isActive = this.statusFilter() === 'all' ? undefined : this.statusFilter() === 'active';
       const result = await this.adminService.getSessions(
         page,
         20,
         this.search() || undefined,
-        isActive
+        isActive,
       );
       this.result.set(result);
       this.sessions.set(result.items);

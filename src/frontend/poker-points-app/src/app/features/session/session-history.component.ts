@@ -82,9 +82,7 @@ export class SessionHistoryComponent implements OnInit {
   }
 
   calculateAverage(votes: Vote[]): number | null {
-    const numericVotes = votes
-      .map((v) => parseFloat(v.cardValue ?? ''))
-      .filter((n) => !isNaN(n));
+    const numericVotes = votes.map((v) => parseFloat(v.cardValue ?? '')).filter((n) => !isNaN(n));
 
     if (numericVotes.length === 0) return null;
     return numericVotes.reduce((a, b) => a + b, 0) / numericVotes.length;

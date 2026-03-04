@@ -25,7 +25,9 @@ import { AdminService } from '../../core/services/admin.service';
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Ended Sessions</div>
-          <div class="mt-2 text-3xl font-bold text-gray-400">{{ sessionCount() - activeSessionCount() }}</div>
+          <div class="mt-2 text-3xl font-bold text-gray-400">
+            {{ sessionCount() - activeSessionCount() }}
+          </div>
         </div>
       </div>
 

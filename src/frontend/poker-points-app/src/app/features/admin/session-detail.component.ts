@@ -18,13 +18,17 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
 
       @if (isLoading()) {
         <div class="text-center py-8">
-          <div class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"></div>
+          <div
+            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+          ></div>
         </div>
       } @else if (session()) {
         <div class="bg-white shadow rounded-lg p-6">
           <div class="flex justify-between items-start mb-6">
             <div>
-              <h1 class="text-2xl font-bold text-gray-900 font-mono">{{ session()!.accessCode }}</h1>
+              <h1 class="text-2xl font-bold text-gray-900 font-mono">
+                {{ session()!.accessCode }}
+              </h1>
               @if (session()!.name) {
                 <p class="text-gray-600 mt-1">{{ session()!.name }}</p>
               }
@@ -103,12 +107,16 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
                   <div class="flex items-center space-x-2">
                     <span class="font-medium">{{ p.displayName }}</span>
                     @if (p.isOrganizer) {
-                      <span class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-800 rounded font-medium">
+                      <span
+                        class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-800 rounded font-medium"
+                      >
                         Organizer
                       </span>
                     }
                     @if (p.isObserver) {
-                      <span class="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded font-medium">
+                      <span
+                        class="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded font-medium"
+                      >
                         Observer
                       </span>
                     }

@@ -19,34 +19,24 @@ export class AdminService {
   private readonly apiUrl = `${environment.apiUrl}/admin`;
 
   // User Management
-  async getUsers(
-    page = 1,
-    pageSize = 20,
-    search?: string
-  ): Promise<PagedResult<AdminUser>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
+  async getUsers(page = 1, pageSize = 20, search?: string): Promise<PagedResult<AdminUser>> {
+    let params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
 
     if (search) {
       params = params.set('search', search);
     }
 
     return firstValueFrom(
-      this.http.get<PagedResult<AdminUser>>(`${this.apiUrl}/users`, { params })
+      this.http.get<PagedResult<AdminUser>>(`${this.apiUrl}/users`, { params }),
     );
   }
 
   async getUser(id: string): Promise<AdminUserDetail> {
-    return firstValueFrom(
-      this.http.get<AdminUserDetail>(`${this.apiUrl}/users/${id}`)
-    );
+    return firstValueFrom(this.http.get<AdminUserDetail>(`${this.apiUrl}/users/${id}`));
   }
 
   async updateUser(id: string, request: UpdateUserRequest): Promise<AdminUser> {
-    return firstValueFrom(
-      this.http.put<AdminUser>(`${this.apiUrl}/users/${id}`, request)
-    );
+    return firstValueFrom(this.http.put<AdminUser>(`${this.apiUrl}/users/${id}`, request));
   }
 
   async deleteUser(id: string): Promise<void> {
@@ -54,9 +44,7 @@ export class AdminService {
   }
 
   async resendVerification(id: string): Promise<void> {
-    await firstValueFrom(
-      this.http.post(`${this.apiUrl}/users/${id}/resend-verification`, {})
-    );
+    await firstValueFrom(this.http.post(`${this.apiUrl}/users/${id}/resend-verification`, {}));
   }
 
   // Session Management
@@ -64,11 +52,9 @@ export class AdminService {
     page = 1,
     pageSize = 20,
     search?: string,
-    isActive?: boolean
+    isActive?: boolean,
   ): Promise<PagedResult<AdminSession>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('pageSize', pageSize.toString());
+    let params = new HttpParams().set('page', page.toString()).set('pageSize', pageSize.toString());
 
     if (search) {
       params = params.set('search', search);
@@ -80,14 +66,12 @@ export class AdminService {
     return firstValueFrom(
       this.http.get<PagedResult<AdminSession>>(`${this.apiUrl}/sessions`, {
         params,
-      })
+      }),
     );
   }
 
   async getSession(id: string): Promise<AdminSessionDetail> {
-    return firstValueFrom(
-      this.http.get<AdminSessionDetail>(`${this.apiUrl}/sessions/${id}`)
-    );
+    return firstValueFrom(this.http.get<AdminSessionDetail>(`${this.apiUrl}/sessions/${id}`));
   }
 
   async deleteSession(id: string): Promise<void> {

@@ -1,12 +1,18 @@
 <main class="h-full bg-white grid grid-rows-[auto_1fr_auto] overflow-hidden">
   <!-- Row 1: Header -->
-  <header class="bg-white/80 backdrop-blur-md px-5 py-3 flex items-center justify-between border-b border-gray-200">
+  <header
+    class="bg-white/80 backdrop-blur-md px-5 py-3 flex items-center justify-between border-b border-gray-200"
+  >
     <div class="flex items-center gap-4">
       <a routerLink="/" class="flex items-center gap-2">
         <img src="brand/logo.svg" alt="Estimagator" class="w-8 h-8" />
         <div class="flex items-center">
-          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none">Estima</span>
-          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none">gator</span>
+          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none"
+            >Estima</span
+          >
+          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none"
+            >gator</span
+          >
         </div>
       </a>
       <button
@@ -17,14 +23,28 @@
         @if (sessionName()) {
           <span class="text-poker-green-700 font-semibold text-base">{{ sessionName() }}</span>
         } @else {
-          <span class="font-mono text-poker-green-700 font-bold tracking-wider text-lg">{{ sessionCode() }}</span>
+          <span class="font-mono text-poker-green-700 font-bold tracking-wider text-lg">{{
+            sessionCode()
+          }}</span>
         }
-        <svg class="w-4 h-4 text-poker-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        <svg
+          class="w-4 h-4 text-poker-green-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+          />
         </svg>
         <!-- Copied overlay -->
         @if (shareUrlCopied()) {
-          <div class="absolute inset-0 flex items-center justify-center bg-poker-green-500 text-white font-semibold rounded-lg animate-fade-out">
+          <div
+            class="absolute inset-0 flex items-center justify-center bg-poker-green-500 text-white font-semibold rounded-lg animate-fade-out"
+          >
             Copied!
           </div>
         }
@@ -36,7 +56,13 @@
       <div class="flex items-center gap-2">
         <span
           class="status-dot"
-          [class]="connectionState() === 'connected' ? 'status-dot-connected' : connectionState() === 'reconnecting' ? 'status-dot-reconnecting' : 'status-dot-disconnected'"
+          [class]="
+            connectionState() === 'connected'
+              ? 'status-dot-connected'
+              : connectionState() === 'reconnecting'
+                ? 'status-dot-reconnecting'
+                : 'status-dot-disconnected'
+          "
         ></span>
         <span class="text-gray-500 text-sm capitalize">{{ connectionState() }}</span>
       </div>
@@ -46,11 +72,15 @@
         <app-account-dropdown />
       } @else {
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm">
+          <div
+            class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm"
+          >
             {{ currentParticipant()?.displayName?.charAt(0)?.toUpperCase() }}
           </div>
           <div>
-            <div class="text-gray-900 font-medium text-sm">{{ currentParticipant()?.displayName }}</div>
+            <div class="text-gray-900 font-medium text-sm">
+              {{ currentParticipant()?.displayName }}
+            </div>
             @if (isObserver()) {
               <span class="badge badge-gray text-[10px] py-0">Observer</span>
             }
@@ -68,12 +98,30 @@
         <button
           (click)="toggleSettingsPanel()"
           class="p-2 rounded-lg transition-colors"
-          [class]="isSettingsPanelOpen() ? 'bg-poker-green-100 text-poker-green-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'"
+          [class]="
+            isSettingsPanelOpen()
+              ? 'bg-poker-green-100 text-poker-green-700'
+              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+          "
           title="Session Settings"
         >
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
           </svg>
         </button>
       }
@@ -84,7 +132,11 @@
         title="Leave game"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
         </svg>
       </button>
     </div>
@@ -92,237 +144,295 @@
 
   <!-- Row 2: Middle Scrollable Area - Poker Table -->
   <div class="min-h-0 overflow-auto flex justify-center items-center py-4">
-    <div class="relative flex items-center justify-center shrink-0" style="height: 560px; width: 720px;">
-        <!-- The Poker Table -->
-        <div class="w-[380px] h-[200px] poker-table rounded-[60px] border-[6px] border-poker-green-800 shadow-2xl flex items-center justify-center">
-          <!-- Inner felt rim -->
-          <div class="absolute inset-2 rounded-[50px] border-2 border-white/5"></div>
+    <div
+      class="relative flex items-center justify-center shrink-0"
+      style="height: 560px; width: 720px"
+    >
+      <!-- The Poker Table -->
+      <div
+        class="w-[380px] h-[200px] poker-table rounded-[60px] border-[6px] border-poker-green-800 shadow-2xl flex items-center justify-center"
+      >
+        <!-- Inner felt rim -->
+        <div class="absolute inset-2 rounded-[50px] border-2 border-white/5"></div>
 
-          <!-- Table Center Content -->
-          <div class="text-center relative z-10">
-            @if (votesRevealed()) {
-              <!-- Results Display -->
-              <div class="space-y-4">
-                @if (votingResults(); as results) {
-                  @if (results.isConsensus) {
-                    <div class="relative">
-                      <div class="text-7xl font-display font-bold text-white animate-text-glow" style="-webkit-text-stroke: 2px rgba(0, 0, 0, 0.3);">
-                        {{ revealedVotes()?.[0]?.cardValue }}
-                      </div>
-                      <div class="mt-2 inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full font-semibold">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        Consensus!
-                      </div>
+        <!-- Table Center Content -->
+        <div class="text-center relative z-10">
+          @if (votesRevealed()) {
+            <!-- Results Display -->
+            <div class="space-y-4">
+              @if (votingResults(); as results) {
+                @if (results.isConsensus) {
+                  <div class="relative">
+                    <div
+                      class="text-7xl font-display font-bold text-white animate-text-glow"
+                      style="-webkit-text-stroke: 2px rgba(0, 0, 0, 0.3)"
+                    >
+                      {{ revealedVotes()?.[0]?.cardValue }}
                     </div>
-                  } @else {
-                    <div>
-                      @if (results.average !== null) {
-                        <div class="text-white/50 text-sm uppercase tracking-wider mb-1">Average</div>
-                        <div class="text-5xl font-display font-bold text-white">
-                          {{ results.average | number:'1.1-1' }}
+                    <div
+                      class="mt-2 inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-full font-semibold"
+                    >
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      Consensus!
+                    </div>
+                  </div>
+                } @else {
+                  <div>
+                    @if (results.average !== null) {
+                      <div class="text-white/50 text-sm uppercase tracking-wider mb-1">Average</div>
+                      <div class="text-5xl font-display font-bold text-white">
+                        {{ results.average | number: '1.1-1' }}
+                      </div>
+                    } @else {
+                      <div class="text-white/50">No numeric votes</div>
+                    }
+                  </div>
+                  <!-- Vote Distribution -->
+                  @if (voteDistribution().length > 0) {
+                    <div class="flex justify-center gap-2 mt-4">
+                      @for (dist of voteDistribution(); track dist.value) {
+                        <div class="flex flex-col items-center">
+                          <div
+                            class="playing-card w-11 h-16 flex items-center justify-center text-gray-800 font-bold text-lg"
+                          >
+                            {{ dist.value }}
+                          </div>
+                          <div class="text-xs text-white/60 mt-1.5 font-medium">
+                            {{ dist.count }}x
+                          </div>
                         </div>
-                      } @else {
-                        <div class="text-white/50">No numeric votes</div>
                       }
                     </div>
-                    <!-- Vote Distribution -->
-                    @if (voteDistribution().length > 0) {
-                      <div class="flex justify-center gap-2 mt-4">
-                        @for (dist of voteDistribution(); track dist.value) {
-                          <div class="flex flex-col items-center">
-                            <div class="playing-card w-11 h-16 flex items-center justify-center text-gray-800 font-bold text-lg">
-                              {{ dist.value }}
-                            </div>
-                            <div class="text-xs text-white/60 mt-1.5 font-medium">{{ dist.count }}x</div>
-                          </div>
-                        }
-                      </div>
-                    }
                   }
                 }
+              }
+            </div>
+          } @else if (allVotersVoted()) {
+            <!-- All voted - ready to reveal -->
+            <div>
+              <div class="text-white text-xl font-semibold mb-2">
+                <span class="inline-flex items-center gap-2">
+                  <svg
+                    class="w-6 h-6 animate-bounce-subtle"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  All votes in!
+                </span>
               </div>
-            } @else if (allVotersVoted()) {
-              <!-- All voted - ready to reveal -->
-              <div>
-                <div class="text-white text-xl font-semibold mb-2">
-                  <span class="inline-flex items-center gap-2">
-                    <svg class="w-6 h-6 animate-bounce-subtle" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    All votes in!
-                  </span>
+              @if (isOrganizer()) {
+                <button
+                  (click)="revealVotes()"
+                  class="px-8 py-3 text-lg font-semibold bg-white text-poker-green-700 rounded-xl shadow-lg hover:bg-gray-50 transition-all"
+                >
+                  Reveal Votes
+                </button>
+              } @else {
+                <div class="text-white/50 text-sm">Waiting for host to reveal...</div>
+              }
+            </div>
+          } @else {
+            <!-- Waiting for votes -->
+            <div>
+              @if (timerRunning()) {
+                <!-- Timer Display -->
+                <div
+                  class="text-6xl font-mono font-bold mb-3 transition-colors"
+                  [class]="timerSeconds()! < 10 ? 'text-red-400 animate-pulse' : 'text-white'"
+                >
+                  {{ formatTime(timerSeconds()!) }}
                 </div>
                 @if (isOrganizer()) {
-                  <button
-                    (click)="revealVotes()"
-                    class="px-8 py-3 text-lg font-semibold bg-white text-poker-green-700 rounded-xl shadow-lg hover:bg-gray-50 transition-all"
-                  >
-                    Reveal Votes
-                  </button>
-                } @else {
-                  <div class="text-white/50 text-sm">Waiting for host to reveal...</div>
-                }
-              </div>
-            } @else {
-              <!-- Waiting for votes -->
-              <div>
-                @if (timerRunning()) {
-                  <!-- Timer Display -->
-                  <div
-                    class="text-6xl font-mono font-bold mb-3 transition-colors"
-                    [class]="timerSeconds()! < 10 ? 'text-red-400 animate-pulse' : 'text-white'"
-                  >
-                    {{ formatTime(timerSeconds()!) }}
+                  <div class="flex items-center justify-center gap-3">
+                    <button
+                      (click)="extendTimer(30)"
+                      class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
+                    >
+                      +30s
+                    </button>
+                    <button
+                      (click)="extendTimer(60)"
+                      class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
+                    >
+                      +1m
+                    </button>
+                    <button
+                      (click)="stopTimer()"
+                      class="px-2 py-1 text-xs text-red-400/70 hover:text-red-400 transition-colors"
+                    >
+                      Stop
+                    </button>
                   </div>
-                  @if (isOrganizer()) {
-                    <div class="flex items-center justify-center gap-3">
-                      <button
-                        (click)="extendTimer(30)"
-                        class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
-                      >
-                        +30s
-                      </button>
-                      <button
-                        (click)="extendTimer(60)"
-                        class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
-                      >
-                        +1m
-                      </button>
-                      <button
-                        (click)="stopTimer()"
-                        class="px-2 py-1 text-xs text-red-400/70 hover:text-red-400 transition-colors"
-                      >
-                        Stop
-                      </button>
-                    </div>
-                  }
-                } @else {
-                  <div class="text-white/70 text-lg mb-1">Waiting for votes...</div>
                 }
-                <div class="flex items-center justify-center gap-3 text-white/70">
-                  <div class="flex items-center gap-1.5">
-                    <div class="w-24 h-2 bg-black/30 rounded-full overflow-hidden">
-                      <div
-                        class="h-full bg-white rounded-full transition-all duration-500"
-                        [style.width.%]="voters().length > 0 ? (votedCount() / voters().length) * 100 : 0"
-                      ></div>
-                    </div>
+              } @else {
+                <div class="text-white/70 text-lg mb-1">Waiting for votes...</div>
+              }
+              <div class="flex items-center justify-center gap-3 text-white/70">
+                <div class="flex items-center gap-1.5">
+                  <div class="w-24 h-2 bg-black/30 rounded-full overflow-hidden">
+                    <div
+                      class="h-full bg-white rounded-full transition-all duration-500"
+                      [style.width.%]="
+                        voters().length > 0 ? (votedCount() / voters().length) * 100 : 0
+                      "
+                    ></div>
                   </div>
-                  <span class="font-mono font-medium text-sm text-white">{{ votedCount() }}/{{ voters().length }}</span>
                 </div>
-                <!-- Reveal early button for organizer -->
-                @if (isOrganizer() && votedCount() > 0) {
-                  <button
-                    (click)="revealVotes()"
-                    class="mt-3 px-6 py-2 text-sm font-semibold text-white border-2 border-white/40 rounded-xl hover:bg-white/10 transition-all"
-                  >
-                    Reveal Votes
-                  </button>
-                }
-                <!-- Timer buttons for organizer -->
-                @if (isOrganizer() && !timerRunning()) {
-                  <div class="flex justify-center gap-2 mt-4">
-                    <button
-                      (click)="startTimer(30)"
-                      class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
-                    >
-                      30s
-                    </button>
-                    <button
-                      (click)="startTimer(60)"
-                      class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
-                    >
-                      1m
-                    </button>
-                    <button
-                      (click)="startTimer(120)"
-                      class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
-                    >
-                      2m
-                    </button>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-
-          <!-- Participants around the table -->
-          @for (voter of sortedVoters(); track voter.id; let i = $index) {
-            <div
-              class="absolute flex flex-col items-center transition-all duration-500"
-              [class]="sizeMode() === 'compact' ? 'gap-1' : 'gap-2'"
-              [style]="getParticipantPosition(i, sortedVoters().length)"
-            >
-              <!-- Card - size varies by sizeMode: large (56x84), normal (48x72), compact (36x54) -->
-              <div
-                class="relative rounded-lg flex items-center justify-center font-bold transition-all duration-300 overflow-hidden"
-                [class.w-14]="sizeMode() === 'large'"
-                [class.h-[84px]]="sizeMode() === 'large'"
-                [class.text-2xl]="sizeMode() === 'large'"
-                [class.w-12]="sizeMode() === 'normal'"
-                [class.h-[72px]]="sizeMode() === 'normal'"
-                [class.text-xl]="sizeMode() === 'normal'"
-                [class.w-9]="sizeMode() === 'compact'"
-                [class.h-[54px]]="sizeMode() === 'compact'"
-                [class.text-base]="sizeMode() === 'compact'"
-                [ngClass]="getCardClasses(voter)"
-              >
-                @if (votesRevealed()) {
-                  <!-- Revealed vote -->
-                  <span class="relative z-10">{{ getParticipantVote(voter.id)?.cardValue ?? '-' }}</span>
-                } @else if (hasParticipantVoted(voter.id)) {
-                  <!-- Face down card with pattern -->
-                  <div class="card-back"></div>
-                } @else {
-                  <!-- No vote yet - empty card placeholder -->
-                }
-              </div>
-              <!-- Name -->
-              <div class="flex flex-col items-center gap-0.5">
-                <div
-                  class="font-semibold rounded-full truncate shadow-md"
-                  [class]="sizeMode() === 'compact' ? 'text-xs px-2 py-0.5 max-w-[80px]' : 'text-sm px-3 py-1 max-w-[110px]'"
-                  [ngClass]="voter.id === currentParticipant()?.id ? 'bg-poker-green-500 text-white' : 'bg-white text-gray-800'"
+                <span class="font-mono font-medium text-sm text-white"
+                  >{{ votedCount() }}/{{ voters().length }}</span
                 >
-                  {{ voter.displayName }}
-                </div>
-                @if (voter.isOrganizer) {
-                  <span class="badge badge-green text-[10px] py-0">Host</span>
-                }
               </div>
+              <!-- Reveal early button for organizer -->
+              @if (isOrganizer() && votedCount() > 0) {
+                <button
+                  (click)="revealVotes()"
+                  class="mt-3 px-6 py-2 text-sm font-semibold text-white border-2 border-white/40 rounded-xl hover:bg-white/10 transition-all"
+                >
+                  Reveal Votes
+                </button>
+              }
+              <!-- Timer buttons for organizer -->
+              @if (isOrganizer() && !timerRunning()) {
+                <div class="flex justify-center gap-2 mt-4">
+                  <button
+                    (click)="startTimer(30)"
+                    class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
+                  >
+                    30s
+                  </button>
+                  <button
+                    (click)="startTimer(60)"
+                    class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
+                  >
+                    1m
+                  </button>
+                  <button
+                    (click)="startTimer(120)"
+                    class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
+                  >
+                    2m
+                  </button>
+                </div>
+              }
             </div>
           }
         </div>
 
-        <!-- Observers Section -->
-        @if (observers().length > 0) {
-          <div class="absolute -right-32 top-1/2 -translate-y-1/2 bg-white p-2 min-w-[100px] rounded-lg shadow-sm border border-gray-200 text-sm">
-            <div class="flex items-center gap-1.5 text-gray-500 text-xs mb-2 uppercase tracking-wider font-medium">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Observers
+        <!-- Participants around the table -->
+        @for (voter of sortedVoters(); track voter.id; let i = $index) {
+          <div
+            class="absolute flex flex-col items-center transition-all duration-500"
+            [class]="sizeMode() === 'compact' ? 'gap-1' : 'gap-2'"
+            [style]="getParticipantPosition(i, sortedVoters().length)"
+          >
+            <!-- Card - size varies by sizeMode: large (56x84), normal (48x72), compact (36x54) -->
+            <div
+              class="relative rounded-lg flex items-center justify-center font-bold transition-all duration-300 overflow-hidden"
+              [class.w-14]="sizeMode() === 'large'"
+              [class.h-[84px]]="sizeMode() === 'large'"
+              [class.text-2xl]="sizeMode() === 'large'"
+              [class.w-12]="sizeMode() === 'normal'"
+              [class.h-[72px]]="sizeMode() === 'normal'"
+              [class.text-xl]="sizeMode() === 'normal'"
+              [class.w-9]="sizeMode() === 'compact'"
+              [class.h-[54px]]="sizeMode() === 'compact'"
+              [class.text-base]="sizeMode() === 'compact'"
+              [ngClass]="getCardClasses(voter)"
+            >
+              @if (votesRevealed()) {
+                <!-- Revealed vote -->
+                <span class="relative z-10">{{
+                  getParticipantVote(voter.id)?.cardValue ?? '-'
+                }}</span>
+              } @else if (hasParticipantVoted(voter.id)) {
+                <!-- Face down card with pattern -->
+                <div class="card-back"></div>
+              } @else {
+                <!-- No vote yet - empty card placeholder -->
+              }
             </div>
-            <div class="space-y-1">
-              @for (observer of observers(); track observer.id) {
-                <div
-                  class="text-sm px-2 py-1 rounded flex items-center gap-2"
-                  [class]="observer.isConnected ? 'text-gray-900' : 'text-gray-400'"
-                >
-                  <span
-                    class="w-1.5 h-1.5 rounded-full"
-                    [class]="observer.isConnected ? 'bg-emerald-500' : 'bg-gray-300'"
-                  ></span>
-                  {{ observer.displayName }}
-                </div>
+            <!-- Name -->
+            <div class="flex flex-col items-center gap-0.5">
+              <div
+                class="font-semibold rounded-full truncate shadow-md"
+                [class]="
+                  sizeMode() === 'compact'
+                    ? 'text-xs px-2 py-0.5 max-w-[80px]'
+                    : 'text-sm px-3 py-1 max-w-[110px]'
+                "
+                [ngClass]="
+                  voter.id === currentParticipant()?.id
+                    ? 'bg-poker-green-500 text-white'
+                    : 'bg-white text-gray-800'
+                "
+              >
+                {{ voter.displayName }}
+              </div>
+              @if (voter.isOrganizer) {
+                <span class="badge badge-green text-[10px] py-0">Host</span>
               }
             </div>
           </div>
         }
       </div>
+
+      <!-- Observers Section -->
+      @if (observers().length > 0) {
+        <div
+          class="absolute -right-32 top-1/2 -translate-y-1/2 bg-white p-2 min-w-[100px] rounded-lg shadow-sm border border-gray-200 text-sm"
+        >
+          <div
+            class="flex items-center gap-1.5 text-gray-500 text-xs mb-2 uppercase tracking-wider font-medium"
+          >
+            <svg
+              class="w-3.5 h-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            Observers
+          </div>
+          <div class="space-y-1">
+            @for (observer of observers(); track observer.id) {
+              <div
+                class="text-sm px-2 py-1 rounded flex items-center gap-2"
+                [class]="observer.isConnected ? 'text-gray-900' : 'text-gray-400'"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [class]="observer.isConnected ? 'bg-emerald-500' : 'bg-gray-300'"
+                ></span>
+                {{ observer.displayName }}
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
   </div>
 
   <!-- Row 3: Bottom Area - Story Title, Controls & Card Deck -->
@@ -354,7 +464,13 @@
             class="p-1.5 bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors"
             title="Save"
           >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </button>
@@ -363,7 +479,13 @@
             class="p-1.5 bg-gray-100 text-gray-500 rounded-lg hover:bg-gray-200 transition-colors"
             title="Cancel"
           >
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -380,8 +502,18 @@
               class="inline-flex items-center gap-1 text-poker-green-600 hover:text-poker-green-700 transition-colors"
               title="Open story link"
             >
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
               </svg>
             </a>
           }
@@ -391,8 +523,18 @@
               class="p-1 text-gray-400 hover:text-poker-green-600 hover:bg-poker-green-50 rounded transition-all"
               title="Edit story title"
             >
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <svg
+                class="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                />
               </svg>
             </button>
           }
@@ -417,25 +559,39 @@
         @if (votesRevealed() && isOrganizer()) {
           <!-- Organizer controls replace card deck when votes are revealed -->
           <div class="flex justify-center gap-3">
-            <button
-              (click)="resetVotes()"
-              class="btn-secondary"
-            >
+            <button (click)="resetVotes()" class="btn-secondary">
               <span class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 Vote Again
               </span>
             </button>
-            <button
-              (click)="nextStory()"
-              class="btn-primary"
-            >
+            <button (click)="nextStory()" class="btn-primary">
               <span class="flex items-center gap-2">
                 Next Story
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
                 </svg>
               </span>
             </button>
@@ -452,9 +608,15 @@
               >
                 <span class="relative z-10">{{ card }}</span>
                 @if (myVote() === card && !votesRevealed()) {
-                  <div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-poker-green-500 rounded-full flex items-center justify-center">
+                  <div
+                    class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-poker-green-500 rounded-full flex items-center justify-center"
+                  >
                     <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
                   </div>
                 }
@@ -467,8 +629,18 @@
       <div class="text-center text-sm h-5">
         @if (votesRevealed()) {
           <span class="text-gray-400 flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             Voting locked - waiting for reset
           </span>
