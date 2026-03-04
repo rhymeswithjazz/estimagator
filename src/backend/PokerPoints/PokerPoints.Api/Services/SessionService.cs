@@ -353,7 +353,7 @@ public class SessionService : ISessionService
         if (session == null) return null;
 
         // Only allow organizer or participants to view history
-        var isAuthorized = session.OrganizerId == userId || 
+        var isAuthorized = session.OrganizerId == userId ||
                           session.Participants.Any(p => p.UserId == userId);
         if (!isAuthorized) return null;
 
