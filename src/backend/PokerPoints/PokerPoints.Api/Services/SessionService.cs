@@ -7,7 +7,7 @@ namespace PokerPoints.Api.Services;
 
 public interface ISessionService
 {
-    Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null);
+    Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120);
     Task<Session?> GetSessionByCodeAsync(string accessCode);
     Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode);
     Task<GameStateResponse?> GetGameStateAsync(string accessCode);
@@ -29,14 +29,16 @@ public interface ISessionService
 public class SessionService : ISessionService
 {
     private readonly PokerPointsDbContext _db;
+    private readonly ITimerService _timerService;
     private static readonly char[] AccessCodeChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".ToCharArray();
 
-    public SessionService(PokerPointsDbContext db)
+    public SessionService(PokerPointsDbContext db, ITimerService timerService)
     {
         _db = db;
+        _timerService = timerService;
     }
 
-    public async Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null)
+    public async Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120)
     {
         var accessCode = await GenerateUniqueAccessCodeAsync();
 
@@ -45,6 +47,7 @@ public class SessionService : ISessionService
             AccessCode = accessCode,
             Name = name,
             DeckType = deckType,
+            TimerDurationSeconds = timerDurationSeconds,
             IsActive = true,
             OrganizerId = organizerId
         };
@@ -52,7 +55,7 @@ public class SessionService : ISessionService
         _db.Sessions.Add(session);
         await _db.SaveChangesAsync();
 
-        return new CreateSessionResponse(session.Id, session.AccessCode, session.Name);
+        return new CreateSessionResponse(session.Id, session.AccessCode, session.Name, session.TimerDurationSeconds);
     }
 
     public async Task<List<UserSessionResponse>> GetUserSessionsAsync(Guid userId)
@@ -106,6 +109,7 @@ public class SessionService : ISessionService
             session.AccessCode,
             session.Name,
             session.DeckType,
+            session.TimerDurationSeconds,
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),
@@ -129,6 +133,7 @@ public class SessionService : ISessionService
             session.AccessCode,
             session.Name,
             session.DeckType,
+            session.TimerDurationSeconds,
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),
@@ -158,12 +163,15 @@ public class SessionService : ISessionService
             }
         }
 
+        var activeTimer = _timerService.GetTimerState(accessCode);
+
         return new GameStateResponse(
             sessionInfo,
             activeStory != null ? ToStoryDto(activeStory) : null,
             session.Participants.Select(ToParticipantDto).ToList(),
             voteStatuses,
-            revealedVotes
+            revealedVotes,
+            activeTimer
         );
     }
 

@@ -37,7 +37,8 @@ public class SessionsController : ControllerBase
 
         var deckType = request?.DeckType ?? "fibonacci";
         var name = request?.Name;
-        var result = await _sessionService.CreateSessionAsync(deckType, name, userId);
+        var timerDuration = request?.TimerDurationSeconds ?? 120;
+        var result = await _sessionService.CreateSessionAsync(deckType, name, userId, timerDuration);
         return Created($"/api/sessions/{result.AccessCode}", result);
     }
 

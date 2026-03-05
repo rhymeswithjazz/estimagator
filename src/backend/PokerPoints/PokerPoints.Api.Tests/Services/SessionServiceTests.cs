@@ -20,7 +20,15 @@ public class SessionServiceTests : IDisposable
             .Options;
 
         _db = new PokerPointsDbContext(options);
-        _service = new SessionService(_db);
+        _service = new SessionService(_db, new NullTimerService());
+    }
+
+    private sealed class NullTimerService : ITimerService
+    {
+        public void StartTimer(string accessCode, int durationSeconds) { }
+        public void ExtendTimer(string accessCode, int additionalSeconds) { }
+        public void StopTimer(string accessCode) { }
+        public Models.TimerStateDto? GetTimerState(string accessCode) => null;
     }
 
     public void Dispose()

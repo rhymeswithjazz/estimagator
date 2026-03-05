@@ -29,6 +29,15 @@ export class HomeComponent {
   readonly sessionName = signal('');
   readonly createError = signal<string | null>(null);
 
+  readonly selectedTimerDuration = signal(120);
+
+  readonly timerOptions = [
+    { value: 120, label: '2 min' },
+    { value: 300, label: '5 min' },
+    { value: 420, label: '7 min' },
+    { value: 600, label: '10 min' },
+  ];
+
   readonly deckOptions: { value: DeckType; label: string; preview: string }[] = [
     {
       value: 'fibonacci',
@@ -62,7 +71,11 @@ export class HomeComponent {
     this.createError.set(null);
     try {
       const name = this.sessionName().trim() || undefined;
-      const response = await this.sessionService.createSession(this.selectedDeck(), name);
+      const response = await this.sessionService.createSession(
+        this.selectedDeck(),
+        name,
+        this.selectedTimerDuration(),
+      );
       this.router.navigate(['/join', response.accessCode], { queryParams: { new: 'true' } });
     } catch (err) {
       console.error('Failed to create session:', err);
@@ -113,5 +126,9 @@ export class HomeComponent {
 
   selectDeck(deck: DeckType): void {
     this.selectedDeck.set(deck);
+  }
+
+  selectTimerDuration(duration: number): void {
+    this.selectedTimerDuration.set(duration);
   }
 }

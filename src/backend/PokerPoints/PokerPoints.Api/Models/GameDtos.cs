@@ -11,7 +11,8 @@ public record GameStateResponse(
     StoryDto? CurrentStory,
     List<ParticipantDto> Participants,
     List<VoteStatusDto> VoteStatuses,
-    List<VoteDto>? RevealedVotes
+    List<VoteDto>? RevealedVotes,
+    TimerStateDto? ActiveTimer
 );
 
 public record VoteStatusDto(
@@ -32,4 +33,8 @@ public record VotesResetEvent(Guid? StoryId);
 
 public record StoryUpdatedEvent(StoryDto Story);
 
-public record TimerEvent(int SecondsRemaining);
+public record TimerStartedEvent(DateTimeOffset EndTimeUtc, int DurationSeconds);
+
+public record TimerExtendedEvent(DateTimeOffset EndTimeUtc);
+
+public record TimerStateDto(DateTimeOffset EndTimeUtc, int DurationSeconds);

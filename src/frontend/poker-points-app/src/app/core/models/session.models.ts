@@ -1,12 +1,14 @@
 export interface CreateSessionRequest {
   deckType?: string;
   name?: string;
+  timerDurationSeconds?: number;
 }
 
 export interface CreateSessionResponse {
   sessionId: string;
   accessCode: string;
   name: string | null;
+  timerDurationSeconds: number;
 }
 
 export interface SessionInfo {
@@ -14,6 +16,7 @@ export interface SessionInfo {
   accessCode: string;
   name: string | null;
   deckType: string;
+  timerDurationSeconds: number;
   isActive: boolean;
   createdAt: string;
   participants: Participant[];
@@ -57,6 +60,21 @@ export interface GameState {
   participants: Participant[];
   voteStatuses: VoteStatus[];
   revealedVotes: Vote[] | null;
+  activeTimer: TimerState | null;
+}
+
+export interface TimerState {
+  endTimeUtc: string;
+  durationSeconds: number;
+}
+
+export interface TimerStartedEvent {
+  endTimeUtc: string;
+  durationSeconds: number;
+}
+
+export interface TimerExtendedEvent {
+  endTimeUtc: string;
 }
 
 // Hub event payloads

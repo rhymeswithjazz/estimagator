@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, effect, DestroyRef, inject } from '@angular/core';
+import { Injectable, signal, computed, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SignalRService } from './signalr.service';
 import {
@@ -41,6 +41,10 @@ export class GameStateService {
     null,
   );
   private readonly _storyQueue = signal<Story[]>([]);
+  private readonly _timerEndTime = signal<Date | null>(null);
+  private readonly _timerDurationSeconds = signal<number>(0);
+  private readonly _timerSecondsRemaining = signal<number>(0);
+  private timerInterval: ReturnType<typeof setInterval> | null = null;
 
   // Read-only public signals
   readonly sessionCode = this._sessionCode.asReadonly();
@@ -54,6 +58,9 @@ export class GameStateService {
   readonly myVote = this._myVote.asReadonly();
   readonly votingResults = this._votingResults.asReadonly();
   readonly storyQueue = this._storyQueue.asReadonly();
+  readonly timerEndTime = this._timerEndTime.asReadonly();
+  readonly timerSecondsRemaining = this._timerSecondsRemaining.asReadonly();
+  readonly timerRunning = computed(() => this._timerEndTime() !== null && this._timerSecondsRemaining() > 0);
 
   // Computed signals
   readonly isInSession = computed(
@@ -182,6 +189,23 @@ export class GameStateService {
       .subscribe((stories) => {
         this._storyQueue.set(stories);
       });
+
+    this.signalR.timerStarted$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      this.setTimerEndTime(new Date(event.endTimeUtc));
+      this._timerDurationSeconds.set(event.durationSeconds);
+    });
+
+    this.signalR.timerExtended$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      this.setTimerEndTime(new Date(event.endTimeUtc));
+    });
+
+    this.signalR.timerStopped$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.clearTimer();
+    });
+
+    this.signalR.timerExpired$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.clearTimer();
+    });
   }
 
   private applyGameState(state: GameState): void {
@@ -200,6 +224,14 @@ export class GameStateService {
           this._myVote.set(myVoteData.cardValue);
         }
       }
+    }
+
+    // Restore timer state on reconnect
+    if (state.activeTimer) {
+      this.setTimerEndTime(new Date(state.activeTimer.endTimeUtc));
+      this._timerDurationSeconds.set(state.activeTimer.durationSeconds);
+    } else {
+      this.clearTimer();
     }
   }
 
@@ -317,6 +349,64 @@ export class GameStateService {
     await this.signalR.restartStory(storyId);
   }
 
+  async startTimer(): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.startTimer();
+  }
+
+  async extendTimer(additionalSeconds: number = 60): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.extendTimer(additionalSeconds);
+  }
+
+  async stopTimer(): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.stopTimer();
+  }
+
+  formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  private setTimerEndTime(endTime: Date): void {
+    this._timerEndTime.set(endTime);
+    this.startLocalCountdown();
+  }
+
+  private clearTimer(): void {
+    this._timerEndTime.set(null);
+    this._timerSecondsRemaining.set(0);
+    this.stopLocalCountdown();
+  }
+
+  private startLocalCountdown(): void {
+    this.stopLocalCountdown();
+    this.updateRemainingSeconds();
+    this.timerInterval = setInterval(() => this.updateRemainingSeconds(), 250);
+  }
+
+  private stopLocalCountdown(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  private updateRemainingSeconds(): void {
+    const endTime = this._timerEndTime();
+    if (!endTime) {
+      this._timerSecondsRemaining.set(0);
+      return;
+    }
+    const remaining = Math.max(0, Math.ceil((endTime.getTime() - Date.now()) / 1000));
+    this._timerSecondsRemaining.set(remaining);
+    if (remaining <= 0) {
+      this.stopLocalCountdown();
+    }
+  }
+
   async attemptReconnect(sessionCode: string): Promise<boolean> {
     const storedIdentity = this.getStoredIdentityForSession(sessionCode);
     if (!storedIdentity) {
@@ -343,6 +433,7 @@ export class GameStateService {
     // Note: We intentionally don't clear stored identity here
     this._storyQueue.set([]);
     // so users can rejoin with the same name if they come back
+    this.clearTimer();
   }
 
   private getStorageKey(sessionCode: string): string {

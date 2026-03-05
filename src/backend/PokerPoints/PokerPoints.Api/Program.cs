@@ -70,6 +70,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Services
+builder.Services.AddSingleton<ITimerService, TimerService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<IVotingService, VotingService>();

@@ -21,8 +21,9 @@ export class SessionService {
   async createSession(
     deckType: DeckType = 'fibonacci',
     name?: string,
+    timerDurationSeconds: number = 120,
   ): Promise<CreateSessionResponse> {
-    const request: CreateSessionRequest = { deckType, name };
+    const request: CreateSessionRequest = { deckType, name, timerDurationSeconds };
     return firstValueFrom(this.http.post<CreateSessionResponse>(this.apiUrl, request));
   }
 

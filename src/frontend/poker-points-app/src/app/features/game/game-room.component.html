@@ -247,26 +247,20 @@
             <!-- Waiting for votes -->
             <div>
               @if (timerRunning()) {
-                <!-- Timer Display -->
+                <!-- Timer Display (visible to all) -->
                 <div
                   class="text-6xl font-mono font-bold mb-3 transition-colors"
-                  [class]="timerSeconds()! < 10 ? 'text-red-400 animate-pulse' : 'text-white'"
+                  [class]="timerSecondsRemaining() < 10 ? 'text-red-400 animate-pulse' : 'text-white'"
                 >
-                  {{ formatTime(timerSeconds()!) }}
+                  {{ formatTime(timerSecondsRemaining()) }}
                 </div>
                 @if (isOrganizer()) {
                   <div class="flex items-center justify-center gap-3">
                     <button
-                      (click)="extendTimer(30)"
-                      class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
-                    >
-                      +30s
-                    </button>
-                    <button
                       (click)="extendTimer(60)"
                       class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
                     >
-                      +1m
+                      +1 min
                     </button>
                     <button
                       (click)="stopTimer()"
@@ -303,26 +297,17 @@
                   Reveal Votes
                 </button>
               }
-              <!-- Timer buttons for organizer -->
+              <!-- Start Timer button for organizer -->
               @if (isOrganizer() && !timerRunning()) {
-                <div class="flex justify-center gap-2 mt-4">
+                <div class="flex justify-center mt-4">
                   <button
-                    (click)="startTimer(30)"
-                    class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
+                    (click)="startTimer()"
+                    class="px-4 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium flex items-center gap-1.5"
                   >
-                    30s
-                  </button>
-                  <button
-                    (click)="startTimer(60)"
-                    class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
-                  >
-                    1m
-                  </button>
-                  <button
-                    (click)="startTimer(120)"
-                    class="px-3 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium"
-                  >
-                    2m
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Start Timer
                   </button>
                 </div>
               }

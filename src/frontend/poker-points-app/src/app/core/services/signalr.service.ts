@@ -11,8 +11,10 @@ import {
   VotesRevealedEvent,
   VotesResetEvent,
   StoryUpdatedEvent,
+  TimerStartedEvent,
+  TimerExtendedEvent,
+  Story,
 } from '../models/session.models';
-import { Story } from '../models/session.models';
 import { AuthService } from './auth.service';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
@@ -41,6 +43,10 @@ export class SignalRService {
   readonly storiesAdded$ = new Subject<Story[]>();
   readonly storyDeleted$ = new Subject<string>();
   readonly storyQueueUpdated$ = new Subject<Story[]>();
+  readonly timerStarted$ = new Subject<TimerStartedEvent>();
+  readonly timerExtended$ = new Subject<TimerExtendedEvent>();
+  readonly timerStopped$ = new Subject<void>();
+  readonly timerExpired$ = new Subject<void>();
 
   async connect(): Promise<void> {
     if (this.connection?.state === signalR.HubConnectionState.Connected) {
@@ -131,6 +137,22 @@ export class SignalRService {
 
     this.connection.on('StoryQueueUpdated', (stories: Story[]) => {
       this.storyQueueUpdated$.next(stories);
+    });
+
+    this.connection.on('TimerStarted', (event: TimerStartedEvent) => {
+      this.timerStarted$.next(event);
+    });
+
+    this.connection.on('TimerExtended', (event: TimerExtendedEvent) => {
+      this.timerExtended$.next(event);
+    });
+
+    this.connection.on('TimerStopped', () => {
+      this.timerStopped$.next();
+    });
+
+    this.connection.on('TimerExpired', () => {
+      this.timerExpired$.next();
     });
   }
 
@@ -259,5 +281,26 @@ export class SignalRService {
       throw new Error('Not connected to SignalR hub');
     }
     await this.connection.invoke('RestartStory', storyId);
+  }
+
+  async startTimer(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('StartTimer');
+  }
+
+  async extendTimer(additionalSeconds: number = 60): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('ExtendTimer', additionalSeconds);
+  }
+
+  async stopTimer(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('StopTimer');
   }
 }

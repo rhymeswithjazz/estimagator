@@ -13,19 +13,22 @@ public class PokerHub : Hub
     private readonly IParticipantService _participantService;
     private readonly IVotingService _votingService;
     private readonly IAuthService _authService;
+    private readonly ITimerService _timerService;
 
     public PokerHub(
         ILogger<PokerHub> logger,
         ISessionService sessionService,
         IParticipantService participantService,
         IVotingService votingService,
-        IAuthService authService)
+        IAuthService authService,
+        ITimerService timerService)
     {
         _logger = logger;
         _sessionService = sessionService;
         _participantService = participantService;
         _votingService = votingService;
         _authService = authService;
+        _timerService = timerService;
     }
 
     public override async Task OnConnectedAsync()
@@ -207,6 +210,8 @@ public class PokerHub : Hub
             return;
         }
 
+        _timerService.StopTimer(session.AccessCode);
+
         var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
 
         // Auto-complete the story on reveal
@@ -215,6 +220,7 @@ public class PokerHub : Hub
         _logger.LogInformation("Votes revealed and story completed {StoryId}: Average={Average}, Consensus={IsConsensus}",
             gameState.CurrentStory.Id, result.Average, result.IsConsensus);
 
+        await Clients.Group(session.AccessCode).SendAsync("TimerStopped");
         await Clients.Group(session.AccessCode).SendAsync("VotesRevealed", result);
 
         // Notify clients that story is now completed
@@ -244,6 +250,8 @@ public class PokerHub : Hub
             await Clients.Caller.SendAsync("Error", "No active story");
             return;
         }
+
+        _timerService.StopTimer(session.AccessCode);
 
         // Restart story: clears votes AND sets status back to "active"
         var story = await _sessionService.RestartStoryAsync(gameState.CurrentStory.Id);
@@ -302,6 +310,8 @@ public class PokerHub : Hub
         }
 
         var session = participant.Session;
+        _timerService.StopTimer(session.AccessCode);
+
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
 
         // Complete current story if exists
@@ -430,6 +440,8 @@ public class PokerHub : Hub
         }
 
         var session = participant.Session;
+        _timerService.StopTimer(session.AccessCode);
+
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
 
         // Complete current story if exists
@@ -467,6 +479,8 @@ public class PokerHub : Hub
         }
 
         var session = participant.Session;
+        _timerService.StopTimer(session.AccessCode);
+
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
 
         // Complete current story if exists and it's different from the one we're restarting
@@ -490,6 +504,73 @@ public class PokerHub : Hub
         // Notify clients that the queue has changed
         var updatedQueue = await _sessionService.GetPendingStoriesAsync(session.Id);
         await Clients.Group(session.AccessCode).SendAsync("StoryQueueUpdated", updatedQueue);
+    }
+
+    public async Task StartTimer()
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can start the timer");
+            return;
+        }
+
+        var session = participant.Session;
+        _timerService.StartTimer(session.AccessCode, session.TimerDurationSeconds);
+
+        var timerState = _timerService.GetTimerState(session.AccessCode);
+        if (timerState != null)
+        {
+            _logger.LogInformation("Timer started for session {AccessCode}: {Duration}s", session.AccessCode, session.TimerDurationSeconds);
+            await Clients.Group(session.AccessCode).SendAsync("TimerStarted",
+                new TimerStartedEvent(timerState.EndTimeUtc, timerState.DurationSeconds));
+        }
+    }
+
+    public async Task ExtendTimer(int additionalSeconds = 60)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can extend the timer");
+            return;
+        }
+
+        // Cap extension at 60 seconds
+        additionalSeconds = Math.Min(additionalSeconds, 60);
+
+        var session = participant.Session;
+        _timerService.ExtendTimer(session.AccessCode, additionalSeconds);
+
+        var timerState = _timerService.GetTimerState(session.AccessCode);
+        if (timerState != null)
+        {
+            _logger.LogInformation("Timer extended for session {AccessCode} by {Seconds}s", session.AccessCode, additionalSeconds);
+            await Clients.Group(session.AccessCode).SendAsync("TimerExtended",
+                new TimerExtendedEvent(timerState.EndTimeUtc));
+        }
+    }
+
+    public async Task StopTimer()
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null) return;
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the organizer can stop the timer");
+            return;
+        }
+
+        var session = participant.Session;
+        _timerService.StopTimer(session.AccessCode);
+
+        _logger.LogInformation("Timer stopped for session {AccessCode}", session.AccessCode);
+        await Clients.Group(session.AccessCode).SendAsync("TimerStopped");
     }
 
     public async Task<GameStateResponse?> GetSessionState()

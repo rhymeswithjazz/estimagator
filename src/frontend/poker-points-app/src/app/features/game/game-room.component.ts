@@ -141,10 +141,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Share link state
   readonly shareUrlCopied = signal(false);
 
-  // Timer state
-  readonly timerSeconds = signal<number | null>(null);
-  readonly timerRunning = signal(false);
-  private timerInterval: ReturnType<typeof setInterval> | null = null;
+  // Timer state (delegated to GameStateService)
+  readonly timerSecondsRemaining = this.gameState.timerSecondsRemaining;
+  readonly timerRunning = this.gameState.timerRunning;
 
   constructor() {
     // Watch for consensus and trigger confetti
@@ -293,9 +292,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.stopTimer();
-  }
+  ngOnDestroy(): void {}
 
   async leaveGame(): Promise<void> {
     await this.gameState.leaveSession();
@@ -366,46 +363,23 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     await this.gameState.nextStory();
   }
 
-  startTimer(seconds: number = 60): void {
+  async startTimer(): Promise<void> {
     if (!this.isOrganizer() || this.votesRevealed()) return;
-
-    this.stopTimer();
-    this.timerSeconds.set(seconds);
-    this.timerRunning.set(true);
-
-    this.timerInterval = setInterval(() => {
-      const current = this.timerSeconds();
-      if (current === null || current <= 1) {
-        this.stopTimer();
-        // Auto-reveal when timer expires
-        if (!this.votesRevealed()) {
-          this.revealVotes();
-        }
-      } else {
-        this.timerSeconds.set(current - 1);
-      }
-    }, 1000);
+    await this.gameState.startTimer();
   }
 
-  stopTimer(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
-    }
-    this.timerRunning.set(false);
-    this.timerSeconds.set(null);
+  async stopTimer(): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.gameState.stopTimer();
   }
 
-  extendTimer(seconds: number): void {
+  async extendTimer(seconds: number): Promise<void> {
     if (!this.isOrganizer() || !this.timerRunning()) return;
-    const current = this.timerSeconds() ?? 0;
-    this.timerSeconds.set(current + seconds);
+    await this.gameState.extendTimer(seconds);
   }
 
   formatTime(seconds: number): string {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return this.gameState.formatTime(seconds);
   }
 
   // Settings panel methods

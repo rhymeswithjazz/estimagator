@@ -8,6 +8,7 @@ public class Session
     public string AccessCode { get; set; } = string.Empty;
     public string? Name { get; set; }
     public string DeckType { get; set; } = "fibonacci";
+    public int TimerDurationSeconds { get; set; } = 120;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }
 

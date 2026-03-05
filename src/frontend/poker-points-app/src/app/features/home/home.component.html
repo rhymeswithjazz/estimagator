@@ -191,6 +191,28 @@
                 }
               </div>
 
+              <!-- Timer Duration -->
+              <div class="space-y-2">
+                <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
+                  >Timer Duration</label
+                >
+                <div class="flex gap-2">
+                  @for (option of timerOptions; track option.value) {
+                    <button
+                      (click)="selectTimerDuration(option.value)"
+                      class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border-2"
+                      [class]="
+                        selectedTimerDuration() === option.value
+                          ? 'bg-poker-green-50 border-poker-green-500 text-poker-green-700'
+                          : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-poker-green-50 hover:border-poker-green-200'
+                      "
+                    >
+                      {{ option.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+
               <button
                 (click)="createSession()"
                 class="btn-primary w-full"
