@@ -30,6 +30,8 @@ export class HomeComponent {
   readonly createError = signal<string | null>(null);
 
   readonly selectedTimerDuration = signal(300);
+  readonly customTimerMinutes = signal('');
+  readonly isCustomTimer = signal(false);
 
   readonly timerOptions = [
     { value: 120, label: '2 min' },
@@ -130,5 +132,15 @@ export class HomeComponent {
 
   selectTimerDuration(duration: number): void {
     this.selectedTimerDuration.set(duration);
+    this.isCustomTimer.set(false);
+    this.customTimerMinutes.set('');
+  }
+
+  applyCustomTimer(): void {
+    const mins = parseInt(this.customTimerMinutes(), 10);
+    if (mins > 0) {
+      this.selectedTimerDuration.set(mins * 60);
+      this.isCustomTimer.set(true);
+    }
   }
 }

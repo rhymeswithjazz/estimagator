@@ -202,7 +202,7 @@
                       (click)="selectTimerDuration(option.value)"
                       class="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border-2"
                       [class]="
-                        selectedTimerDuration() === option.value
+                        selectedTimerDuration() === option.value && !isCustomTimer()
                           ? 'bg-poker-green-50 border-poker-green-500 text-poker-green-700'
                           : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-poker-green-50 hover:border-poker-green-200'
                       "
@@ -210,6 +210,31 @@
                       {{ option.label }}
                     </button>
                   }
+                  <div
+                    class="flex items-center gap-1 rounded-xl border-2 px-2 transition-all duration-200"
+                    [class]="
+                      isCustomTimer()
+                        ? 'bg-poker-green-50 border-poker-green-500'
+                        : 'bg-gray-50 border-gray-200'
+                    "
+                  >
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      [ngModel]="customTimerMinutes()"
+                      (ngModelChange)="customTimerMinutes.set($event)"
+                      (input)="applyCustomTimer()"
+                      placeholder="#"
+                      class="w-8 py-2.5 text-sm font-semibold text-center bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      [class]="isCustomTimer() ? 'text-poker-green-700' : 'text-gray-600'"
+                    />
+                    <span
+                      class="text-xs font-medium"
+                      [class]="isCustomTimer() ? 'text-poker-green-600' : 'text-gray-400'"
+                      >min</span
+                    >
+                  </div>
                 </div>
               </div>
 

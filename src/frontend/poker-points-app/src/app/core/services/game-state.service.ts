@@ -349,9 +349,9 @@ export class GameStateService {
     await this.signalR.restartStory(storyId);
   }
 
-  async startTimer(durationSeconds?: number): Promise<void> {
+  async startTimer(): Promise<void> {
     if (!this.isOrganizer()) return;
-    await this.signalR.startTimer(durationSeconds);
+    await this.signalR.startTimer();
   }
 
   async extendTimer(additionalSeconds: number = 60): Promise<void> {

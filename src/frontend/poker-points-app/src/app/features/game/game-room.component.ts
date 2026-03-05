@@ -153,17 +153,6 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly timerSecondsRemaining = this.gameState.timerSecondsRemaining;
   readonly timerRunning = this.gameState.timerRunning;
 
-  // Timer setup state
-  readonly showTimerSetup = signal(false);
-  readonly selectedTimerDuration = signal(300);
-  readonly customTimerMinutes = signal('');
-  readonly timerPresets = [
-    { value: 120, label: '2m' },
-    { value: 300, label: '5m' },
-    { value: 420, label: '7m' },
-    { value: 600, label: '10m' },
-  ];
-
   constructor() {
     // Watch for consensus and trigger confetti
     effect(() => {
@@ -330,7 +319,6 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   async resetVotes(): Promise<void> {
     if (!this.isOrganizer()) return;
-    this.showTimerSetup.set(false);
     await this.gameState.resetVotes();
   }
 
@@ -383,27 +371,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     await this.gameState.nextStory();
   }
 
-  openTimerSetup(): void {
-    this.showTimerSetup.set(true);
-    this.customTimerMinutes.set('');
-  }
-
-  selectTimerPreset(value: number): void {
-    this.selectedTimerDuration.set(value);
-    this.customTimerMinutes.set('');
-  }
-
-  applyCustomTimer(): void {
-    const mins = parseInt(this.customTimerMinutes(), 10);
-    if (mins > 0) {
-      this.selectedTimerDuration.set(mins * 60);
-    }
-  }
-
   async startTimer(): Promise<void> {
     if (!this.isOrganizer() || this.votesRevealed()) return;
-    this.showTimerSetup.set(false);
-    await this.gameState.startTimer(this.selectedTimerDuration());
+    await this.gameState.startTimer();
   }
 
   async stopTimer(): Promise<void> {
