@@ -506,7 +506,7 @@ public class PokerHub : Hub
         await Clients.Group(session.AccessCode).SendAsync("StoryQueueUpdated", updatedQueue);
     }
 
-    public async Task StartTimer()
+    public async Task StartTimer(int? durationSeconds = null)
     {
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
@@ -518,12 +518,14 @@ public class PokerHub : Hub
         }
 
         var session = participant.Session;
-        _timerService.StartTimer(session.AccessCode, session.TimerDurationSeconds);
+        var duration = durationSeconds ?? session.TimerDurationSeconds;
+        if (duration < 1) duration = session.TimerDurationSeconds;
+        _timerService.StartTimer(session.AccessCode, duration);
 
         var timerState = _timerService.GetTimerState(session.AccessCode);
         if (timerState != null)
         {
-            _logger.LogInformation("Timer started for session {AccessCode}: {Duration}s", session.AccessCode, session.TimerDurationSeconds);
+            _logger.LogInformation("Timer started for session {AccessCode}: {Duration}s", session.AccessCode, duration);
             await Clients.Group(session.AccessCode).SendAsync("TimerStarted",
                 new TimerStartedEvent(timerState.EndTimeUtc, timerState.DurationSeconds));
         }

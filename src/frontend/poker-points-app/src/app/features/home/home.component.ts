@@ -29,7 +29,7 @@ export class HomeComponent {
   readonly sessionName = signal('');
   readonly createError = signal<string | null>(null);
 
-  readonly selectedTimerDuration = signal(120);
+  readonly selectedTimerDuration = signal(300);
 
   readonly timerOptions = [
     { value: 120, label: '2 min' },

@@ -5,7 +5,7 @@ namespace PokerPoints.Api.Models;
 public record CreateSessionRequest(
     string DeckType = "fibonacci",
     string? Name = null,
-    int TimerDurationSeconds = 120
+    int TimerDurationSeconds = 300
 );
 
 public record CreateSessionResponse(Guid SessionId, string AccessCode, string? Name, int TimerDurationSeconds);

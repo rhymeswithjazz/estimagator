@@ -283,11 +283,11 @@ export class SignalRService {
     await this.connection.invoke('RestartStory', storyId);
   }
 
-  async startTimer(): Promise<void> {
+  async startTimer(durationSeconds?: number): Promise<void> {
     if (!this.connection) {
       throw new Error('Not connected to SignalR hub');
     }
-    await this.connection.invoke('StartTimer');
+    await this.connection.invoke('StartTimer', durationSeconds ?? null);
   }
 
   async extendTimer(additionalSeconds: number = 60): Promise<void> {
