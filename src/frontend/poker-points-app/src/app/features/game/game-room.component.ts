@@ -7,6 +7,7 @@ import { SignalRService } from '../../core/services/signalr.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Participant, Vote } from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
+import { StoryHistoryPanelComponent } from './story-history-panel.component';
 import { AccountDropdownComponent } from './account-dropdown.component';
 import confetti from 'canvas-confetti';
 
@@ -19,6 +20,7 @@ import confetti from 'canvas-confetti';
     NgClass,
     RouterLink,
     SettingsPanelComponent,
+    StoryHistoryPanelComponent,
     AccountDropdownComponent,
   ],
   templateUrl: './game-room.component.html',
@@ -137,6 +139,12 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Settings panel state
   readonly isSettingsPanelOpen = signal(false);
+
+  // History panel state
+  readonly isHistoryPanelOpen = signal(false);
+  readonly completedStoryCount = computed(
+    () => this.storyQueue().filter((s) => s.status === 'completed').length,
+  );
 
   // Share link state
   readonly shareUrlCopied = signal(false);
@@ -385,6 +393,11 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Settings panel methods
   toggleSettingsPanel(): void {
     this.isSettingsPanelOpen.update((open) => !open);
+  }
+
+  // History panel methods
+  toggleHistoryPanel(): void {
+    this.isHistoryPanelOpen.update((open) => !open);
   }
 
   // Share link methods

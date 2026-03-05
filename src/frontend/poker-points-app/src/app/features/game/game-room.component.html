@@ -49,6 +49,39 @@
           </div>
         }
       </button>
+
+      <!-- History Button -->
+      <button
+        (click)="toggleHistoryPanel()"
+        class="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors"
+        [class]="
+          isHistoryPanelOpen()
+            ? 'bg-poker-green-100 text-poker-green-700'
+            : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+        "
+        title="Story History"
+      >
+        <svg
+          class="w-4.5 h-4.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        @if (completedStoryCount() > 0) {
+          <span
+            class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold bg-poker-green-500 text-white"
+          >
+            {{ completedStoryCount() }}
+          </span>
+        }
+      </button>
     </div>
 
     <div class="flex items-center gap-4">
@@ -250,7 +283,9 @@
                 <!-- Timer Display (visible to all) -->
                 <div
                   class="text-6xl font-mono font-bold mb-3 transition-colors"
-                  [class]="timerSecondsRemaining() < 10 ? 'text-red-400 animate-pulse' : 'text-white'"
+                  [class]="
+                    timerSecondsRemaining() < 10 ? 'text-red-400 animate-pulse' : 'text-white'
+                  "
                 >
                   {{ formatTime(timerSecondsRemaining()) }}
                 </div>
@@ -304,8 +339,18 @@
                     (click)="startTimer()"
                     class="px-4 py-1.5 text-xs bg-white/10 text-white/70 rounded-lg hover:bg-white/20 hover:text-white transition-all font-medium flex items-center gap-1.5"
                   >
-                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      class="w-3.5 h-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
                     Start Timer
                   </button>
@@ -641,6 +686,11 @@
     }
   </div>
 </main>
+
+<!-- History Panel (all participants) -->
+@if (isHistoryPanelOpen()) {
+  <app-story-history-panel (close)="isHistoryPanelOpen.set(false)" />
+}
 
 <!-- Settings Panel (Organizer only) -->
 @if (isOrganizer() && isSettingsPanelOpen()) {
