@@ -584,7 +584,7 @@
     </div>
 
     <!-- Card Deck / Organizer Controls - fixed height to prevent layout shift -->
-    @if (!isObserver()) {
+    @if (!isObserver() || isOrganizer()) {
       <div class="h-[76px] flex flex-col justify-center">
         @if (votesRevealed() && isOrganizer()) {
           <!-- Organizer controls replace card deck when votes are revealed -->
@@ -626,8 +626,8 @@
               </span>
             </button>
           </div>
-        } @else {
-          <!-- Card deck for voting -->
+        } @else if (!isObserver()) {
+          <!-- Card deck for voting (hidden for observers) -->
           <div class="flex justify-center gap-1.5 flex-wrap">
             @for (card of deckValues(); track card) {
               <button
@@ -655,34 +655,37 @@
           </div>
         }
       </div>
-      <!-- Status message - always present -->
-      <div class="text-center text-sm h-5">
-        @if (votesRevealed()) {
-          <span class="text-gray-400 flex items-center justify-center gap-2">
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-            Voting locked - waiting for reset
-          </span>
-        } @else if (hasVoted()) {
-          <span class="text-gray-500">
-            Your vote: <span class="text-poker-green-600 font-bold text-base">{{ myVote() }}</span>
-            <span class="text-gray-400 ml-1">(tap another card to change)</span>
-          </span>
-        } @else {
-          <span class="text-gray-400">Select a card to vote</span>
-        }
-      </div>
+      <!-- Status message -->
+      @if (!isObserver()) {
+        <div class="text-center text-sm h-5">
+          @if (votesRevealed()) {
+            <span class="text-gray-400 flex items-center justify-center gap-2">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+              Voting locked - waiting for reset
+            </span>
+          } @else if (hasVoted()) {
+            <span class="text-gray-500">
+              Your vote:
+              <span class="text-poker-green-600 font-bold text-base">{{ myVote() }}</span>
+              <span class="text-gray-400 ml-1">(tap another card to change)</span>
+            </span>
+          } @else {
+            <span class="text-gray-400">Select a card to vote</span>
+          }
+        </div>
+      }
     }
   </div>
 </main>
