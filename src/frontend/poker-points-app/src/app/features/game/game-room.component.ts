@@ -152,6 +152,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Timer state (delegated to GameStateService)
   readonly timerSecondsRemaining = this.gameState.timerSecondsRemaining;
   readonly timerRunning = this.gameState.timerRunning;
+  readonly showTimerExpiredModal = computed(
+    () => this.gameState.timerJustExpired() && this.isOrganizer() && !this.allVotersVoted(),
+  );
 
   constructor() {
     // Watch for consensus and trigger confetti
@@ -388,6 +391,15 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   formatTime(seconds: number): string {
     return this.gameState.formatTime(seconds);
+  }
+
+  dismissTimerExpired(): void {
+    this.gameState.dismissTimerExpired();
+  }
+
+  async revealFromTimerExpired(): Promise<void> {
+    this.gameState.dismissTimerExpired();
+    await this.revealVotes();
   }
 
   // Settings panel methods

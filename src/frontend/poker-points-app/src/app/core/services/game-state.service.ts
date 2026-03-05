@@ -44,6 +44,7 @@ export class GameStateService {
   private readonly _timerEndTime = signal<Date | null>(null);
   private readonly _timerDurationSeconds = signal<number>(0);
   private readonly _timerSecondsRemaining = signal<number>(0);
+  private readonly _timerJustExpired = signal(false);
   private timerInterval: ReturnType<typeof setInterval> | null = null;
 
   // Read-only public signals
@@ -60,7 +61,10 @@ export class GameStateService {
   readonly storyQueue = this._storyQueue.asReadonly();
   readonly timerEndTime = this._timerEndTime.asReadonly();
   readonly timerSecondsRemaining = this._timerSecondsRemaining.asReadonly();
-  readonly timerRunning = computed(() => this._timerEndTime() !== null && this._timerSecondsRemaining() > 0);
+  readonly timerRunning = computed(
+    () => this._timerEndTime() !== null && this._timerSecondsRemaining() > 0,
+  );
+  readonly timerJustExpired = this._timerJustExpired.asReadonly();
 
   // Computed signals
   readonly isInSession = computed(
@@ -138,6 +142,7 @@ export class GameStateService {
     this.signalR.votesRevealed$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this._revealedVotes.set(event.votes);
       this._votingResults.set({ average: event.average, isConsensus: event.isConsensus });
+      this._timerJustExpired.set(false);
     });
 
     this.signalR.votesReset$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -145,6 +150,7 @@ export class GameStateService {
       this._votingResults.set(null);
       this._myVote.set(null);
       this._voteStatuses.set([]);
+      this._timerJustExpired.set(false);
     });
 
     this.signalR.storyUpdated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
@@ -205,6 +211,7 @@ export class GameStateService {
 
     this.signalR.timerExpired$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.clearTimer();
+      this._timerJustExpired.set(true);
     });
   }
 
@@ -362,6 +369,10 @@ export class GameStateService {
   async stopTimer(): Promise<void> {
     if (!this.isOrganizer()) return;
     await this.signalR.stopTimer();
+  }
+
+  dismissTimerExpired(): void {
+    this._timerJustExpired.set(false);
   }
 
   formatTime(seconds: number): string {
