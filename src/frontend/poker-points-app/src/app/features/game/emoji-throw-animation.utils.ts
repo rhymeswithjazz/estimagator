@@ -1,15 +1,17 @@
 import {
   EmojiThrowProfile,
   EmojiThrownEvent,
+  EGG_THROW_OPTION,
   getEmojiThrowOptionMetadata,
   POOP_THROW_OPTION,
+  TOMATO_THROW_OPTION,
 } from '../../core/models/session.models';
 
 export const MAX_ACTIVE_EMOJI_ANIMATIONS = 20;
 export const MAX_STUCK_DARTS = 28;
-export const MAX_POOP_SPLATS = 16;
+export const MAX_EMOJI_SPLATS = 16;
 export const STUCK_DART_LIFETIME_MS = 3000;
-export const POOP_SPLAT_LIFETIME_MS = 1150;
+export const EMOJI_SPLAT_LIFETIME_MS = 1150;
 export const EMOJI_POP_CLEANUP_MS = 750;
 
 export interface EmojiThrowPoint {
@@ -61,8 +63,11 @@ export interface EmojiAnimation {
   mode: 'travel' | 'pop';
 }
 
-export interface EmojiPoopSplat {
+export type EmojiImpactSplatKind = 'poop' | 'tomato' | 'egg';
+
+export interface EmojiImpactSplat {
   id: string;
+  kind: EmojiImpactSplatKind;
   x: number;
   y: number;
   rotationDeg: number;
@@ -110,6 +115,19 @@ const EMOJI_ANIMATION_PROFILES: Record<EmojiThrowProfile, EmojiAnimationProfileC
     bounceMax: 34,
     sticksOnImpact: false,
   },
+  rock: {
+    durationMs: 560,
+    cleanupBufferMs: 520,
+    arcMin: 12,
+    arcMax: 36,
+    arcDistanceScale: 0.06,
+    continueMin: 58,
+    continueMax: 96,
+    continueDistanceScale: 0.24,
+    bounceMin: 28,
+    bounceMax: 48,
+    sticksOnImpact: false,
+  },
   default: {
     durationMs: 700,
     cleanupBufferMs: 400,
@@ -140,7 +158,8 @@ export function createEmojiAnimation(
     mode === 'travel' && targetGeometry.surfaceRect
       ? getEmojiImpactPoint(startCenter, targetGeometry.surfaceRect)
       : { point: targetGeometry.center, side: 'center' as const };
-  const stopsOnImpact = profileConfig.sticksOnImpact || event.emoji === POOP_THROW_OPTION;
+  const stopsOnImpact =
+    profileConfig.sticksOnImpact || getEmojiImpactSplatKind(event.emoji) !== null;
   const landingContinuation = stopsOnImpact
     ? { x: 0, y: 0 }
     : getEmojiLandingContinuation(startCenter, impact.point, impact.side, profileConfig);
@@ -199,26 +218,52 @@ export function getEmojiStuckDartStyle(animation: EmojiAnimation): string {
   ].join('; ');
 }
 
-export function createEmojiPoopSplat(
+export function getEmojiImpactSplatKind(emoji: string): EmojiImpactSplatKind | null {
+  switch (emoji) {
+    case POOP_THROW_OPTION:
+      return 'poop';
+    case TOMATO_THROW_OPTION:
+      return 'tomato';
+    case EGG_THROW_OPTION:
+      return 'egg';
+    default:
+      return null;
+  }
+}
+
+export function createEmojiImpactSplat(
   animation: EmojiAnimation,
+  kind: EmojiImpactSplatKind,
   random: () => number = Math.random,
-): EmojiPoopSplat {
+): EmojiImpactSplat {
   return {
     id: animation.id,
+    kind,
     x: animation.toX + (random() - 0.5) * 8,
     y: animation.toY + (random() - 0.5) * 8,
     rotationDeg: (random() - 0.5) * 34,
-    scale: 0.9 + random() * 0.25,
+    scale: (kind === 'egg' ? 0.95 : 0.9) + random() * 0.25,
   };
 }
 
-export function getEmojiPoopSplatStyle(splat: EmojiPoopSplat): string {
+export function getEmojiImpactSplatStyle(splat: EmojiImpactSplat): string {
   return [
     `left: ${splat.x}px`,
     `top: ${splat.y}px`,
     `--splat-rotation: ${splat.rotationDeg}deg`,
     `--splat-scale: ${splat.scale}`,
   ].join('; ');
+}
+
+export function createEmojiPoopSplat(
+  animation: EmojiAnimation,
+  random: () => number = Math.random,
+): EmojiImpactSplat {
+  return createEmojiImpactSplat(animation, 'poop', random);
+}
+
+export function getEmojiPoopSplatStyle(splat: EmojiImpactSplat): string {
+  return getEmojiImpactSplatStyle(splat);
 }
 
 export function getEmojiImpactDelayMs(animation: EmojiAnimation): number {

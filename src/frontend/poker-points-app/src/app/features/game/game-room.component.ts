@@ -15,12 +15,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { AuthService } from '../../core/services/auth.service';
-import {
-  EmojiThrownEvent,
-  Participant,
-  POOP_THROW_OPTION,
-  Vote,
-} from '../../core/models/session.models';
+import { EmojiThrownEvent, Participant, Vote } from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
 import { StoryHistoryPanelComponent } from './story-history-panel.component';
 import { AccountDropdownComponent } from './account-dropdown.component';
@@ -29,21 +24,22 @@ import { EmojiThrowIconComponent } from './emoji-throw-icon.component';
 import { EmojiThrowPaletteComponent } from './emoji-throw-palette.component';
 import {
   createEmojiAnimation,
-  createEmojiPoopSplat,
   EmojiAnimation,
-  EmojiPoopSplat,
+  EmojiImpactSplat,
   EmojiTargetGeometry,
   EmojiThrowPoint,
   EmojiThrowRect,
   getEmojiAnimationCleanupMs,
   getEmojiAnimationStyle,
+  createEmojiImpactSplat,
   getEmojiImpactDelayMs,
-  getEmojiPoopSplatStyle,
+  getEmojiImpactSplatKind,
+  getEmojiImpactSplatStyle,
   getEmojiStuckDartStyle,
   MAX_ACTIVE_EMOJI_ANIMATIONS,
-  MAX_POOP_SPLATS,
+  MAX_EMOJI_SPLATS,
   MAX_STUCK_DARTS,
-  POOP_SPLAT_LIFETIME_MS,
+  EMOJI_SPLAT_LIFETIME_MS,
   STUCK_DART_LIFETIME_MS,
 } from './emoji-throw-animation.utils';
 import confetti from 'canvas-confetti';
@@ -77,10 +73,11 @@ import confetti from 'canvas-confetti';
       .emoji-throw-hover-bridge {
         position: absolute;
         left: 50%;
-        top: -3.35rem;
+        top: -3.75rem;
         z-index: 29;
-        width: 15rem;
-        height: 4.25rem;
+        width: 26rem;
+        max-width: min(26rem, calc(100vw - 2rem));
+        height: 9.25rem;
         pointer-events: auto;
         transform: translateX(-50%);
       }
@@ -130,6 +127,10 @@ import confetti from 'canvas-confetti';
 
       .emoji-flight--airplane .emoji-flight-glyph {
         animation-name: emojiAirplaneGlyph;
+      }
+
+      .emoji-flight--rock .emoji-flight-glyph {
+        animation-name: emojiRockGlyph;
       }
 
       .emoji-flight--pop .emoji-flight-glyph {
@@ -240,6 +241,33 @@ import confetti from 'canvas-confetti';
         }
       }
 
+      @keyframes emojiRockGlyph {
+        0% {
+          opacity: 0;
+          transform: scale(0.7) rotate(-24deg);
+        }
+        10% {
+          opacity: 1;
+          transform: scale(1) rotate(16deg);
+        }
+        48% {
+          opacity: 1;
+          transform: scale(1.08) rotate(168deg);
+        }
+        72% {
+          opacity: 1;
+          transform: scale(0.92) rotate(276deg);
+        }
+        88% {
+          opacity: 1;
+          transform: scale(1) rotate(342deg);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.86) rotate(390deg);
+        }
+      }
+
       @keyframes emojiPopPath {
         0% {
           opacity: 1;
@@ -335,7 +363,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly Math = Math;
   readonly getEmojiAnimationStyle = getEmojiAnimationStyle;
   readonly getEmojiStuckDartStyle = getEmojiStuckDartStyle;
-  readonly getEmojiPoopSplatStyle = getEmojiPoopSplatStyle;
+  readonly getEmojiImpactSplatStyle = getEmojiImpactSplatStyle;
 
   // Sorted voters: host at top (index 0), current user at bottom (index ~half)
   readonly sortedVoters = computed(() => {
@@ -413,7 +441,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly openEmojiTargetId = signal<string | null>(null);
   readonly emojiAnimations = signal<EmojiAnimation[]>([]);
   readonly stuckDartAnimations = signal<EmojiAnimation[]>([]);
-  readonly poopSplatEffects = signal<EmojiPoopSplat[]>([]);
+  readonly emojiSplatEffects = signal<EmojiImpactSplat[]>([]);
 
   // Timer state (delegated to GameStateService)
   readonly timerSecondsRemaining = this.gameState.timerSecondsRemaining;
@@ -581,19 +609,20 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       [...animations, animation].slice(-MAX_ACTIVE_EMOJI_ANIMATIONS),
     );
 
-    if (event.emoji === POOP_THROW_OPTION) {
+    const splatKind = getEmojiImpactSplatKind(event.emoji);
+    if (splatKind) {
       const impactDelayMs = getEmojiImpactDelayMs(animation);
       window.setTimeout(() => {
-        const splat = createEmojiPoopSplat(animation);
-        this.poopSplatEffects.update((splats) => [...splats, splat].slice(-MAX_POOP_SPLATS));
+        const splat = createEmojiImpactSplat(animation, splatKind);
+        this.emojiSplatEffects.update((splats) => [...splats, splat].slice(-MAX_EMOJI_SPLATS));
         this.emojiAnimations.update((animations) =>
           animations.filter((item) => item.id !== event.throwId),
         );
         window.setTimeout(() => {
-          this.poopSplatEffects.update((splats) =>
+          this.emojiSplatEffects.update((splats) =>
             splats.filter((item) => item.id !== event.throwId),
           );
-        }, POOP_SPLAT_LIFETIME_MS);
+        }, EMOJI_SPLAT_LIFETIME_MS);
       }, impactDelayMs);
       return;
     }

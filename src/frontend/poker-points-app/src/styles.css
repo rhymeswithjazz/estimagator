@@ -598,7 +598,7 @@
   background-color: rgba(139, 192, 83, 0.35);
 }
 
-.emoji-poop-splat {
+.emoji-impact-splat {
   position: fixed;
   z-index: 75;
   width: 2.75rem;
@@ -606,11 +606,27 @@
   pointer-events: none;
   transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(var(--splat-scale));
   transform-origin: center;
-  animation: emojiPoopSplat 1150ms ease-out forwards;
+  animation: emojiImpactSplat 1150ms ease-out forwards;
 }
 
-.emoji-poop-splat::before,
-.emoji-poop-splat::after {
+.emoji-impact-splat img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.emoji-impact-splat--tomato {
+  width: 3.35rem;
+  height: 3rem;
+}
+
+.emoji-impact-splat--egg {
+  width: 3.45rem;
+  height: 2.85rem;
+}
+
+.emoji-impact-splat--poop::before,
+.emoji-impact-splat--poop::after {
   position: absolute;
   content: '';
   border-radius: 9999px;
@@ -622,16 +638,15 @@
     -0.36rem 0.55rem 0 -0.24rem rgb(146 82 31);
 }
 
-.emoji-poop-splat::before {
+.emoji-impact-splat--poop::before {
   inset: 0.36rem 0.26rem 0.3rem;
   background:
     radial-gradient(circle at 32% 38%, rgb(160 94 39) 0 18%, transparent 20%),
-    radial-gradient(circle at 62% 62%, rgb(76 43 16) 0 14%, transparent 16%),
-    rgb(103 58 21);
+    radial-gradient(circle at 62% 62%, rgb(76 43 16) 0 14%, transparent 16%), rgb(103 58 21);
   transform: scaleX(1.05) rotate(-8deg);
 }
 
-.emoji-poop-splat::after {
+.emoji-impact-splat--poop::after {
   left: 50%;
   top: 50%;
   width: 0.55rem;
@@ -640,7 +655,7 @@
   background: rgb(71 39 14);
 }
 
-@keyframes emojiPoopSplat {
+@keyframes emojiImpactSplat {
   0% {
     opacity: 0;
     transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(0.2);

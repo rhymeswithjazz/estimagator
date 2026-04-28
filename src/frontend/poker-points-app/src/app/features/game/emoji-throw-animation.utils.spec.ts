@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  createEmojiImpactSplat,
   createEmojiPoopSplat,
   createEmojiAnimation,
   getEmojiAnimationCleanupMs,
   getEmojiAnimationStyle,
+  getEmojiImpactSplatKind,
+  getEmojiImpactSplatStyle,
   getEmojiImpactDelayMs,
   getEmojiPoopSplatStyle,
   getEmojiStuckDartStyle,
@@ -14,7 +17,10 @@ import {
 import {
   AIRPLANE_THROW_OPTION,
   DART_THROW_OPTION,
+  EGG_THROW_OPTION,
   EmojiThrownEvent,
+  ROCK_THROW_OPTION,
+  TOMATO_THROW_OPTION,
 } from '../../core/models/session.models';
 
 describe('emoji throw animation utils', () => {
@@ -65,7 +71,7 @@ describe('emoji throw animation utils', () => {
     ).toEqual({ x: 0, y: -40 });
   });
 
-  it('selects dart, airplane, and default motion profiles', () => {
+  it('selects dart, airplane, rock, and default motion profiles', () => {
     const targetGeometry = {
       center: { x: 120, y: 140 },
       surfaceRect: targetRect,
@@ -93,6 +99,13 @@ describe('emoji throw animation utils', () => {
       false,
       () => 0,
     );
+    const rockAnimation = createEmojiAnimation(
+      { ...event, emoji: ROCK_THROW_OPTION },
+      targetGeometry,
+      senderCenter,
+      false,
+      () => 0,
+    );
 
     expect(dartAnimation.profile).toBe('dart');
     expect(dartAnimation.durationMs).toBeLessThan(defaultAnimation.durationMs);
@@ -104,6 +117,12 @@ describe('emoji throw animation utils', () => {
     expect(airplaneAnimation.durationMs).toBeGreaterThan(defaultAnimation.durationMs);
     expect(Math.abs(airplaneAnimation.horizontalArc)).toBeGreaterThan(
       Math.abs(defaultAnimation.horizontalArc),
+    );
+
+    expect(rockAnimation.profile).toBe('rock');
+    expect(rockAnimation.durationMs).toBeLessThan(defaultAnimation.durationMs);
+    expect(Math.abs(rockAnimation.landingContinueX)).toBeGreaterThan(
+      Math.abs(defaultAnimation.landingContinueX),
     );
 
     expect(defaultAnimation.profile).toBe('default');
@@ -153,6 +172,36 @@ describe('emoji throw animation utils', () => {
     expect(getEmojiPoopSplatStyle(splat)).toContain('left: 100px');
     expect(getEmojiPoopSplatStyle(splat)).toContain('top: 140px');
     expect(getEmojiPoopSplatStyle(splat)).toContain('--splat-scale: 1.025');
+  });
+
+  it('creates tomato and egg splats at the impact point when those throws land', () => {
+    const targetGeometry = {
+      center: { x: 120, y: 140 },
+      surfaceRect: targetRect,
+    };
+    const tomatoAnimation = createEmojiAnimation(
+      { ...event, emoji: TOMATO_THROW_OPTION },
+      targetGeometry,
+      { x: 0, y: 140 },
+      false,
+      () => 0.5,
+    );
+    const eggAnimation = createEmojiAnimation(
+      { ...event, emoji: EGG_THROW_OPTION },
+      targetGeometry,
+      { x: 0, y: 140 },
+      false,
+      () => 0.5,
+    );
+
+    expect(getEmojiImpactSplatKind(TOMATO_THROW_OPTION)).toBe('tomato');
+    expect(getEmojiImpactSplatKind(EGG_THROW_OPTION)).toBe('egg');
+    expect(tomatoAnimation.landingContinueX).toBe(0);
+    expect(eggAnimation.landingContinueX).toBe(0);
+    expect(createEmojiImpactSplat(tomatoAnimation, 'tomato', () => 0.5).kind).toBe('tomato');
+    expect(
+      getEmojiImpactSplatStyle(createEmojiImpactSplat(eggAnimation, 'egg', () => 0.5)),
+    ).toContain('--splat-scale: 1.075');
   });
 
   it('keeps leftward airplane throws upright by mirroring vertically', () => {

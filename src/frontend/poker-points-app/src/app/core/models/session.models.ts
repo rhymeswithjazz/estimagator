@@ -117,15 +117,21 @@ export const DART_THROW_OPTION = '🎯';
 export const AIRPLANE_THROW_OPTION = '✈️';
 export const PAPER_BALL_THROW_OPTION = 'paper-ball';
 export const POOP_THROW_OPTION = '💩';
+export const TOMATO_THROW_OPTION = '🍅';
+export const ROCK_THROW_OPTION = '🪨';
+export const EGG_THROW_OPTION = '🥚';
 export const EMOJI_THROW_OPTIONS = [
   DART_THROW_OPTION,
   AIRPLANE_THROW_OPTION,
   PAPER_BALL_THROW_OPTION,
   '❤️',
   POOP_THROW_OPTION,
+  TOMATO_THROW_OPTION,
+  ROCK_THROW_OPTION,
+  EGG_THROW_OPTION,
 ] as const;
 export type EmojiThrowOption = (typeof EMOJI_THROW_OPTIONS)[number];
-export type EmojiThrowProfile = 'dart' | 'airplane' | 'default';
+export type EmojiThrowProfile = 'dart' | 'airplane' | 'rock' | 'default';
 export type EmojiThrowIconKind = 'dart' | 'airplane' | 'paper-ball' | 'emoji';
 
 export interface EmojiThrowOptionMetadata {
@@ -163,6 +169,24 @@ export const EMOJI_THROW_OPTION_METADATA: Record<EmojiThrowOption, EmojiThrowOpt
   [POOP_THROW_OPTION]: {
     value: POOP_THROW_OPTION,
     label: 'poop',
+    iconKind: 'emoji',
+    profile: 'default',
+  },
+  [TOMATO_THROW_OPTION]: {
+    value: TOMATO_THROW_OPTION,
+    label: 'tomato',
+    iconKind: 'emoji',
+    profile: 'default',
+  },
+  [ROCK_THROW_OPTION]: {
+    value: ROCK_THROW_OPTION,
+    label: 'rock',
+    iconKind: 'emoji',
+    profile: 'rock',
+  },
+  [EGG_THROW_OPTION]: {
+    value: EGG_THROW_OPTION,
+    label: 'egg',
     iconKind: 'emoji',
     profile: 'default',
   },

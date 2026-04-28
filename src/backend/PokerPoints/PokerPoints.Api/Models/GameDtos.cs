@@ -58,6 +58,9 @@ public static class EmojiThrowOptions
         "✈️",
         "paper-ball",
         "❤️",
-        "💩"
+        "💩",
+        "🍅",
+        "🪨",
+        "🥚"
     };
 }

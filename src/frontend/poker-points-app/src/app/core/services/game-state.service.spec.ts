@@ -53,6 +53,18 @@ describe('canThrowEmojiAt', () => {
     );
   });
 
+  it('allows the tomato, rock, and egg throw options', () => {
+    expect(canThrowEmojiAt(currentParticipant, participants, targetParticipant.id, '🍅')).toBe(
+      true,
+    );
+    expect(canThrowEmojiAt(currentParticipant, participants, targetParticipant.id, '🪨')).toBe(
+      true,
+    );
+    expect(canThrowEmojiAt(currentParticipant, participants, targetParticipant.id, '🥚')).toBe(
+      true,
+    );
+  });
+
   it('does not allow throwing at the current participant', () => {
     expect(canThrowEmojiAt(currentParticipant, participants, currentParticipant.id, '🎯')).toBe(
       false,

@@ -801,8 +801,21 @@
   </div>
 }
 
-@for (splat of poopSplatEffects(); track splat.id) {
-  <div class="emoji-poop-splat" aria-hidden="true" [style]="getEmojiPoopSplatStyle(splat)"></div>
+@for (splat of emojiSplatEffects(); track splat.id) {
+  <div
+    class="emoji-impact-splat"
+    [class.emoji-impact-splat--poop]="splat.kind === 'poop'"
+    [class.emoji-impact-splat--tomato]="splat.kind === 'tomato'"
+    [class.emoji-impact-splat--egg]="splat.kind === 'egg'"
+    aria-hidden="true"
+    [style]="getEmojiImpactSplatStyle(splat)"
+  >
+    @if (splat.kind === 'tomato') {
+      <img src="tomato-splat.svg" alt="" />
+    } @else if (splat.kind === 'egg') {
+      <img src="fried-egg-splat.svg" alt="" />
+    }
+  </div>
 }
 
 @for (animation of emojiAnimations(); track animation.id) {
@@ -812,6 +825,7 @@
     [class.emoji-flight--pop]="animation.mode === 'pop'"
     [class.emoji-flight--dart]="animation.profile === 'dart'"
     [class.emoji-flight--airplane]="animation.profile === 'airplane'"
+    [class.emoji-flight--rock]="animation.profile === 'rock'"
     [attr.title]="animation.senderDisplayName"
     [style]="getEmojiAnimationStyle(animation)"
   >

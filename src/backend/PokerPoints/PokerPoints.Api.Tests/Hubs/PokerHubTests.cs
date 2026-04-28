@@ -146,6 +146,9 @@ public class PokerHubTests
     [Theory]
     [InlineData("paper-ball")]
     [InlineData("💩")]
+    [InlineData("🍅")]
+    [InlineData("🪨")]
+    [InlineData("🥚")]
     public async Task ThrowEmoji_ShouldAllowCuratedThrowOptions(string emoji)
     {
         // Arrange
