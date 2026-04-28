@@ -214,6 +214,10 @@ export class GameStateService {
       this.clearTimer();
       this._timerJustExpired.set(true);
     });
+
+    this.signalR.reconnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      void this.restoreSessionAfterReconnect();
+    });
   }
 
   private applyGameState(state: GameState): void {
@@ -475,6 +479,40 @@ export class GameStateService {
       storedIdentity.displayName,
       storedIdentity.isObserver ?? false,
     );
+  }
+
+  private async restoreSessionAfterReconnect(): Promise<void> {
+    const sessionCode = this._sessionCode();
+    const currentParticipant = this._currentParticipant();
+    if (!sessionCode || !currentParticipant) return;
+
+    try {
+      const reconnectedParticipant = await this.signalR.joinSession(
+        sessionCode,
+        currentParticipant.displayName,
+        currentParticipant.isObserver,
+        currentParticipant.id,
+      );
+
+      if (!reconnectedParticipant) return;
+
+      this._currentParticipant.set(reconnectedParticipant);
+      this.storeIdentity({
+        sessionCode,
+        participantId: reconnectedParticipant.id,
+        displayName: reconnectedParticipant.displayName,
+        isObserver: reconnectedParticipant.isObserver,
+      });
+
+      const gameState = await this.signalR.getSessionState();
+      if (gameState) {
+        this.applyGameState(gameState);
+      }
+
+      await this.loadStoryQueue();
+    } catch (err) {
+      console.error('Failed to restore session after reconnect:', err);
+    }
   }
 
   private clearSessionState(): void {

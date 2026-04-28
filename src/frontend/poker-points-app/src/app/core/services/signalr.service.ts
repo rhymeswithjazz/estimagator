@@ -49,6 +49,7 @@ export class SignalRService {
   readonly timerStopped$ = new Subject<void>();
   readonly timerExpired$ = new Subject<void>();
   readonly emojiThrown$ = new Subject<EmojiThrownEvent>();
+  readonly reconnected$ = new Subject<void>();
 
   async connect(): Promise<void> {
     if (this.connection?.state === signalR.HubConnectionState.Connected) {
@@ -172,6 +173,7 @@ export class SignalRService {
 
     this.connection.onreconnected(() => {
       this._connectionState.set('connected');
+      this.reconnected$.next();
       console.log('SignalR reconnected');
     });
 

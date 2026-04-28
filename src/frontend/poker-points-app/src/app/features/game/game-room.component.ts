@@ -708,7 +708,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.cancelEmojiPaletteClose();
+  }
 
   async leaveGame(): Promise<void> {
     await this.gameState.leaveSession();
