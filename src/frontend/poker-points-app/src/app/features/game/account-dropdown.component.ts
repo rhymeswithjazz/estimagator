@@ -1,11 +1,12 @@
 import { Component, inject, output, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-account-dropdown',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ThemeSelectorComponent],
   template: `
     <div class="relative">
       <!-- Trigger Button (Profile Avatar) -->
@@ -46,6 +47,12 @@ import { AuthService } from '../../core/services/auth.service';
 
           <!-- Menu Items -->
           <div class="py-1">
+            <div class="px-4 py-2">
+              <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Theme
+              </div>
+              <app-theme-selector />
+            </div>
             <a
               routerLink="/profile"
               (click)="close()"

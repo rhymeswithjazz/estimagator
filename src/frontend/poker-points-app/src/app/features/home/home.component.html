@@ -15,13 +15,17 @@
           >
         </div>
       </div>
-      <app-account-dropdown />
+      <div class="flex items-center gap-3">
+        <app-theme-selector />
+        <app-account-dropdown />
+      </div>
     </header>
   } @else {
     <header
       class="sticky top-0 p-4 flex justify-end items-center bg-white/80 backdrop-blur-md z-20"
     >
       <div class="flex items-center gap-3">
+        <app-theme-selector />
         <a
           routerLink="/login"
           class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors"

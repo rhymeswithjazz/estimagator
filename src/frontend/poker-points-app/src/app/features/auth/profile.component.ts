@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { SessionService } from '../../core/services/session.service';
 import { UserSession } from '../../core/models/session.models';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, ThemeSelectorComponent],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {

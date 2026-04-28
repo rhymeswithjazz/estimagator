@@ -2,11 +2,12 @@ import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../core/services/session.service';
 import { SessionHistoryResponse, StoryHistory, Vote } from '../../core/models/session.models';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-session-history',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, ThemeSelectorComponent],
   templateUrl: './session-history.component.html',
 })
 export class SessionHistoryComponent implements OnInit {

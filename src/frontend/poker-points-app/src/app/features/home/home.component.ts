@@ -5,11 +5,12 @@ import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DeckType, DECK_VALUES } from '../../core/models/session.models';
 import { AccountDropdownComponent } from '../game/account-dropdown.component';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink, AccountDropdownComponent],
+  imports: [FormsModule, RouterLink, AccountDropdownComponent, ThemeSelectorComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {

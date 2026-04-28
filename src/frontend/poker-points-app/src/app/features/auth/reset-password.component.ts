@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ThemeSelectorComponent],
   template: `
-    <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative">
+      <app-theme-selector class="absolute right-4 top-4 z-20" />
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-6">
           <h1 class="text-2xl font-bold text-emerald-600">Estimagator</h1>

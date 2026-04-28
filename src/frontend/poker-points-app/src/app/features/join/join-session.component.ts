@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { SessionService } from '../../core/services/session.service';
 import { GameStateService } from '../../core/services/game-state.service';
 import { DOCUMENT } from '@angular/common';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-join-session',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, ThemeSelectorComponent],
   templateUrl: './join-session.component.html',
 })
 export class JoinSessionComponent implements OnInit {

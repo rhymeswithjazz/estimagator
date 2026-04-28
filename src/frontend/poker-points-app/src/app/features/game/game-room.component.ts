@@ -9,6 +9,7 @@ import { Participant, Vote } from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
 import { StoryHistoryPanelComponent } from './story-history-panel.component';
 import { AccountDropdownComponent } from './account-dropdown.component';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 import confetti from 'canvas-confetti';
 
 @Component({
@@ -22,6 +23,7 @@ import confetti from 'canvas-confetti';
     SettingsPanelComponent,
     StoryHistoryPanelComponent,
     AccountDropdownComponent,
+    ThemeSelectorComponent,
   ],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },

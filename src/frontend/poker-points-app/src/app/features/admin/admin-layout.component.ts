@@ -4,11 +4,19 @@ import { AuthService } from '../../core/services/auth.service';
 import { ModalService } from '../../core/services/modal.service';
 import { ConfirmModalComponent } from '../../shared/components/confirm-modal.component';
 import { AlertModalComponent } from '../../shared/components/alert-modal.component';
+import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ConfirmModalComponent, AlertModalComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ConfirmModalComponent,
+    AlertModalComponent,
+    ThemeSelectorComponent,
+  ],
   template: `
     <div class="min-h-screen bg-gray-100">
       <nav class="bg-white shadow-sm border-b">
@@ -48,6 +56,7 @@ import { AlertModalComponent } from '../../shared/components/alert-modal.compone
                 Sessions
               </a>
               <div class="w-px h-6 bg-gray-300 mx-2"></div>
+              <app-theme-selector />
               <a
                 routerLink="/"
                 class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-md"
