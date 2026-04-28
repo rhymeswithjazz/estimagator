@@ -113,6 +113,121 @@ public class PokerHubTests
     }
 
     [Fact]
+    public async Task TransferHost_ShouldBroadcastHostTransferredAndSessionState_WhenRequestIsValid()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        var currentHost = CreateParticipant(
+            SenderId,
+            "Sender",
+            "ABC123",
+            "sender-connection",
+            isOrganizer: true);
+        var newHost = CreateParticipant(TargetId, "Target", "ABC123", "target-connection");
+        newHost.IsOrganizer = true;
+        var gameState = CreateGameState(newHost, currentStory: null);
+
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(currentHost);
+        fixture.ParticipantService
+            .Setup(s => s.TransferHostAsync(SenderId, TargetId))
+            .ReturnsAsync(new HostTransferResult(HostTransferStatus.Success, SenderId, newHost));
+        fixture.SessionService
+            .Setup(s => s.GetGameStateAsync("ABC123"))
+            .ReturnsAsync(gameState);
+
+        // Act
+        var result = await fixture.Hub.TransferHost(TargetId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.IsOrganizer);
+        Assert.Equal(TargetId, result.Id);
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "HostTransferred",
+                It.Is<object?[]>(args => IsExpectedHostTransferredEvent(args)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "SessionState",
+                It.Is<object?[]>(args => ReferenceEquals(args.SingleOrDefault(), gameState)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task TransferHost_ShouldSendError_WhenCallerIsNotHost()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection"));
+
+        // Act
+        var act = () => fixture.Hub.TransferHost(TargetId);
+
+        // Assert
+        var exception = await Assert.ThrowsAsync<HubException>(act);
+        Assert.Equal("Only the current host can transfer host controls.", exception.Message);
+        fixture.ParticipantService.Verify(
+            s => s.TransferHostAsync(It.IsAny<Guid>(), It.IsAny<Guid>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task EndSession_ShouldDeactivateSession_WhenCallerIsHost()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(
+                SenderId,
+                "Sender",
+                "ABC123",
+                "sender-connection",
+                isOrganizer: true));
+        fixture.SessionService
+            .Setup(s => s.DeactivateSessionByHostAsync(SessionId))
+            .ReturnsAsync(true);
+
+        // Act
+        await fixture.Hub.EndSession();
+
+        // Assert
+        fixture.TimerService.Verify(t => t.StopTimer("ABC123"), Times.Once);
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "SessionEnded",
+                It.Is<object?[]>(args => args.Length == 0),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task EndSession_ShouldSendError_WhenCallerIsNotHost()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection"));
+
+        // Act
+        await fixture.Hub.EndSession();
+
+        // Assert
+        VerifyError(fixture.CallerClient, "Only the host can end the session");
+        fixture.SessionService.Verify(
+            s => s.DeactivateSessionByHostAsync(It.IsAny<Guid>()),
+            Times.Never);
+    }
+
+    [Fact]
     public async Task ThrowEmoji_ShouldBroadcastEmojiThrown_WhenRequestIsValid()
     {
         // Arrange
@@ -295,6 +410,7 @@ public class PokerHubTests
         var sessionService = new Mock<ISessionService>();
         var participantService = new Mock<IParticipantService>();
         var votingService = new Mock<IVotingService>();
+        var timerService = new Mock<ITimerService>();
         var rateLimiter = new Mock<IEmojiThrowRateLimiter>();
         var callerClient = new Mock<ISingleClientProxy>();
         var groupClient = new Mock<IClientProxy>();
@@ -311,7 +427,7 @@ public class PokerHubTests
             participantService.Object,
             votingService.Object,
             Mock.Of<IAuthService>(),
-            Mock.Of<ITimerService>(),
+            timerService.Object,
             rateLimiter.Object)
         {
             Clients = clients.Object,
@@ -323,6 +439,7 @@ public class PokerHubTests
             sessionService,
             participantService,
             votingService,
+            timerService,
             rateLimiter,
             callerClient,
             groupClient);
@@ -334,7 +451,8 @@ public class PokerHubTests
         string accessCode,
         string? connectionId,
         Guid? sessionId = null,
-        bool isObserver = false)
+        bool isObserver = false,
+        bool isOrganizer = false)
     {
         var actualSessionId = sessionId ?? SessionId;
         return new Participant
@@ -343,6 +461,7 @@ public class PokerHubTests
             SessionId = actualSessionId,
             DisplayName = displayName,
             IsObserver = isObserver,
+            IsOrganizer = isOrganizer,
             ConnectionId = connectionId,
             Session = new Session
             {
@@ -394,6 +513,15 @@ public class PokerHubTests
                evt.Emoji == emoji;
     }
 
+    private static bool IsExpectedHostTransferredEvent(object?[] args)
+    {
+        var evt = args.SingleOrDefault() as HostTransferredEvent;
+        return evt != null &&
+               evt.PreviousHostParticipantId == SenderId &&
+               evt.NewHost.Id == TargetId &&
+               evt.NewHost.IsOrganizer;
+    }
+
     private static void VerifyError(Mock<ISingleClientProxy> callerClient, string message)
     {
         callerClient.Verify(
@@ -416,6 +544,7 @@ public class PokerHubTests
         Mock<ISessionService> SessionService,
         Mock<IParticipantService> ParticipantService,
         Mock<IVotingService> VotingService,
+        Mock<ITimerService> TimerService,
         Mock<IEmojiThrowRateLimiter> RateLimiter,
         Mock<ISingleClientProxy> CallerClient,
         Mock<IClientProxy> GroupClient);

@@ -347,6 +347,11 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly votedCount = computed(
     () => this.voters().filter((v) => this.participantVoteMap().get(v.id)).length,
   );
+  readonly eligibleHostRecipients = computed(() =>
+    this.participants().filter(
+      (participant) => participant.isConnected && !participant.isOrganizer,
+    ),
+  );
 
   // Dynamic sizing based on voter count
   readonly sizeMode = computed(() => {
@@ -438,6 +443,11 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   // Share link state
   readonly shareUrlCopied = signal(false);
   readonly roleChangePending = signal(false);
+  readonly showHostLeaveTransferPrompt = signal(false);
+  readonly showHostLeaveNoReplacementPrompt = signal(false);
+  readonly selectedLeaveTransferTargetId = signal('');
+  readonly hostLeaveTransferPending = signal(false);
+  readonly hostLeaveError = signal<string | null>(null);
   readonly openEmojiTargetId = signal<string | null>(null);
   readonly emojiAnimations = signal<EmojiAnimation[]>([]);
   readonly stuckDartAnimations = signal<EmojiAnimation[]>([]);
@@ -462,6 +472,10 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
     this.signalR.emojiThrown$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this.queueEmojiAnimation(event);
+    });
+
+    this.signalR.sessionEnded$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.router.navigate(['/']);
     });
   }
 
@@ -742,6 +756,62 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   }
 
   async leaveGame(): Promise<void> {
+    if (this.isOrganizer()) {
+      const eligibleRecipients = this.eligibleHostRecipients();
+      if (eligibleRecipients.length > 0) {
+        this.selectedLeaveTransferTargetId.set(eligibleRecipients[0].id);
+        this.hostLeaveError.set(null);
+        this.showHostLeaveTransferPrompt.set(true);
+        return;
+      }
+
+      this.hostLeaveError.set(null);
+      this.showHostLeaveNoReplacementPrompt.set(true);
+      return;
+    }
+
+    await this.performLeaveGame();
+  }
+
+  async confirmTransferHostAndLeave(): Promise<void> {
+    if (this.hostLeaveTransferPending()) return;
+
+    const targetId = this.selectedLeaveTransferTargetId();
+    if (!targetId) {
+      this.hostLeaveError.set('Choose a new host before leaving.');
+      return;
+    }
+
+    this.hostLeaveTransferPending.set(true);
+    this.hostLeaveError.set(null);
+    try {
+      const transferred = await this.gameState.transferHost(targetId);
+      if (!transferred) {
+        this.hostLeaveError.set('Unable to transfer host controls.');
+        return;
+      }
+
+      this.showHostLeaveTransferPrompt.set(false);
+      await this.performLeaveGame();
+    } catch (err) {
+      this.hostLeaveError.set(getTransferErrorMessage(err));
+    } finally {
+      this.hostLeaveTransferPending.set(false);
+    }
+  }
+
+  cancelHostLeavePrompt(): void {
+    this.showHostLeaveTransferPrompt.set(false);
+    this.showHostLeaveNoReplacementPrompt.set(false);
+    this.hostLeaveError.set(null);
+  }
+
+  async leaveWithoutReplacement(): Promise<void> {
+    this.showHostLeaveNoReplacementPrompt.set(false);
+    await this.performLeaveGame();
+  }
+
+  private async performLeaveGame(): Promise<void> {
     await this.gameState.leaveSession();
     this.router.navigate(['/']);
   }
@@ -882,4 +952,17 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       setTimeout(() => this.shareUrlCopied.set(false), 1500);
     }
   }
+}
+
+function getTransferErrorMessage(err: unknown): string {
+  const fallback = 'Unable to transfer host controls.';
+  if (!(err instanceof Error) || !err.message) return fallback;
+
+  const message = err.message;
+  if (message.includes('Method does not exist')) {
+    return 'Host transfer is unavailable. Refresh and try again.';
+  }
+
+  const hubExceptionMessage = message.match(/HubException:\s*(.+)$/)?.[1];
+  return hubExceptionMessage || message;
 }

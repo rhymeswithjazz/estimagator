@@ -845,6 +845,98 @@
   <app-settings-panel (close)="isSettingsPanelOpen.set(false)" />
 }
 
+<!-- Host Leave Transfer Prompt -->
+@if (showHostLeaveTransferPrompt()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center"
+    (click)="cancelHostLeavePrompt()"
+  >
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div
+      class="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4"
+      (click)="$event.stopPropagation()"
+    >
+      <h3 class="text-lg font-display font-bold text-gray-900 mb-2">
+        Transfer Host Before Leaving
+      </h3>
+      <p class="text-sm text-gray-500 mb-4">
+        Choose a connected participant to keep host controls available after you leave.
+      </p>
+
+      <select
+        [ngModel]="selectedLeaveTransferTargetId()"
+        (ngModelChange)="selectedLeaveTransferTargetId.set($event)"
+        class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+      >
+        @for (participant of eligibleHostRecipients(); track participant.id) {
+          <option [value]="participant.id">
+            {{ participant.displayName }}{{ participant.isObserver ? ' (spectator)' : '' }}
+          </option>
+        }
+      </select>
+
+      @if (hostLeaveError()) {
+        <p class="text-sm text-red-600 mt-3">{{ hostLeaveError() }}</p>
+      }
+
+      <div class="flex gap-3 mt-5">
+        <button
+          (click)="cancelHostLeavePrompt()"
+          [disabled]="hostLeaveTransferPending()"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="confirmTransferHostAndLeave()"
+          [disabled]="hostLeaveTransferPending()"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold bg-poker-green-500 text-white rounded-xl hover:bg-poker-green-600 transition-colors disabled:opacity-50"
+        >
+          @if (hostLeaveTransferPending()) {
+            Transferring...
+          } @else {
+            Transfer & Leave
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Host Leave Warning When No Replacement Exists -->
+@if (showHostLeaveNoReplacementPrompt()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center"
+    (click)="cancelHostLeavePrompt()"
+  >
+    <div class="absolute inset-0 bg-black/30"></div>
+    <div
+      class="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4"
+      (click)="$event.stopPropagation()"
+    >
+      <h3 class="text-lg font-display font-bold text-gray-900 mb-2">Leave Without a Host?</h3>
+      <p class="text-sm text-gray-500 mb-5">
+        No connected participant can receive host controls. The session will not have an active host
+        until the current host reconnects.
+      </p>
+      <div class="flex gap-3">
+        <button
+          (click)="cancelHostLeavePrompt()"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="leaveWithoutReplacement()"
+          class="flex-1 px-4 py-2.5 text-sm font-semibold bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+        >
+          Leave Anyway
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
 <!-- Timer Expired Modal (Organizer only, when not all voted) -->
 @if (showTimerExpiredModal()) {
   <div class="fixed inset-0 z-50 flex items-center justify-center" (click)="dismissTimerExpired()">

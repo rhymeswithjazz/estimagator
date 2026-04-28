@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using PokerPoints.Api.Models;
 using PokerPoints.Data;
 using PokerPoints.Data.Entities;
 
@@ -7,14 +6,33 @@ namespace PokerPoints.Api.Services;
 
 public interface IParticipantService
 {
-    Task<Participant> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId);
-    Task<Participant?> ReconnectAsync(Guid participantId, string connectionId);
+    Task<Participant> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId, Guid? userId = null);
+    Task<Participant?> ReconnectAsync(Guid participantId, string connectionId, Guid? userId = null);
     Task DisconnectAsync(string connectionId);
     Task<Participant?> GetByConnectionIdAsync(string connectionId);
     Task<Participant?> GetByIdAsync(Guid participantId);
     Task<Participant?> UpdateRoleAsync(string connectionId, bool isObserver);
     Task<bool> IsOrganizerAsync(string connectionId, Guid sessionId);
+    Task<HostTransferResult> TransferHostAsync(Guid currentHostParticipantId, Guid targetParticipantId);
 }
+
+public enum HostTransferStatus
+{
+    Success,
+    CurrentParticipantNotFound,
+    CurrentParticipantNotHost,
+    TargetNotFound,
+    TargetDifferentSession,
+    TargetDisconnected,
+    TargetAlreadyHost,
+    SessionInactive
+}
+
+public record HostTransferResult(
+    HostTransferStatus Status,
+    Guid? PreviousHostParticipantId = null,
+    Participant? NewHost = null
+);
 
 public class ParticipantService : IParticipantService
 {
@@ -25,7 +43,13 @@ public class ParticipantService : IParticipantService
         _db = db;
     }
 
-    public async Task<Participant> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId)
+    public async Task<Participant> JoinSessionAsync(
+        Guid sessionId,
+        string displayName,
+        bool isObserver,
+        bool isOrganizer,
+        string connectionId,
+        Guid? userId = null)
     {
         var participant = new Participant
         {
@@ -33,7 +57,8 @@ public class ParticipantService : IParticipantService
             DisplayName = displayName,
             IsObserver = isObserver,
             IsOrganizer = isOrganizer,
-            ConnectionId = connectionId
+            ConnectionId = connectionId,
+            UserId = userId
         };
 
         _db.Participants.Add(participant);
@@ -42,12 +67,13 @@ public class ParticipantService : IParticipantService
         return participant;
     }
 
-    public async Task<Participant?> ReconnectAsync(Guid participantId, string connectionId)
+    public async Task<Participant?> ReconnectAsync(Guid participantId, string connectionId, Guid? userId = null)
     {
         var participant = await _db.Participants.FindAsync(participantId);
         if (participant == null) return null;
 
         participant.ConnectionId = connectionId;
+        participant.UserId ??= userId;
         await _db.SaveChangesAsync();
 
         return participant;
@@ -99,5 +125,80 @@ public class ParticipantService : IParticipantService
             .FirstOrDefaultAsync(p => p.ConnectionId == connectionId && p.SessionId == sessionId);
 
         return participant?.IsOrganizer ?? false;
+    }
+
+    public async Task<HostTransferResult> TransferHostAsync(Guid currentHostParticipantId, Guid targetParticipantId)
+    {
+        var currentHost = await _db.Participants
+            .Include(p => p.Session)
+            .FirstOrDefaultAsync(p => p.Id == currentHostParticipantId);
+
+        if (currentHost == null)
+        {
+            return new HostTransferResult(HostTransferStatus.CurrentParticipantNotFound);
+        }
+
+        if (!currentHost.IsOrganizer)
+        {
+            return new HostTransferResult(HostTransferStatus.CurrentParticipantNotHost);
+        }
+
+        if (!currentHost.Session.IsActive)
+        {
+            return new HostTransferResult(HostTransferStatus.SessionInactive);
+        }
+
+        var target = await _db.Participants
+            .Include(p => p.Session)
+            .FirstOrDefaultAsync(p => p.Id == targetParticipantId);
+
+        if (target == null)
+        {
+            return new HostTransferResult(HostTransferStatus.TargetNotFound);
+        }
+
+        if (target.SessionId != currentHost.SessionId)
+        {
+            return new HostTransferResult(HostTransferStatus.TargetDifferentSession);
+        }
+
+        if (string.IsNullOrEmpty(target.ConnectionId))
+        {
+            return new HostTransferResult(HostTransferStatus.TargetDisconnected);
+        }
+
+        if (target.IsOrganizer)
+        {
+            return new HostTransferResult(HostTransferStatus.TargetAlreadyHost);
+        }
+
+        await using var transaction = _db.Database.IsRelational()
+            ? await _db.Database.BeginTransactionAsync()
+            : null;
+
+        var sessionParticipants = await _db.Participants
+            .Where(p => p.SessionId == currentHost.SessionId && p.IsOrganizer)
+            .ToListAsync();
+
+        foreach (var participant in sessionParticipants)
+        {
+            participant.IsOrganizer = false;
+        }
+
+        target.IsOrganizer = true;
+        currentHost.Session.OrganizerId = target.UserId;
+
+        await _db.SaveChangesAsync();
+
+        if (transaction != null)
+        {
+            await transaction.CommitAsync();
+        }
+
+        return new HostTransferResult(
+            HostTransferStatus.Success,
+            currentHostParticipantId,
+            target
+        );
     }
 }

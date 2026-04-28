@@ -15,6 +15,7 @@ import {
   TimerExtendedEvent,
   Story,
   EmojiThrownEvent,
+  HostTransferredEvent,
 } from '../models/session.models';
 import { AuthService } from './auth.service';
 
@@ -35,6 +36,7 @@ export class SignalRService {
   // Event streams
   readonly userJoined$ = new Subject<UserJoinedEvent>();
   readonly userLeft$ = new Subject<UserLeftEvent>();
+  readonly hostTransferred$ = new Subject<HostTransferredEvent>();
   readonly voteCast$ = new Subject<VoteCastEvent>();
   readonly votesRevealed$ = new Subject<VotesRevealedEvent>();
   readonly votesReset$ = new Subject<VotesResetEvent>();
@@ -50,6 +52,7 @@ export class SignalRService {
   readonly timerExpired$ = new Subject<void>();
   readonly emojiThrown$ = new Subject<EmojiThrownEvent>();
   readonly reconnected$ = new Subject<void>();
+  readonly sessionEnded$ = new Subject<void>();
 
   async connect(): Promise<void> {
     if (this.connection?.state === signalR.HubConnectionState.Connected) {
@@ -106,6 +109,10 @@ export class SignalRService {
       this.userLeft$.next(event);
     });
 
+    this.connection.on('HostTransferred', (event: HostTransferredEvent) => {
+      this.hostTransferred$.next(event);
+    });
+
     this.connection.on('VoteCast', (event: VoteCastEvent) => {
       this.voteCast$.next(event);
     });
@@ -160,6 +167,10 @@ export class SignalRService {
 
     this.connection.on('EmojiThrown', (event: EmojiThrownEvent) => {
       this.emojiThrown$.next(event);
+    });
+
+    this.connection.on('SessionEnded', () => {
+      this.sessionEnded$.next();
     });
   }
 
@@ -219,6 +230,20 @@ export class SignalRService {
       throw new Error('Not connected to SignalR hub');
     }
     return this.connection.invoke<Participant | null>('SwitchRole', isObserver);
+  }
+
+  async transferHost(targetParticipantId: string): Promise<Participant | null> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    return this.connection.invoke<Participant | null>('TransferHost', targetParticipantId);
+  }
+
+  async endSession(): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('EndSession');
   }
 
   async revealVotes(): Promise<void> {

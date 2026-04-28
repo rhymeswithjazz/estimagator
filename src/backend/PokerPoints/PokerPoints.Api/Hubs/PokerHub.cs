@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using PokerPoints.Api.Authentication;
 using PokerPoints.Api.Models;
 using PokerPoints.Api.Services;
+using PokerPoints.Data.Entities;
 
 namespace PokerPoints.Api.Hubs;
 
@@ -62,12 +63,16 @@ public class PokerHub : Hub
 
         // Check if authenticated user has verified email
         var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (Guid.TryParse(userIdClaim, out var userId))
+        var authenticatedUserId = Guid.TryParse(userIdClaim, out var userId)
+            ? userId
+            : (Guid?)null;
+
+        if (authenticatedUserId.HasValue)
         {
-            var user = await _authService.GetUserByIdAsync(userId);
+            var user = await _authService.GetUserByIdAsync(authenticatedUserId.Value);
             if (user != null && !user.EmailVerified)
             {
-                _logger.LogWarning("Unverified user {UserId} attempted to join session", userId);
+                _logger.LogWarning("Unverified user {UserId} attempted to join session", authenticatedUserId.Value);
                 await Clients.Caller.SendAsync("Error", "Please verify your email address before joining sessions");
                 return null;
             }
@@ -84,7 +89,10 @@ public class PokerHub : Hub
         // Check if this is a reconnection
         if (existingParticipantId.HasValue)
         {
-            var existingParticipant = await _participantService.ReconnectAsync(existingParticipantId.Value, Context.ConnectionId);
+            var existingParticipant = await _participantService.ReconnectAsync(
+                existingParticipantId.Value,
+                Context.ConnectionId,
+                authenticatedUserId);
             if (existingParticipant != null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
@@ -112,7 +120,7 @@ public class PokerHub : Hub
 
         // Determine if this participant is the session organizer
         var isOrganizer = session.OrganizerId.HasValue
-            ? session.OrganizerId == userId  // Match session creator
+            ? session.OrganizerId == authenticatedUserId  // Match session creator
             : session.Participants.Count == 0;  // Fallback for legacy sessions without a creator
 
         var participant = await _participantService.JoinSessionAsync(
@@ -120,7 +128,8 @@ public class PokerHub : Hub
             displayName,
             isObserver,
             isOrganizer,
-            Context.ConnectionId
+            Context.ConnectionId,
+            authenticatedUserId
         );
 
         await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
@@ -233,6 +242,80 @@ public class PokerHub : Hub
         }
 
         return participantDto;
+    }
+
+    public async Task<ParticipantDto?> TransferHost(Guid targetParticipantId)
+    {
+        var currentHost = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (currentHost == null)
+        {
+            throw new HubException("You are not in a session.");
+        }
+
+        if (!currentHost.IsOrganizer)
+        {
+            throw new HubException("Only the current host can transfer host controls.");
+        }
+
+        var result = await _participantService.TransferHostAsync(currentHost.Id, targetParticipantId);
+        if (result.Status != HostTransferStatus.Success || result.NewHost == null)
+        {
+            throw new HubException(GetHostTransferErrorMessage(result.Status));
+        }
+
+        var newHostDto = ToParticipantDto(result.NewHost);
+
+        _logger.LogInformation(
+            "Host transferred in session {SessionCode}: {PreviousHostParticipantId} -> {NewHostParticipantId}",
+            currentHost.Session.AccessCode,
+            currentHost.Id,
+            result.NewHost.Id);
+
+        await Clients.Group(currentHost.Session.AccessCode).SendAsync(
+            "HostTransferred",
+            new HostTransferredEvent(currentHost.Id, newHostDto));
+
+        var gameState = await _sessionService.GetGameStateAsync(currentHost.Session.AccessCode);
+        if (gameState != null)
+        {
+            await Clients.Group(currentHost.Session.AccessCode).SendAsync("SessionState", gameState);
+        }
+
+        return newHostDto;
+    }
+
+    public async Task EndSession()
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null)
+        {
+            await Clients.Caller.SendAsync("Error", "Not in a session");
+            return;
+        }
+
+        if (!participant.IsOrganizer)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the host can end the session");
+            return;
+        }
+
+        var session = participant.Session;
+        var success = await _sessionService.DeactivateSessionByHostAsync(session.Id);
+        if (!success)
+        {
+            await Clients.Caller.SendAsync("Error", "Session not found or already ended");
+            return;
+        }
+
+        _timerService.StopTimer(session.AccessCode);
+
+        _logger.LogInformation(
+            "Session ended by live host: {SessionCode}, {ParticipantId}",
+            session.AccessCode,
+            participant.Id);
+
+        await Clients.Group(session.AccessCode).SendAsync("TimerStopped");
+        await Clients.Group(session.AccessCode).SendAsync("SessionEnded");
     }
 
     public async Task RevealVotes()
@@ -677,4 +760,24 @@ public class PokerHub : Hub
 
         return await _sessionService.GetGameStateAsync(participant.Session.AccessCode);
     }
+
+    private static ParticipantDto ToParticipantDto(Participant participant) => new(
+        participant.Id,
+        participant.DisplayName,
+        participant.IsObserver,
+        participant.IsOrganizer,
+        !string.IsNullOrEmpty(participant.ConnectionId)
+    );
+
+    private static string GetHostTransferErrorMessage(HostTransferStatus status) => status switch
+    {
+        HostTransferStatus.CurrentParticipantNotFound => "You are not in a session.",
+        HostTransferStatus.CurrentParticipantNotHost => "Only the current host can transfer host controls.",
+        HostTransferStatus.TargetNotFound => "That participant is no longer available.",
+        HostTransferStatus.TargetDifferentSession => "That participant is not in this session.",
+        HostTransferStatus.TargetDisconnected => "That participant is not connected.",
+        HostTransferStatus.TargetAlreadyHost => "That participant is already the host.",
+        HostTransferStatus.SessionInactive => "This session has already ended.",
+        _ => "Unable to transfer host controls."
+    };
 }

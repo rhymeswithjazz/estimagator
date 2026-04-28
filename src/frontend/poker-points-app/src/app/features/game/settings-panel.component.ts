@@ -1,8 +1,7 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, computed, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
-import { SessionService } from '../../core/services/session.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -288,6 +287,89 @@ import { SessionService } from '../../core/services/session.service';
                 }
               </div>
             </div>
+
+            <div class="space-y-3 pt-2 border-t border-gray-100">
+              <div
+                class="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m8-3.13a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                Transfer Host
+              </div>
+
+              @if (eligibleHostRecipients().length > 0) {
+                <div class="space-y-2">
+                  <select
+                    [ngModel]="selectedHostRecipientId() || eligibleHostRecipients()[0].id"
+                    (ngModelChange)="selectedHostRecipientId.set($event)"
+                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+                  >
+                    @for (participant of eligibleHostRecipients(); track participant.id) {
+                      <option [value]="participant.id">
+                        {{ participant.displayName
+                        }}{{ participant.isObserver ? ' (spectator)' : '' }}
+                      </option>
+                    }
+                  </select>
+
+                  @if (transferError()) {
+                    <p class="text-xs text-red-600">{{ transferError() }}</p>
+                  }
+
+                  @if (showTransferConfirm()) {
+                    <div
+                      class="bg-poker-green-50 border border-poker-green-200 rounded-lg p-3 space-y-3"
+                    >
+                      <p class="text-sm text-poker-green-900">
+                        Transfer host controls to
+                        <span class="font-semibold">{{ selectedHostRecipient()?.displayName }}</span
+                        >? You will lose host controls immediately.
+                      </p>
+                      <div class="flex gap-2">
+                        <button
+                          (click)="confirmHostTransfer()"
+                          [disabled]="isTransferringHost()"
+                          class="flex-1 px-3 py-2 text-sm font-medium bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors disabled:opacity-50"
+                        >
+                          @if (isTransferringHost()) {
+                            Transferring...
+                          } @else {
+                            Yes, Transfer Host
+                          }
+                        </button>
+                        <button
+                          (click)="cancelHostTransfer()"
+                          [disabled]="isTransferringHost()"
+                          class="px-3 py-2 text-sm font-medium bg-white text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  } @else {
+                    <button
+                      (click)="requestHostTransfer()"
+                      class="w-full px-3 py-2 text-sm font-medium bg-poker-green-500 text-white rounded-lg hover:bg-poker-green-600 transition-colors"
+                    >
+                      Transfer Host
+                    </button>
+                  }
+                </div>
+              } @else {
+                <p class="text-sm text-gray-400">No connected participants available.</p>
+              }
+            </div>
           }
         </div>
 
@@ -374,7 +456,6 @@ import { SessionService } from '../../core/services/session.service';
 })
 export class SettingsPanelComponent {
   private readonly gameState = inject(GameStateService);
-  private readonly sessionService = inject(SessionService);
   private readonly router = inject(Router);
 
   readonly close = output<void>();
@@ -383,12 +464,28 @@ export class SettingsPanelComponent {
   readonly isOrganizer = this.gameState.isOrganizer;
   readonly storyQueue = this.gameState.storyQueue;
   readonly sessionCode = this.gameState.sessionCode;
+  readonly participants = this.gameState.participants;
+  readonly eligibleHostRecipients = computed(() =>
+    this.participants().filter(
+      (participant) => participant.isConnected && !participant.isOrganizer,
+    ),
+  );
+  readonly selectedHostRecipient = computed(() => {
+    const selectedId = this.selectedHostRecipientId() || this.eligibleHostRecipients()[0]?.id;
+    return (
+      this.eligibleHostRecipients().find((participant) => participant.id === selectedId) ?? null
+    );
+  });
 
   // Local state
   readonly isAddingStories = signal(false);
   readonly newStoriesText = signal('');
   readonly newStoryTitle = signal('');
   readonly newStoryUrl = signal('');
+  readonly selectedHostRecipientId = signal('');
+  readonly showTransferConfirm = signal(false);
+  readonly isTransferringHost = signal(false);
+  readonly transferError = signal<string | null>(null);
   readonly showDeactivateConfirm = signal(false);
   readonly isDeactivating = signal(false);
 
@@ -457,6 +554,42 @@ export class SettingsPanelComponent {
     await this.gameState.restartStory(storyId);
   }
 
+  requestHostTransfer(): void {
+    const target = this.selectedHostRecipient();
+    if (!target) return;
+
+    this.selectedHostRecipientId.set(target.id);
+    this.transferError.set(null);
+    this.showTransferConfirm.set(true);
+  }
+
+  cancelHostTransfer(): void {
+    this.showTransferConfirm.set(false);
+    this.transferError.set(null);
+  }
+
+  async confirmHostTransfer(): Promise<void> {
+    const target = this.selectedHostRecipient();
+    if (!target || this.isTransferringHost()) return;
+
+    this.isTransferringHost.set(true);
+    this.transferError.set(null);
+    try {
+      const success = await this.gameState.transferHost(target.id);
+      if (!success) {
+        this.transferError.set('Unable to transfer host controls.');
+        return;
+      }
+
+      this.showTransferConfirm.set(false);
+      this.close.emit();
+    } catch (err) {
+      this.transferError.set(getTransferErrorMessage(err));
+    } finally {
+      this.isTransferringHost.set(false);
+    }
+  }
+
   cancelDeactivate(): void {
     this.showDeactivateConfirm.set(false);
   }
@@ -470,17 +603,25 @@ export class SettingsPanelComponent {
 
     this.isDeactivating.set(true);
     try {
-      const success = await this.sessionService.deactivateSession(code);
-      if (success) {
-        await this.gameState.leaveSession();
-        this.router.navigate(['/']);
-      } else {
-        console.error('Failed to deactivate session');
-      }
+      await this.gameState.endSession();
+      this.router.navigate(['/']);
     } catch (err) {
       console.error('Error deactivating session:', err);
     } finally {
       this.isDeactivating.set(false);
     }
   }
+}
+
+function getTransferErrorMessage(err: unknown): string {
+  const fallback = 'Unable to transfer host controls.';
+  if (!(err instanceof Error) || !err.message) return fallback;
+
+  const message = err.message;
+  if (message.includes('Method does not exist')) {
+    return 'Host transfer is unavailable. Refresh and try again.';
+  }
+
+  const hubExceptionMessage = message.match(/HubException:\s*(.+)$/)?.[1];
+  return hubExceptionMessage || message;
 }

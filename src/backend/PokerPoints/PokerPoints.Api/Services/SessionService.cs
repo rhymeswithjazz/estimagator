@@ -23,6 +23,7 @@ public interface ISessionService
     Task<Story?> UpdateStoryAsync(Guid storyId, string title, string? url);
     Task DeleteStoryAsync(Guid storyId);
     Task<bool> DeactivateSessionAsync(string accessCode, Guid organizerId);
+    Task<bool> DeactivateSessionByHostAsync(Guid sessionId);
     Task<SessionHistoryResponse?> GetSessionHistoryAsync(string accessCode, Guid userId);
 }
 
@@ -327,26 +328,20 @@ public class SessionService : ISessionService
 
         if (session == null) return false;
 
-        // Complete any active story before ending the session
-        var activeStory = session.Stories.FirstOrDefault(s => s.Status == "active");
-        if (activeStory != null)
-        {
-            // Calculate final score from votes
-            var numericVotes = activeStory.Votes
-                .Select(v => decimal.TryParse(v.CardValue, out var n) ? (decimal?)n : null)
-                .Where(n => n.HasValue)
-                .Select(n => n!.Value)
-                .ToList();
+        await DeactivateLoadedSessionAsync(session);
+        return true;
+    }
 
-            activeStory.FinalScore = numericVotes.Count > 0
-                ? Math.Round(numericVotes.Average(), 1)
-                : null;
-            activeStory.Status = "completed";
-        }
+    public async Task<bool> DeactivateSessionByHostAsync(Guid sessionId)
+    {
+        var session = await _db.Sessions
+            .Include(s => s.Stories.Where(st => st.Status == "active"))
+                .ThenInclude(st => st.Votes)
+            .FirstOrDefaultAsync(s => s.Id == sessionId && s.IsActive);
 
-        session.IsActive = false;
-        await _db.SaveChangesAsync();
+        if (session == null) return false;
 
+        await DeactivateLoadedSessionAsync(session);
         return true;
     }
 
@@ -414,6 +409,28 @@ public class SessionService : ISessionService
         p.IsOrganizer,
         !string.IsNullOrEmpty(p.ConnectionId)
     );
+
+    private async Task DeactivateLoadedSessionAsync(Session session)
+    {
+        // Complete any active story before ending the session
+        var activeStory = session.Stories.FirstOrDefault(s => s.Status == "active");
+        if (activeStory != null)
+        {
+            var numericVotes = activeStory.Votes
+                .Select(v => decimal.TryParse(v.CardValue, out var n) ? (decimal?)n : null)
+                .Where(n => n.HasValue)
+                .Select(n => n!.Value)
+                .ToList();
+
+            activeStory.FinalScore = numericVotes.Count > 0
+                ? Math.Round(numericVotes.Average(), 1)
+                : null;
+            activeStory.Status = "completed";
+        }
+
+        session.IsActive = false;
+        await _db.SaveChangesAsync();
+    }
 
     private static StoryDto ToStoryDto(Story s) => new(
         s.Id,

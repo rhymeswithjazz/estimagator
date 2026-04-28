@@ -25,6 +25,8 @@ public record UserJoinedEvent(ParticipantDto Participant);
 
 public record UserLeftEvent(Guid ParticipantId);
 
+public record HostTransferredEvent(Guid PreviousHostParticipantId, ParticipantDto NewHost);
+
 public record VoteCastEvent(Guid ParticipantId);
 
 public record VotesRevealedEvent(List<VoteDto> Votes, decimal? Average, bool IsConsensus);

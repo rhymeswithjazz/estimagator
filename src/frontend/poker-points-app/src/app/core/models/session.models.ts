@@ -86,6 +86,11 @@ export interface UserLeftEvent {
   participantId: string;
 }
 
+export interface HostTransferredEvent {
+  previousHostParticipantId: string;
+  newHost: Participant;
+}
+
 export interface VoteCastEvent {
   participantId: string;
 }

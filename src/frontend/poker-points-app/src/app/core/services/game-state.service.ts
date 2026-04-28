@@ -128,6 +128,27 @@ export class GameStateService {
       );
     });
 
+    this.signalR.hostTransferred$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      this._participants.update((list) =>
+        list.map((participant) => {
+          if (participant.id === event.previousHostParticipantId) {
+            return { ...participant, isOrganizer: false };
+          }
+          if (participant.id === event.newHost.id) {
+            return event.newHost;
+          }
+          return participant;
+        }),
+      );
+
+      const currentParticipant = this._currentParticipant();
+      if (currentParticipant?.id === event.previousHostParticipantId) {
+        this._currentParticipant.set({ ...currentParticipant, isOrganizer: false });
+      } else if (currentParticipant?.id === event.newHost.id) {
+        this._currentParticipant.set(event.newHost);
+      }
+    });
+
     this.signalR.voteCast$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this._voteStatuses.update((statuses) => {
         const existing = statuses.find((s) => s.participantId === event.participantId);
@@ -217,6 +238,10 @@ export class GameStateService {
 
     this.signalR.reconnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.restoreSessionAfterReconnect();
+    });
+
+    this.signalR.sessionEnded$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.clearSessionState();
     });
   }
 
@@ -345,6 +370,44 @@ export class GameStateService {
         isObserver: participant.isObserver,
       });
     }
+  }
+
+  async transferHost(targetParticipantId: string): Promise<boolean> {
+    if (!this.isOrganizer()) return false;
+
+    const newHost = await this.signalR.transferHost(targetParticipantId);
+    if (!newHost) {
+      throw new Error('Unable to transfer host controls.');
+    }
+
+    this._participants.update((participants) =>
+      participants.map((participant) => ({
+        ...participant,
+        isOrganizer: participant.id === newHost.id,
+        isConnected: participant.id === newHost.id ? newHost.isConnected : participant.isConnected,
+      })),
+    );
+
+    const currentParticipant = this._currentParticipant();
+    if (currentParticipant) {
+      this._currentParticipant.update((participant) =>
+        participant
+          ? {
+              ...participant,
+              isOrganizer: participant.id === newHost.id,
+            }
+          : participant,
+      );
+    }
+
+    return true;
+  }
+
+  async endSession(): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.endSession();
+    this.clearSessionState();
+    await this.signalR.disconnect();
   }
 
   async revealVotes(): Promise<void> {
