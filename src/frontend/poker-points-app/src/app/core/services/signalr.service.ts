@@ -14,6 +14,7 @@ import {
   TimerStartedEvent,
   TimerExtendedEvent,
   Story,
+  EmojiThrownEvent,
 } from '../models/session.models';
 import { AuthService } from './auth.service';
 
@@ -47,6 +48,7 @@ export class SignalRService {
   readonly timerExtended$ = new Subject<TimerExtendedEvent>();
   readonly timerStopped$ = new Subject<void>();
   readonly timerExpired$ = new Subject<void>();
+  readonly emojiThrown$ = new Subject<EmojiThrownEvent>();
 
   async connect(): Promise<void> {
     if (this.connection?.state === signalR.HubConnectionState.Connected) {
@@ -153,6 +155,10 @@ export class SignalRService {
 
     this.connection.on('TimerExpired', () => {
       this.timerExpired$.next();
+    });
+
+    this.connection.on('EmojiThrown', (event: EmojiThrownEvent) => {
+      this.emojiThrown$.next(event);
     });
   }
 
@@ -302,5 +308,12 @@ export class SignalRService {
       throw new Error('Not connected to SignalR hub');
     }
     await this.connection.invoke('StopTimer');
+  }
+
+  async throwEmoji(targetParticipantId: string, emoji: string): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('ThrowEmoji', targetParticipantId, emoji);
   }
 }

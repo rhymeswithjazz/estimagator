@@ -38,3 +38,26 @@ public record TimerStartedEvent(DateTimeOffset EndTimeUtc, int DurationSeconds);
 public record TimerExtendedEvent(DateTimeOffset EndTimeUtc);
 
 public record TimerStateDto(DateTimeOffset EndTimeUtc, int DurationSeconds);
+
+public record EmojiThrownEvent(
+    Guid ThrowId,
+    Guid SenderParticipantId,
+    string SenderDisplayName,
+    Guid TargetParticipantId,
+    string Emoji,
+    DateTimeOffset SentAtUtc
+);
+
+public static class EmojiThrowOptions
+{
+    public static readonly TimeSpan Cooldown = TimeSpan.FromMilliseconds(200);
+
+    public static readonly IReadOnlySet<string> AllowedEmojis = new HashSet<string>
+    {
+        "🎯",
+        "✈️",
+        "paper-ball",
+        "❤️",
+        "💩"
+    };
+}

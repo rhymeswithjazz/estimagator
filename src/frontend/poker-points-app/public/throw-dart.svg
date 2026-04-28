@@ -1,0 +1,1277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="0 0 353.794 80.693" role="img" aria-label="Dart">
+  <g transform="matrix(0 -1 1 0 0 80.693)">
+    <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x2="40.346" x1="40.346" y2="70.887">
+    	<stop id="stop4" stop-color="#EF4444" offset="0"/>
+    	<stop id="stop6" stop-color="#E2001A" offset="1"/>
+    </linearGradient>
+    <path id="path8" d="m16.133 9.667c-2.62 1.084-17.077 8.583-16.084 21.684s2.349 34.245 2.349 34.245l3.159 3.054c1.767-9.344 9.447-11.539 9.447-18.051 0-4.037-3.782-9.726-7.341-13.977 4.98-0.38 15.564 6.125 16.568 12.958 0.606-1.525 0.991-3.478 0.991-4.499 0-2.657-6.948-12.774-6.948-18.189 0-7.614 5.506-12.995 15.056-19.365-1.438 3.058-2.794 7.561-2.794 10.371 0 4.138 5.213 8.091 8.789 12.127 2.145 2.402 3.861 4.95 4.929 7.291 0.737-1.051 0.998-2.505 0.998-3.885 0-1.022-1.229-7.153-1.229-8.175 0-5.928 4.725-14.647 13.022-18.13-2.409 5.897-4.028 8.728-4.028 13.429 0 7.46 7.359 6.949 7.359 17.781 0 4.191-4.805 12.594-4.234 17.79 5.049-6.17 9.703-13.417 8.855-20.43 3.971 4.866 5.597 8.669 5.597 12.86 0 3.27-2.452 8.226-2.452 11.445 0 6.077 2.576 8.326 4.681 10.886l5.47-5.291s1.358-21.144 2.352-34.245-13.466-20.6-16.084-21.684c-2.62-1.085-18.523-7.409-24.213-9.667-5.692 2.258-21.594 8.582-24.215 9.667" fill="url(#SVGID_1_)"/>
+    <linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x2="60.518" x1="60.518" y2="102.28">
+    	<stop id="stop11" stop-color="#EF4444" offset="0"/>
+    	<stop id="stop13" stop-color="#E2001A" offset="1"/>
+    </linearGradient>
+    <path id="path15" d="m64.558 9.667c-2.619-1.084-18.524-7.409-24.213-9.667v102.28l32.475-31.394 5.471-5.289s1.358-21.145 2.352-34.246c0.992-13.1-13.467-20.6-16.085-21.684" fill="url(#SVGID_2_)"/>
+    <linearGradient id="SVGID_3_" y2="54.703" gradientUnits="userSpaceOnUse" x2="72.822" y1="54.703" x1="5.5566">
+    	<stop id="stop18" stop-color="#EF4444" offset=".5"/>
+    	<stop id="stop20" stop-color="#991B1B" offset=".5275"/>
+    	<stop id="stop22" stop-color="#EF4444" offset="1"/>
+    </linearGradient>
+    <path id="path24" d="m70.595 48.556c0-4.19-1.626-7.994-5.597-12.86 0.848 7.013-3.807 14.26-8.855 20.43-0.57-5.195 4.233-13.599 4.233-17.789 0-10.833-7.358-10.322-7.358-17.781 0-4.702 1.619-7.533 4.028-13.43-8.298 3.483-13.021 12.203-13.021 18.13 0 1.022 1.228 7.153 1.228 8.176 0 1.379-0.262 2.834-0.998 3.884-1.067-2.341-2.784-4.889-4.93-7.291-3.575-4.036-8.788-7.988-8.788-12.127 0-2.81 1.357-7.313 2.793-10.371-9.549 6.37-15.055 11.751-15.055 19.365 0 5.415 6.949 15.533 6.949 18.189 0 1.022-0.386 2.975-0.992 4.499-1.004-6.832-11.588-13.338-16.569-12.958 3.56 4.251 7.342 9.941 7.342 13.977 0 6.513-7.68 8.708-9.447 18.052l34.791 33.629 32.475-31.393c-2.104-2.56-4.68-4.809-4.68-10.886-0.001-3.219 2.451-8.175 2.451-11.445" fill="url(#SVGID_3_)"/>
+    <linearGradient id="SVGID_4_" y2="92.009" gradientUnits="userSpaceOnUse" x2="43.764" y1="92.009" x1="36.932">
+    	<stop id="stop27" stop-color="#98999B" offset="0"/>
+    	<stop id="stop29" stop-color="#98999B" offset=".0171"/>
+    	<stop id="stop31" stop-color="#949697" offset=".0209"/>
+    	<stop id="stop33" stop-color="#78797B" offset=".0507"/>
+    	<stop id="stop35" stop-color="#5F6062" offset=".0843"/>
+    	<stop id="stop37" stop-color="#4A4A4C" offset=".1224"/>
+    	<stop id="stop39" stop-color="#373638" offset=".1669"/>
+    	<stop id="stop41" stop-color="#1F1F20" offset=".222"/>
+    	<stop id="stop43" stop-color="#080808" offset=".2993"/>
+    	<stop id="stop45" offset=".5137"/>
+    	<stop id="stop47" stop-color="#C0C1C2" offset=".6438"/>
+    	<stop id="stop49" offset=".8459"/>
+    	<stop id="stop51" offset="1"/>
+    </linearGradient>
+    <path id="path53" d="m40.348 80.573h-1.208c-0.625 0-0.708 0.625-0.708 2.042 0 1.416-1.5 20.831-1.5 20.831h6.832s-1.5-19.415-1.5-20.831c0-1.417-0.083-2.042-0.708-2.042h-1.208z" fill="url(#SVGID_4_)"/>
+    <linearGradient id="SVGID_5_" y2="136.21" gradientUnits="userSpaceOnUse" x2="47.136" y1="136.21" x1="33.559">
+    	<stop id="stop56" stop-color="#98999B" offset="0"/>
+    	<stop id="stop58" stop-color="#98999B" offset=".0171"/>
+    	<stop id="stop60" stop-color="#949697" offset=".0209"/>
+    	<stop id="stop62" stop-color="#78797B" offset=".0507"/>
+    	<stop id="stop64" stop-color="#5F6062" offset=".0843"/>
+    	<stop id="stop66" stop-color="#4A4A4C" offset=".1224"/>
+    	<stop id="stop68" stop-color="#373638" offset=".1669"/>
+    	<stop id="stop70" stop-color="#1F1F20" offset=".222"/>
+    	<stop id="stop72" stop-color="#080808" offset=".2993"/>
+    	<stop id="stop74" offset=".5137"/>
+    	<stop id="stop76" stop-color="#7B7C7E" offset=".6438"/>
+    	<stop id="stop78" offset=".7911"/>
+    	<stop id="stop80" offset="1"/>
+    </linearGradient>
+    <path id="path82" d="m36.932 103.45l1.003 14.179v22.961l-4.376 28.398c2.043-0.165 4.344-0.259 6.789-0.259 2.444 0 4.746 0.094 6.788 0.259l-4.375-28.398v-22.961l1.003-14.179h-6.832z" fill="url(#SVGID_5_)"/>
+    <linearGradient id="SVGID_6_" y2="370.4" gradientUnits="userSpaceOnUse" x2="-7.2529" gradientTransform="matrix(6.1055 0 0 -6.1055 87.611 2579.9)" y1="370.4" x1="-8.2529">
+    	<stop id="stop85" stop-color="#98999B" offset="0"/>
+    	<stop id="stop87" stop-color="#98999B" offset=".0753"/>
+    	<stop id="stop89" stop-color="#949697" offset=".0795"/>
+    	<stop id="stop91" stop-color="#78797B" offset=".1124"/>
+    	<stop id="stop93" stop-color="#5F6062" offset=".1494"/>
+    	<stop id="stop95" stop-color="#4A4A4C" offset=".1915"/>
+    	<stop id="stop97" stop-color="#373638" offset=".2407"/>
+    	<stop id="stop99" stop-color="#1F1F20" offset=".3014"/>
+    	<stop id="stop101" stop-color="#080808" offset=".3867"/>
+    	<stop id="stop103" offset=".6233"/>
+    	<stop id="stop105" stop-color="#9C9D9F" offset=".7706"/>
+    	<stop id="stop107" offset=".9007"/>
+    	<stop id="stop109" offset="1"/>
+    </linearGradient>
+    <path id="path111" d="m39.639 349.42v-38.147h1.269v38.165c0.855-6.392 1.729-15.824 1.891-18.279 0.205-3.076 0.529-43.589 0.529-43.589h-6.106s0.324 40.513 0.527 43.589c0.164 2.46 1.036 11.88 1.89 18.27z" fill="url(#SVGID_6_)"/>
+    <linearGradient id="SVGID_7_" y2="364.64" gradientUnits="userSpaceOnUse" x2="-7.2729" gradientTransform="matrix(6.1055 0 0 -6.1055 87.611 2579.9)" y1="364.64" x1="-8.2729">
+    	<stop id="stop114" stop-color="#98999B" offset="0"/>
+    	<stop id="stop116" stop-color="#98999B" offset=".0753"/>
+    	<stop id="stop118" stop-color="#949697" offset=".0795"/>
+    	<stop id="stop120" stop-color="#78797B" offset=".1124"/>
+    	<stop id="stop122" stop-color="#5F6062" offset=".1494"/>
+    	<stop id="stop124" stop-color="#4A4A4C" offset=".1915"/>
+    	<stop id="stop126" stop-color="#373638" offset=".2407"/>
+    	<stop id="stop128" stop-color="#1F1F20" offset=".3014"/>
+    	<stop id="stop130" stop-color="#080808" offset=".3867"/>
+    	<stop id="stop132" offset=".6233"/>
+    	<stop id="stop134" stop-color="#9C9D9F" offset=".7706"/>
+    	<stop id="stop136" offset=".9007"/>
+    	<stop id="stop138" offset="1"/>
+    </linearGradient>
+    <path id="path140" d="m40.15 353.43h-0.066c0.022 0.123 0.045 0.247 0.066 0.362 0.021-0.115 0.044-0.239 0.066-0.362h-0.066z" fill="url(#SVGID_7_)"/>
+    <linearGradient id="SVGID_8_" y2="366.8" gradientUnits="userSpaceOnUse" x2="-7.2529" gradientTransform="matrix(6.1055 0 0 -6.1055 87.611 2579.9)" y1="366.8" x1="-8.2529">
+    	<stop id="stop143" stop-color="#98999B" offset="0"/>
+    	<stop id="stop145" stop-color="#98999B" offset=".0753"/>
+    	<stop id="stop147" stop-color="#949697" offset=".0795"/>
+    	<stop id="stop149" stop-color="#78797B" offset=".1124"/>
+    	<stop id="stop151" stop-color="#5F6062" offset=".1494"/>
+    	<stop id="stop153" stop-color="#4A4A4C" offset=".1915"/>
+    	<stop id="stop155" stop-color="#373638" offset=".2407"/>
+    	<stop id="stop157" stop-color="#1F1F20" offset=".3014"/>
+    	<stop id="stop159" stop-color="#080808" offset=".3867"/>
+    	<stop id="stop161" offset=".6233"/>
+    	<stop id="stop163" stop-color="#9C9D9F" offset=".7706"/>
+    	<stop id="stop165" offset=".9007"/>
+    	<stop id="stop167" offset="1"/>
+    </linearGradient>
+    <path id="path169" d="m39.639 349.42c0.193 1.449 0.386 2.741 0.57 3.762h0.066s-0.636-21.026-0.636-25.459v21.7z" fill="url(#SVGID_8_)"/>
+    <path id="path198" d="m40.275 353.18h0.066c0.182-1.018 0.373-2.304 0.566-3.747v-21.712c0.001 4.44-0.632 25.46-0.632 25.46z" fill="url(#SVGID_8_)"/>
+    <linearGradient id="SVGID_10_" y2="368.15" gradientUnits="userSpaceOnUse" x2="-7.2529" gradientTransform="matrix(6.1055 0 0 -6.1055 87.611 2579.9)" y1="368.15" x1="-8.2529">
+    	<stop id="stop201" stop-color="#98999B" offset="0"/>
+    	<stop id="stop203" stop-color="#98999B" offset=".0753"/>
+    	<stop id="stop205" stop-color="#949697" offset=".0795"/>
+    	<stop id="stop207" stop-color="#78797B" offset=".1124"/>
+    	<stop id="stop209" stop-color="#5F6062" offset=".1494"/>
+    	<stop id="stop211" stop-color="#4A4A4C" offset=".1915"/>
+    	<stop id="stop213" stop-color="#373638" offset=".2407"/>
+    	<stop id="stop215" stop-color="#1F1F20" offset=".3014"/>
+    	<stop id="stop217" stop-color="#080808" offset=".3867"/>
+    	<stop id="stop219" offset=".6233"/>
+    	<stop id="stop221" stop-color="#9C9D9F" offset=".7706"/>
+    	<stop id="stop223" offset=".9007"/>
+    	<stop id="stop225" offset="1"/>
+    </linearGradient>
+    <path id="path227" d="m40.908 311.27h-1.269v16.453c0 4.433 0.636 25.459 0.636 25.459s0.633-21.026 0.633-25.459v-16.45z" fill="url(#SVGID_10_)"/>
+    <linearGradient id="SVGID_11_" y2="311.46" gradientUnits="userSpaceOnUse" x2="40.274" y1="339.39" x1="40.274">
+    	<stop id="stop230" offset="0"/>
+    	<stop id="stop232" stop-color="#8B8C8E" offset=".1747"/>
+    	<stop id="stop234" stop-color="#767779" offset=".3194"/>
+    	<stop id="stop236" stop-color="#4B4B4D" offset=".6256"/>
+    	<stop id="stop238" stop-color="#212122" offset=".8626"/>
+    	<stop id="stop240" offset="1"/>
+    </linearGradient>
+    <path id="path242" d="m40.908 311.27h-1.269v16.453c0 4.433 0.636 25.459 0.636 25.459s0.633-21.026 0.633-25.459v-16.45z" fill="url(#SVGID_11_)"/>
+    <g id="g244">
+    	<defs id="defs246"><filter id="Adobe_OpacityMaskFilter" height="27.667" width=".667" y="287.9" x="38.681" filterUnits="userSpaceOnUse">
+    			<feColorMatrix id="feColorMatrix249" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" type="matrix"/>
+    		</filter></defs>
+    	<mask id="SVGID_12_" height="27.667" width="0.667" y="287.901" x="38.681" maskUnits="userSpaceOnUse">
+    		<g id="g252" filter="url(#Adobe_OpacityMaskFilter)">
+    				<linearGradient id="SVGID_13_" y2="370.1" gradientUnits="userSpaceOnUse" x2="-7.1885" gradientTransform="matrix(0 27.667 27.667 0 -10201 514.44)" y1="370.1" x1="-8.1885">
+    				<stop id="stop255" stop-color="#fff" offset="0"/>
+    				<stop id="stop257" stop-color="#fff" offset=".1747"/>
+    				<stop id="stop259" stop-color="#FBFBFB" offset=".2683"/>
+    				<stop id="stop261" stop-color="#EDEDED" offset=".3708"/>
+    				<stop id="stop263" stop-color="#D7D7D7" offset=".4775"/>
+    				<stop id="stop265" stop-color="#B9B9B9" offset=".5871"/>
+    				<stop id="stop267" stop-color="#919191" offset=".6991"/>
+    				<stop id="stop269" stop-color="#616161" offset=".8128"/>
+    				<stop id="stop271" stop-color="#292929" offset=".926"/>
+    				<stop id="stop273" offset="1"/>
+    			</linearGradient>
+    			<rect id="rect275" height="27.667" width=".667" y="287.9" x="38.681" fill="url(#SVGID_13_)"/>
+    		</g>
+    	</mask>
+    		<linearGradient id="SVGID_14_" y2="370.1" gradientUnits="userSpaceOnUse" x2="-7.1885" gradientTransform="matrix(0 27.667 27.667 0 -10201 514.44)" y1="370.1" x1="-8.1885">
+    		<stop id="stop278" stop-color="#B1B3B4" offset="0"/>
+    		<stop id="stop280" stop-color="#B1B3B4" offset=".1747"/>
+    		<stop id="stop282" stop-color="#AEAFB1" offset=".2979"/>
+    		<stop id="stop284" stop-color="#A3A4A6" offset=".4327"/>
+    		<stop id="stop286" stop-color="#919294" offset=".573"/>
+    		<stop id="stop288" stop-color="#767779" offset=".7171"/>
+    		<stop id="stop290" stop-color="#515153" offset=".8625"/>
+    		<stop id="stop292" offset="1"/>
+    	</linearGradient>
+    	<rect id="rect294" mask="url(#SVGID_12_)" height="27.667" width=".667" y="287.9" x="38.681" fill="url(#SVGID_14_)"/>
+    	<rect id="rect296" height="27.667" width=".667" y="287.9" x="38.681" fill="none"/>
+    </g>
+    <g id="g298">
+    	<defs id="defs300"><filter id="Adobe_OpacityMaskFilter_1_" height="27.668" width=".667" y="103.45" x="40.015" filterUnits="userSpaceOnUse">
+    			<feColorMatrix id="feColorMatrix303" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" type="matrix"/>
+    		</filter></defs>
+    	<mask id="SVGID_15_" height="27.668" width="0.667" y="103.446" x="40.015" maskUnits="userSpaceOnUse">
+    		<g id="g306" filter="url(#Adobe_OpacityMaskFilter_1_)">
+    				<linearGradient id="SVGID_16_" y2="370.1" gradientUnits="userSpaceOnUse" x2="-7.2021" gradientTransform="matrix(0 27.667 27.667 0 -10199 330.38)" y1="370.1" x1="-8.2021">
+    				<stop id="stop309" stop-color="#fff" offset="0"/>
+    				<stop id="stop311" stop-color="#fff" offset=".1747"/>
+    				<stop id="stop313" stop-color="#FBFBFB" offset=".2683"/>
+    				<stop id="stop315" stop-color="#EDEDED" offset=".3708"/>
+    				<stop id="stop317" stop-color="#D7D7D7" offset=".4775"/>
+    				<stop id="stop319" stop-color="#B9B9B9" offset=".5871"/>
+    				<stop id="stop321" stop-color="#919191" offset=".6991"/>
+    				<stop id="stop323" stop-color="#616161" offset=".8128"/>
+    				<stop id="stop325" stop-color="#292929" offset=".926"/>
+    				<stop id="stop327" offset="1"/>
+    			</linearGradient>
+    			<rect id="rect329" height="27.668" width=".667" y="103.45" x="40.015" fill="url(#SVGID_16_)"/>
+    		</g>
+    	</mask>
+    		<linearGradient id="SVGID_17_" y2="370.1" gradientUnits="userSpaceOnUse" x2="-7.2021" gradientTransform="matrix(0 27.667 27.667 0 -10199 330.38)" y1="370.1" x1="-8.2021">
+    		<stop id="stop332" stop-color="#BCBDBF" offset="0"/>
+    		<stop id="stop334" stop-color="#BCBDBF" offset=".1747"/>
+    		<stop id="stop336" stop-color="#B8B9BB" offset=".2927"/>
+    		<stop id="stop338" stop-color="#ADAFB0" offset=".4218"/>
+    		<stop id="stop340" stop-color="#9B9C9E" offset=".5563"/>
+    		<stop id="stop342" stop-color="#818284" offset=".6943"/>
+    		<stop id="stop344" stop-color="#5D5D5F" offset=".8352"/>
+    		<stop id="stop346" stop-color="#1F1F20" offset=".9764"/>
+    		<stop id="stop348" offset="1"/>
+    	</linearGradient>
+    	<rect id="rect350" mask="url(#SVGID_15_)" height="27.668" width=".667" y="103.45" x="40.015" fill="url(#SVGID_17_)"/>
+    	<rect id="rect352" height="27.668" width=".667" y="103.45" x="40.015" fill="none"/>
+    </g>
+    <g id="g354">
+    	<defs id="defs356"><filter id="Adobe_OpacityMaskFilter_2_" height="17.892" width=".667" y="85.554" x="40.015" filterUnits="userSpaceOnUse">
+    			<feColorMatrix id="feColorMatrix359" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" type="matrix"/>
+    		</filter></defs>
+    	<mask id="SVGID_18_" height="17.892" width="0.667" y="85.554" x="40.015" maskUnits="userSpaceOnUse">
+    		<g id="g362" filter="url(#Adobe_OpacityMaskFilter_2_)">
+    				<linearGradient id="SVGID_19_" y2="370.11" gradientUnits="userSpaceOnUse" x2="-7.1987" gradientTransform="matrix(0 -17.892 -17.892 0 6662.2 -43.232)" y1="370.11" x1="-8.1987">
+    				<stop id="stop365" stop-color="#fff" offset="0"/>
+    				<stop id="stop367" stop-color="#fff" offset=".1747"/>
+    				<stop id="stop369" stop-color="#FBFBFB" offset=".2683"/>
+    				<stop id="stop371" stop-color="#EDEDED" offset=".3708"/>
+    				<stop id="stop373" stop-color="#D7D7D7" offset=".4775"/>
+    				<stop id="stop375" stop-color="#B9B9B9" offset=".5871"/>
+    				<stop id="stop377" stop-color="#919191" offset=".6991"/>
+    				<stop id="stop379" stop-color="#616161" offset=".8128"/>
+    				<stop id="stop381" stop-color="#292929" offset=".926"/>
+    				<stop id="stop383" offset="1"/>
+    			</linearGradient>
+    			<rect id="rect385" height="17.892" width=".667" y="85.555" x="40.015" fill="url(#SVGID_19_)"/>
+    		</g>
+    	</mask>
+    		<linearGradient id="SVGID_20_" y2="370.11" gradientUnits="userSpaceOnUse" x2="-7.1987" gradientTransform="matrix(0 -17.892 -17.892 0 6662.2 -43.232)" y1="370.11" x1="-8.1987">
+    		<stop id="stop388" stop-color="#E3E4E5" offset="0"/>
+    		<stop id="stop390" stop-color="#E3E4E5" offset=".1747"/>
+    		<stop id="stop392" stop-color="#DFE0E1" offset=".2768"/>
+    		<stop id="stop394" stop-color="#D5D6D7" offset=".3887"/>
+    		<stop id="stop396" stop-color="#C4C6C7" offset=".5051"/>
+    		<stop id="stop398" stop-color="#ACAEAF" offset=".6246"/>
+    		<stop id="stop400" stop-color="#8B8C8E" offset=".7467"/>
+    		<stop id="stop402" stop-color="#5F6062" offset=".8708"/>
+    		<stop id="stop404" stop-color="#0C0C0D" offset=".9943"/>
+    		<stop id="stop406" offset="1"/>
+    	</linearGradient>
+    	<rect id="rect408" mask="url(#SVGID_18_)" height="17.892" width=".667" y="85.554" x="40.015" fill="url(#SVGID_20_)"/>
+    	<rect id="rect410" height="17.892" width=".667" y="85.554" x="40.015" fill="none"/>
+    </g>
+    <g id="g412">
+    	<defs id="defs414"><filter id="Adobe_OpacityMaskFilter_3_" height="28.136" width="1.796" y="140.59" x="39.448" filterUnits="userSpaceOnUse">
+    			<feColorMatrix id="feColorMatrix417" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" type="matrix"/>
+    		</filter></defs>
+    	<mask id="SVGID_21_" height="28.136" width="1.796" y="140.586" x="39.448" maskUnits="userSpaceOnUse">
+    		<g id="g420" filter="url(#Adobe_OpacityMaskFilter_3_)">
+    				<linearGradient id="SVGID_22_" y2="370.11" gradientUnits="userSpaceOnUse" x2="-7.1948" gradientTransform="matrix(0 -28.137 -28.137 0 10454 -61.827)" y1="370.11" x1="-8.1948">
+    				<stop id="stop423" stop-color="#fff" offset="0"/>
+    				<stop id="stop425" stop-color="#fff" offset=".1747"/>
+    				<stop id="stop427" stop-color="#FBFBFB" offset=".2683"/>
+    				<stop id="stop429" stop-color="#EDEDED" offset=".3708"/>
+    				<stop id="stop431" stop-color="#D7D7D7" offset=".4775"/>
+    				<stop id="stop433" stop-color="#B9B9B9" offset=".5871"/>
+    				<stop id="stop435" stop-color="#919191" offset=".6991"/>
+    				<stop id="stop437" stop-color="#616161" offset=".8128"/>
+    				<stop id="stop439" stop-color="#292929" offset=".926"/>
+    				<stop id="stop441" offset="1"/>
+    			</linearGradient>
+    			<rect id="rect443" height="28.136" width="1.796" y="140.59" x="39.448" fill="url(#SVGID_22_)"/>
+    		</g>
+    	</mask>
+    		<linearGradient id="SVGID_23_" y2="370.11" gradientUnits="userSpaceOnUse" x2="-7.1929" gradientTransform="matrix(0 -28.137 -28.137 0 10454 -61.796)" y1="370.11" x1="-8.1929">
+    		<stop id="stop446" stop-color="#CFD0D2" offset="0"/>
+    		<stop id="stop448" stop-color="#CFD0D2" offset=".1747"/>
+    		<stop id="stop450" stop-color="#CCCDCF" offset=".284"/>
+    		<stop id="stop452" stop-color="#C2C3C5" offset=".4036"/>
+    		<stop id="stop454" stop-color="#B0B2B3" offset=".528"/>
+    		<stop id="stop456" stop-color="#97989A" offset=".6559"/>
+    		<stop id="stop458" stop-color="#757678" offset=".7864"/>
+    		<stop id="stop460" stop-color="#474749" offset=".9172"/>
+    		<stop id="stop462" offset="1"/>
+    	</linearGradient>
+    	<rect id="rect464" mask="url(#SVGID_21_)" height="28.136" width="1.796" y="140.59" x="39.448" fill="url(#SVGID_23_)"/>
+    	<rect id="rect466" height="28.136" width="1.796" y="140.59" x="39.448" fill="none"/>
+    </g>
+    <linearGradient id="SVGID_24_" y2="277.98" gradientUnits="userSpaceOnUse" x2="50.359" y1="277.98" x1="30.335">
+    	<stop id="stop469" stop-color="#CFD0D2" offset="0"/>
+    	<stop id="stop471" stop-color="#CFD0D2" offset=".1096"/>
+    	<stop id="stop473" stop-color="#C5C6C8" offset=".1572"/>
+    	<stop id="stop475" stop-color="#A8AAAB" offset=".2463"/>
+    	<stop id="stop477" stop-color="#9C9D9F" offset=".2774"/>
+    	<stop id="stop479" stop-color="#ACADAF" offset=".3023"/>
+    	<stop id="stop481" stop-color="#C6C7C9" offset=".3532"/>
+    	<stop id="stop483" stop-color="#D8D9DA" offset=".4021"/>
+    	<stop id="stop485" stop-color="#E3E4E5" offset=".4476"/>
+    	<stop id="stop487" stop-color="#E7E7E8" offset=".4863"/>
+    	<stop id="stop489" stop-color="#9C9D9F" offset=".5788"/>
+    	<stop id="stop491" stop-color="#CFD0D2" offset=".8288"/>
+    	<stop id="stop493" stop-color="#CFD0D2" offset="1"/>
+    </linearGradient>
+    <path id="path495" d="m48.714 268.96c-1.115 0.286-2.817 0.613-5.155 0.779-1.905 0.135-3.824 0.146-5.732 0.043-1.49-0.08-2.745-0.228-3.776-0.395-1.169-0.192-2.05-0.41-2.659-0.591-0.714-0.21-1.057-0.366-1.057-0.366 0.121 2.199 0.438 4.277 0.862 6.214 0.424 1.935 0.956 3.731 1.514 5.369 0.518 1.523 1.067 3.056 1.709 4.533 1.467 3.36 2.875 2.99 2.875 2.99h6.105s1.408 0.37 2.875-2.99c0.643-1.478 1.191-3.01 1.709-4.533 0.558-1.638 1.091-3.435 1.515-5.369 0.424-1.937 0.741-4.015 0.86-6.214 0 0-0.53 0.25-1.645 0.54" fill="url(#SVGID_24_)"/>
+    <g id="g497">
+    		<linearGradient id="SVGID_25_" y2="370.11" gradientUnits="userSpaceOnUse" x2="-7.1987" gradientTransform="matrix(19.337 0 0 -19.337 189.24 7375.4)" y1="370.11" x1="-8.1987">
+    		<stop id="stop500" stop-color="#98999B" offset="0"/>
+    		<stop id="stop502" stop-color="#98999B" offset=".0171"/>
+    		<stop id="stop504" stop-color="#949697" offset=".0209"/>
+    		<stop id="stop506" stop-color="#78797B" offset=".0507"/>
+    		<stop id="stop508" stop-color="#5F6062" offset=".0843"/>
+    		<stop id="stop510" stop-color="#4A4A4C" offset=".1224"/>
+    		<stop id="stop512" stop-color="#373638" offset=".1669"/>
+    		<stop id="stop514" stop-color="#1F1F20" offset=".222"/>
+    		<stop id="stop516" stop-color="#080808" offset=".2993"/>
+    		<stop id="stop518" offset=".5137"/>
+    		<stop id="stop520" stop-color="#7B7C7E" offset=".6438"/>
+    		<stop id="stop522" offset=".7911"/>
+    		<stop id="stop524" offset="1"/>
+    	</linearGradient>
+    	<rect id="rect526" height="2.245" width="19.337" y="217.3" x="30.707" fill="url(#SVGID_25_)"/>
+    	<path id="path528" d="m40.348 217.53c-3.354 0-9.454-0.226-9.454-0.226l0.08 1.601-0.267 0.133 0.187-0.069s6.1 0.581 9.454 0.581c2.958 0 9.453-0.581 9.453-0.581l0.243 0.099-0.324-0.162 0.081-1.601s-6.495 0.23-9.453 0.23" fill="none"/>
+    </g>
+    <line id="line530" stroke-width=".5" x1="40.348" stroke="#B5530F" stroke-miterlimit="10" x2="40.348" y2="80.573" fill="none"/>
+    <linearGradient id="SVGID_26_" y2="193.13" gradientUnits="userSpaceOnUse" x2="50.44" y1="193.13" x1="30.255">
+    	<stop id="stop533" stop-color="#CFD0D2" offset="0"/>
+    	<stop id="stop535" stop-color="#CFD0D2" offset=".1096"/>
+    	<stop id="stop537" stop-color="#C5C6C8" offset=".1572"/>
+    	<stop id="stop539" stop-color="#A8AAAB" offset=".2463"/>
+    	<stop id="stop541" stop-color="#9C9D9F" offset=".2774"/>
+    	<stop id="stop543" stop-color="#ACADAF" offset=".3023"/>
+    	<stop id="stop545" stop-color="#C6C7C9" offset=".3532"/>
+    	<stop id="stop547" stop-color="#D8D9DA" offset=".4021"/>
+    	<stop id="stop549" stop-color="#E3E4E5" offset=".4476"/>
+    	<stop id="stop551" stop-color="#E7E7E8" offset=".4863"/>
+    	<stop id="stop553" stop-color="#9C9D9F" offset=".5788"/>
+    	<stop id="stop555" stop-color="#CFD0D2" offset=".8288"/>
+    	<stop id="stop557" stop-color="#CFD0D2" offset="1"/>
+    </linearGradient>
+    <path id="path559" d="m37.859 168.76c-0.783 0.021-1.545 0.051-2.282 0.091-0.374 0.021-1.989-0.05-2.043 0.297-0.273 3.986-0.546 7.973-0.819 11.96-0.274 3.987-0.547 7.974-0.82 11.96-0.274 3.987-0.546 7.973-0.82 11.961l-0.82 11.959c0.693 0.346 1.125 0.337 1.905 0.363 0.881 0.03 2.134 0.067 3.467 0.103 1.291 0.035 2.656 0.064 3.827 0.074 1.395 0.013 2.79-0.01 4.184-0.042 1.64-0.037 3.369-0.088 4.576-0.126 0.867-0.027 1.457 0.013 2.226-0.372l-0.818-11.959c-0.274-3.988-0.548-7.974-0.821-11.961-0.274-3.986-0.547-7.973-0.819-11.96s-0.547-7.974-0.818-11.96c-0.058-0.35-1.705-0.279-2.084-0.299-0.766-0.04-1.558-0.072-2.369-0.093-0.831-0.02-1.66-0.029-2.49-0.029-0.806 0.01-1.594 0.02-2.362 0.04" fill="url(#SVGID_26_)"/>
+    <linearGradient id="SVGID_27_" y2="268.13" gradientUnits="userSpaceOnUse" x2="50.761" y1="268.13" x1="29.935">
+    	<stop id="stop562" stop-color="#98999B" offset="0"/>
+    	<stop id="stop564" stop-color="#98999B" offset=".0171"/>
+    	<stop id="stop566" stop-color="#949697" offset=".0209"/>
+    	<stop id="stop568" stop-color="#78797B" offset=".0507"/>
+    	<stop id="stop570" stop-color="#5F6062" offset=".0843"/>
+    	<stop id="stop572" stop-color="#4A4A4C" offset=".1224"/>
+    	<stop id="stop574" stop-color="#373638" offset=".1669"/>
+    	<stop id="stop576" stop-color="#1F1F20" offset=".222"/>
+    	<stop id="stop578" stop-color="#080808" offset=".2993"/>
+    	<stop id="stop580" offset=".5137"/>
+    	<stop id="stop582" stop-color="#7B7C7E" offset=".6438"/>
+    	<stop id="stop584" offset=".7911"/>
+    	<stop id="stop586" offset="1"/>
+    </linearGradient>
+    <path id="path588" d="m29.935 266.42m10.413 1.3c-7.916 0-10.387-1.279-10.413-1.293 1.712 0.936 0.964 1.437 0.4 2 0 0 3.086 1.418 10.013 1.418 6.926 0 10.012-1.418 10.012-1.418-0.562-0.564-1.311-1.064 0.401-2 0-0.01-2.455 1.29-10.413 1.29" fill="url(#SVGID_27_)"/>
+    <linearGradient id="SVGID_28_" y2="243.28" gradientUnits="userSpaceOnUse" x2="49.881" y1="243.28" x1="30.815">
+    	<stop id="stop591" stop-color="#98999B" offset="0"/>
+    	<stop id="stop593" stop-color="#98999B" offset=".0171"/>
+    	<stop id="stop595" stop-color="#949697" offset=".0209"/>
+    	<stop id="stop597" stop-color="#78797B" offset=".0507"/>
+    	<stop id="stop599" stop-color="#5F6062" offset=".0843"/>
+    	<stop id="stop601" stop-color="#4A4A4C" offset=".1224"/>
+    	<stop id="stop603" stop-color="#373638" offset=".1669"/>
+    	<stop id="stop605" stop-color="#1F1F20" offset=".222"/>
+    	<stop id="stop607" stop-color="#080808" offset=".2993"/>
+    	<stop id="stop609" offset=".5137"/>
+    	<stop id="stop611" stop-color="#7B7C7E" offset=".6438"/>
+    	<stop id="stop613" offset=".7911"/>
+    	<stop id="stop615" offset="1"/>
+    </linearGradient>
+    <path id="path617" d="m40.348 242.78c-3.677 0-9.533-0.417-9.533-0.417v1.422s5.856 0.415 9.533 0.415c3.676 0 9.533-0.415 9.533-0.415v-1.422s-5.858 0.42-9.533 0.42" fill="url(#SVGID_28_)"/>
+    <g id="g619">
+    	<path id="path621" d="m40.348 217.53c-3.354 0-9.454-0.226-9.454-0.226l0.08 1.601-0.267 0.133 0.187-0.069s6.1 0.581 9.454 0.581c2.958 0 9.453-0.581 9.453-0.581l0.243 0.099-0.324-0.162 0.081-1.601s-6.495 0.23-9.453 0.23" fill="none"/>
+    	<rect id="rect650" height="2.245" width="19.337" y="217.3" x="30.707" fill="url(#SVGID_25_)"/>
+    </g>
+    <linearGradient id="SVGID_30_" y2="255.69" gradientUnits="userSpaceOnUse" x2="51.245" y1="255.69" x1="29.451">
+    	<stop id="stop653" stop-color="#CFD0D2" offset="0"/>
+    	<stop id="stop655" stop-color="#CFD0D2" offset=".1096"/>
+    	<stop id="stop657" stop-color="#C5C6C8" offset=".1572"/>
+    	<stop id="stop659" stop-color="#A8AAAB" offset=".2463"/>
+    	<stop id="stop661" stop-color="#9C9D9F" offset=".2774"/>
+    	<stop id="stop663" stop-color="#ACADAF" offset=".3023"/>
+    	<stop id="stop665" stop-color="#C6C7C9" offset=".3532"/>
+    	<stop id="stop667" stop-color="#D8D9DA" offset=".4021"/>
+    	<stop id="stop669" stop-color="#E3E4E5" offset=".4476"/>
+    	<stop id="stop671" stop-color="#E7E7E8" offset=".4863"/>
+    	<stop id="stop673" stop-color="#9C9D9F" offset=".5788"/>
+    	<stop id="stop675" stop-color="#CFD0D2" offset=".8288"/>
+    	<stop id="stop677" stop-color="#CFD0D2" offset="1"/>
+    </linearGradient>
+    <path id="path679" d="m40.511 244.14c-3.678 0-9.533-0.416-9.533-0.416l-0.641 0.321s0 0.151-0.003 0.408l-0.883 1.66 0.847 1.593c-0.008 0.741-0.016 1.563-0.026 2.44l-0.821 1.545 0.788 1.483c-0.009 0.862-0.017 1.741-0.027 2.616l-0.761 1.432 0.73 1.374c-0.01 0.998-0.019 1.957-0.029 2.841l-0.701 1.317 0.671 1.263c-0.012 1.244-0.022 2.105-0.025 2.346 0 0 2.455 1.293 10.414 1.293 7.957 0 10.412-1.293 10.412-1.293-0.002-0.276-0.014-1.379-0.032-2.947l0.354-0.661-0.367-0.691c-0.014-1.219-0.029-2.609-0.045-4.068l0.412-0.772-0.428-0.804c-0.014-1.285-0.029-2.589-0.044-3.846l0.472-0.882-0.49-0.919c-0.014-1.364-0.027-2.616-0.039-3.666l0.529-0.993-0.552-1.035c-0.007-0.651-0.011-1.033-0.011-1.033l-0.639-0.321c0.001 0.01-5.857 0.43-9.532 0.43" fill="url(#SVGID_30_)"/>
+    <linearGradient id="SVGID_31_" y2="230.81" gradientUnits="userSpaceOnUse" x2="51.245" y1="230.81" x1="29.451">
+    	<stop id="stop682" stop-color="#CFD0D2" offset="0"/>
+    	<stop id="stop684" stop-color="#CFD0D2" offset=".1096"/>
+    	<stop id="stop686" stop-color="#C5C6C8" offset=".1572"/>
+    	<stop id="stop688" stop-color="#A8AAAB" offset=".2463"/>
+    	<stop id="stop690" stop-color="#9C9D9F" offset=".2774"/>
+    	<stop id="stop692" stop-color="#ACADAF" offset=".3023"/>
+    	<stop id="stop694" stop-color="#C6C7C9" offset=".3532"/>
+    	<stop id="stop696" stop-color="#D8D9DA" offset=".4021"/>
+    	<stop id="stop698" stop-color="#E3E4E5" offset=".4476"/>
+    	<stop id="stop700" stop-color="#E7E7E8" offset=".4863"/>
+    	<stop id="stop702" stop-color="#9C9D9F" offset=".5788"/>
+    	<stop id="stop704" stop-color="#CFD0D2" offset=".8288"/>
+    	<stop id="stop706" stop-color="#CFD0D2" offset="1"/>
+    </linearGradient>
+    <path id="path708" fill="url(#SVGID_31_)" d="m40.511 219.49c-3.355 0-9.453-0.581-9.453-0.581l-0.19 0.07-0.531 0.266s-0.003 1.21-0.01 3.048l-0.876 1.646 0.863 1.623c-0.002 0.749-0.004 1.531-0.008 2.332l-0.855 1.607 0.843 1.586c-0.002 0.815-0.005 1.625-0.007 2.407l-0.836 1.569 0.823 1.548c-0.003 0.956-0.005 1.802-0.007 2.481l-0.816 1.533 0.81 1.523 0.56 0.046 0.002 0.002c0.053 0.043 0.1 0.075 0.125 0.091l0.014 0.011 0.002-0.003c0.004 0.003 0.014 0.008 0.014 0.008s5.855 0.416 9.533 0.416c3.675 0 9.533-0.416 9.533-0.416s0.084-0.043 0.192-0.138l0.198-0.017 0.811-1.523-0.486-0.915c-0.004-0.866-0.008-2.167-0.013-3.71l0.499-0.938-0.506-0.952c-0.004-1.162-0.011-2.392-0.014-3.634l0.52-0.977-0.527-0.991c-0.004-1.235-0.007-2.441-0.014-3.556l0.541-1.016-0.55-1.031c-0.007-2.18-0.013-3.663-0.013-3.663l-0.476-0.236-0.243-0.1c0.001 0-6.495 0.58-9.452 0.58"/>
+    <g id="g710">
+    	<polygon id="polygon712" points="41.752 244.12" fill="#999"/>
+    	<polygon id="polygon714" points="41.752 244.12" fill="#fff"/>
+    	<polygon id="polygon716" points="45.922 267.44" fill="#ccc"/>
+    	<polygon id="polygon718" points="45.922 267.44 45.943 267.4 45.943 267.4" fill="#333"/>
+    	<path id="path720" d="m45.928 267.41c-0.008 0.001-0.016 0.001-0.023 0.002l0.018 0.035v-0.001l0.005-0.03z" fill="#ccc"/>
+    	<polygon id="polygon722" points="45.922 267.44" fill="#333"/>
+    	<rect id="rect724" height="0" width="0" y="267.44" x="45.922" fill="#333"/>
+    		<rect id="rect726" transform="matrix(.4563 -.8898 .8898 .4563 -212.99 186.26)" height=".002" width=".043" y="267.42" x="45.91" fill="#333"/>
+    	<rect id="rect728" height=".043" width="0" y="267.4" x="45.932" fill="#333"/>
+    		<rect id="rect730" transform="matrix(.1601 -.9871 .9871 .1601 -225.4 269.95)" height="0" width=".037" y="267.42" x="45.907" fill="#333"/>
+    	<path id="path732" d="m45.928 267.41l-0.006 0.036 0.02-0.038c-0.004-0.01-0.008-0.01-0.014 0z" fill="#333"/>
+    	<polygon id="polygon734" points="34.836 267.44" fill="#ccc"/>
+    	<path id="path736" d="m34.848 267.38c-0.015-0.001-0.031-0.003-0.046-0.005l0.034 0.067v-0.001l0.012-0.07z" fill="#ccc"/>
+    	<rect id="rect738" height=".069" width=".002" y="267.38" x="34.852" fill="#333"/>
+    		<rect id="rect740" transform="matrix(.4758 -.8795 .8795 .4758 -216.93 170.83)" height="0" width=".068" y="267.41" x="34.819" fill="#333"/>
+    	<path id="path742" d="m34.836 267.44l0.032-0.06c-0.007 0-0.014-0.001-0.021-0.002l-0.011 0.06z" fill="#333"/>
+    	<path id="path744" d="m48.691 245.27l0.275-1.483c-0.291 0.019-0.627 0.04-1.006 0.062l0.731 1.42z" fill="#ccc"/>
+    	<polygon id="polygon746" points="45.922 245.28 45.922 245.27 45.922 245.27" fill="#ccc"/>
+    	<polygon id="polygon748" points="46.285 244.59 45.922 245.28 46.639 243.93 46.639 243.93" fill="#333"/>
+    	<polygon id="polygon750" points="46.639 243.93 46.639 243.93 46.285 244.59" fill="#333"/>
+    	<rect id="rect752" height="1.722" width=".002" y="243.65" x="49.096" fill="#333"/>
+    	<path id="path754" d="m48.967 243.79l-0.275 1.483 0.811-1.518c-0.151 0.02-0.333 0.03-0.536 0.04z" fill="#333"/>
+    	<path id="path756" d="m43.15 245.27l0.221-1.197c-0.277 0.01-0.551 0.018-0.824 0.025l0.603 1.17z" fill="#ccc"/>
+    	<polygon id="polygon758" points="39.791 244.13 39.791 244.13 40.379 245.28" fill="#ccc"/>
+    	<path id="path760" d="m45.922 245.27l0.244-1.321c-0.295 0.016-0.594 0.03-0.902 0.045l0.658 1.27z" fill="#ccc"/>
+    	<polygon id="polygon762" points="40.379 245.27 40.379 245.28" fill="#333"/>
+    	<polygon id="polygon764" points="45.922 245.27 45.922 245.28" fill="#333"/>
+    	<rect id="rect766" height="0" width="0" y="245.27" x="45.922" fill="#333"/>
+    	<polygon id="polygon768" points="45.922 245.27 45.922 245.28 46.285 244.59" fill="#333"/>
+    	<polygon id="polygon770" points="45.922 245.27 45.922 245.27 46.285 244.59 46.639 243.93 46.639 243.93" fill="#333"/>
+    	<rect id="rect772" height="1.344" width="0" y="243.94" x="46.044" fill="#333"/>
+    	<path id="path774" d="m46.166 243.95l-0.244 1.321 0.717-1.346c-0.155 0.02-0.315 0.02-0.473 0.03z" fill="#333"/>
+    	<rect id="rect776" height="1.376" width=".002" y="243.98" x="43.473" fill="#333"/>
+    	<path id="path778" d="m43.371 244.08l-0.221 1.197 0.646-1.213c-0.142 0-0.282 0-0.425 0.01z" fill="#333"/>
+    	<path id="path780" d="m37.608 245.27l0.221-1.191c-0.283-0.01-0.566-0.021-0.851-0.031l0.63 1.22z" fill="#ccc"/>
+    	<polygon id="polygon782" points="34.836 245.28 34.836 245.27 34.836 245.27" fill="#ccc"/>
+    	<path id="path784" d="m40.51 244.14c-0.231 0-0.473-0.002-0.72-0.005l0.589 1.145v-0.001l0.211-1.14h-0.08z" fill="#ccc"/>
+    	<rect id="rect786" height="1.159" width="0" y="244.12" x="40.485" fill="#ccc"/>
+    	<rect id="rect788" height="1.296" width=".002" y="244.06" x="40.683" fill="#333"/>
+    	<path id="path790" d="m40.988 244.13c-0.135 0.001-0.269 0.002-0.398 0.002l-0.211 1.14 0.609-1.14z" fill="#333"/>
+    	<rect id="rect792" height="1.336" width=".002" y="244.02" x="37.921" fill="#333"/>
+    	<path id="path794" d="m37.829 244.08l-0.221 1.191 0.628-1.178c-0.135 0-0.272 0-0.407-0.01z" fill="#333"/>
+    	<path id="path796" d="m32.065 245.27l0.271-1.465c-0.46-0.029-0.827-0.054-1.062-0.069l0.791 1.54z" fill="#ccc"/>
+    	<path id="path798" d="m34.836 245.27l0.242-1.31c-0.325-0.017-0.638-0.033-0.942-0.05l0.7 1.36z" fill="#ccc"/>
+    	<rect id="rect800" height="1.46" width=".002" y="243.9" x="35.179" fill="#333"/>
+    		<rect id="rect802" transform="matrix(.4701 -.8826 .8826 .4701 -197.27 160.68)" height="0" width="1.458" y="244.63" x="34.45" fill="#333"/>
+    	<path id="path804" d="m35.079 243.96l-0.242 1.31 0.686-1.287c-0.149 0-0.299-0.01-0.444-0.02z" fill="#333"/>
+    	<rect id="rect806" height="1.628" width=".002" y="243.74" x="32.447" fill="#333"/>
+    	<path id="path808" d="m32.336 243.81l-0.271 1.465 0.765-1.435c-0.174-0.01-0.339-0.02-0.494-0.03z" fill="#333"/>
+    	<polygon id="polygon810" points="47.684 248.85 48.691 250.82 48.691 250.82 49.055 248.85" fill="#ccc"/>
+    	<polygon id="polygon812" points="46.967 248.85 45.922 246.89" fill="#ccc"/>
+    	<polygon id="polygon814" points="45.922 250.82" fill="#ccc"/>
+    	<path id="path816" d="m50.453 248.85l0.287 0.558c-0.002-0.188-0.004-0.377-0.006-0.558h-0.281z" fill="#ccc"/>
+    	<polygon id="polygon818" points="50.453 246.08 49.08 246.08 50.092 248.05" fill="#ccc"/>
+    	<polygon id="polygon820" points="47.656 246.08 46.285 246.08 47.295 244.12 46.283 246.08 47.295 248.05" fill="#ccc"/>
+    	<polygon id="polygon822" points="45.922 250.82 46.967 248.85 46.285 250.14" fill="#333"/>
+    	<polygon id="polygon824" points="46.285 250.14 46.967 248.85 46.967 248.85" fill="#333"/>
+    	<path id="path826" d="m50.734 248.85c-0.002-0.185-0.004-0.358-0.006-0.535l-0.275 0.535h0.281z" fill="#fff"/>
+    	<polygon id="polygon828" points="48.691 250.82 49.738 248.85" fill="#333"/>
+    	<polygon id="polygon830" points="48.691 250.82 49.738 248.85 49.055 248.85" fill="#333"/>
+    	<polygon id="polygon832" points="49.738 248.85 48.691 246.89 49.055 248.85" fill="#999"/>
+    	<polygon id="polygon834" points="47.684 248.85 48.691 246.89 47.682 248.85" fill="#fff"/>
+    	<polygon id="polygon836" points="49.055 248.85 48.691 246.89 47.684 248.85" fill="#fff"/>
+    	<polygon id="polygon838" points="50.092 248.05 51.137 246.08 50.453 246.08" fill="#333"/>
+    	<polygon id="polygon840" points="51.137 246.08 50.092 244.12 50.453 246.08" fill="#999"/>
+    	<polygon id="polygon842" points="50.092 244.12 49.08 246.08 50.453 246.08" fill="#fff"/>
+    	<polygon id="polygon844" points="47.295 248.05 48.34 246.08 47.656 246.08" fill="#333"/>
+    	<polygon id="polygon846" points="48.34 246.08 47.295 244.12 47.656 246.08" fill="#999"/>
+    	<polygon id="polygon848" points="47.656 246.08 47.295 244.12 46.285 246.08" fill="#fff"/>
+    	<polygon id="polygon850" points="43.15 250.82 43.514 248.85 42.141 248.85" fill="#ccc"/>
+    	<polygon id="polygon852" points="39.369 248.85 40.379 250.82 39.37 248.85" fill="#ccc"/>
+    	<polygon id="polygon854" points="46.283 248.85 44.912 248.85 45.922 250.82 45.922 250.82" fill="#ccc"/>
+    	<polygon id="polygon856" points="44.912 246.08 43.539 246.08 44.549 248.05" fill="#ccc"/>
+    	<polygon id="polygon858" points="40.742 246.08 41.752 248.05 42.115 246.08" fill="#ccc"/>
+    	<polygon id="polygon860" points="40.379 250.82" fill="#333"/>
+    	<polygon id="polygon862" points="39.37 248.85 40.379 246.89 39.369 248.85" fill="#fff"/>
+    	<polygon id="polygon864" points="45.922 250.82" fill="#333"/>
+    	<rect id="rect866" height="0" width=".001" y="250.82" x="45.921" fill="#333"/>
+    	<polygon id="polygon868" points="45.922 250.82 45.922 250.82 46.285 250.14" fill="#333"/>
+    	<polygon id="polygon870" points="45.922 250.82 46.285 250.14 46.967 248.85" fill="#333"/>
+    		<rect id="rect872" transform="matrix(-.1821 .9833 -.9833 -.1821 300.16 249.99)" height=".002" width="1.995" y="249.83" x="45.105" fill="#333"/>
+    	<polygon id="polygon874" points="46.967 248.85 46.285 248.85 45.922 250.82" fill="#333"/>
+    	<polygon id="polygon876" points="46.285 248.85 45.922 246.89 46.283 248.85" fill="#999"/>
+    	<polygon id="polygon878" points="46.967 248.85 45.922 246.89 46.285 248.85" fill="#999"/>
+    	<polygon id="polygon880" points="46.283 248.85 45.922 246.89 44.912 248.85" fill="#fff"/>
+    	<polygon id="polygon882" points="43.15 250.82 44.195 248.85" fill="#333"/>
+    	<polygon id="polygon884" points="43.15 250.82 44.195 248.85 43.514 248.85" fill="#333"/>
+    	<polygon id="polygon886" points="44.195 248.85 43.15 246.89 43.514 248.85" fill="#999"/>
+    	<polygon id="polygon888" points="43.15 246.89 42.141 248.85 43.514 248.85" fill="#fff"/>
+    	<polygon id="polygon890" points="44.549 248.05 45.594 246.08 44.912 246.08" fill="#333"/>
+    	<polygon id="polygon892" points="45.594 246.08 44.549 244.12 44.912 246.08" fill="#999"/>
+    	<polygon id="polygon894" points="44.549 244.12 43.539 246.08 44.912 246.08" fill="#fff"/>
+    	<polygon id="polygon896" points="42.797 246.08 42.797 246.08 41.752 248.05" fill="#333"/>
+    	<polygon id="polygon898" points="41.752 248.05 42.797 246.08 42.115 246.08" fill="#333"/>
+    	<polygon id="polygon900" points="42.115 246.08 42.797 246.08 41.752 244.12 41.752 244.12" fill="#999"/>
+    	<polygon id="polygon902" points="42.115 246.08 41.752 244.12 41.752 244.12 40.742 246.08" fill="#fff"/>
+    	<polygon id="polygon904" points="36.598 248.85 37.608 250.82 37.608 250.82 37.971 248.85" fill="#ccc"/>
+    	<polygon id="polygon906" points="34.836 250.82" fill="#ccc"/>
+    	<polygon id="polygon908" points="39.37 248.85 40.379 250.82 40.379 250.82 40.742 248.85" fill="#ccc"/>
+    	<rect id="rect910" height="1.996" width=".001" y="248.84" x="40.561" fill="#ccc"/>
+    	<polygon id="polygon912" points="39.37 246.08 37.997 246.08 39.006 248.05" fill="#ccc"/>
+    	<polygon id="polygon914" points="36.573 246.08 35.2 246.08 36.209 248.05" fill="#ccc"/>
+    	<polygon id="polygon916" points="35.882 248.85 34.836 246.89 35.881 248.85" fill="#999"/>
+    	<polygon id="polygon918" points="40.379 250.82 41.424 248.85" fill="#333"/>
+    	<polygon id="polygon920" points="40.379 250.82 41.424 248.85 40.743 248.85" fill="#333"/>
+    	<polygon id="polygon922" points="41.424 248.85 40.379 246.89 40.743 248.85" fill="#999"/>
+    	<polygon id="polygon924" points="40.743 248.85 40.379 246.89 40.742 248.85" fill="#fff"/>
+    	<polygon id="polygon926" points="40.742 248.85 40.379 246.89 39.37 248.85" fill="#fff"/>
+    	<polygon id="polygon928" points="37.608 250.82 38.653 248.85" fill="#333"/>
+    	<polygon id="polygon930" points="37.608 250.82 38.653 248.85 37.971 248.85" fill="#333"/>
+    	<polygon id="polygon932" points="38.653 248.85 37.608 246.89 37.971 248.85" fill="#999"/>
+    	<polygon id="polygon934" points="37.971 248.85 37.608 246.89 36.598 248.85" fill="#fff"/>
+    	<polygon id="polygon936" points="39.006 248.05 40.051 246.08 39.37 246.08" fill="#333"/>
+    	<polygon id="polygon938" points="40.051 246.08 39.006 244.12 39.37 246.08" fill="#999"/>
+    	<polygon id="polygon940" points="39.006 244.12 37.997 246.08 39.37 246.08" fill="#fff"/>
+    	<polygon id="polygon942" points="36.209 248.05 37.254 246.08 36.573 246.08" fill="#333"/>
+    	<polygon id="polygon944" points="37.254 246.08 36.209 244.12 36.573 246.08" fill="#999"/>
+    	<polygon id="polygon946" points="36.209 244.12 35.2 246.08 36.573 246.08" fill="#fff"/>
+    	<polygon id="polygon948" points="31.055 248.85 32.065 250.82 32.065 250.82 32.428 248.85" fill="#ccc"/>
+    	<polygon id="polygon950" points="35.2 248.85 33.827 248.85 34.836 250.82 34.836 250.82" fill="#ccc"/>
+    	<polygon id="polygon952" points="33.827 246.08 32.454 246.08 33.463 248.05" fill="#ccc"/>
+    	<polygon id="polygon954" points="31.03 246.08 29.657 246.08 30.667 248.05" fill="#ccc"/>
+    	<polygon id="polygon956" points="30.285 248.96 30.285 248.96 30.34 248.85" fill="#333"/>
+    	<path id="path958" d="m30.285 248.96l0.056-0.104h-0.055c0 0.03-0.001 0.06-0.001 0.1z" fill="#333"/>
+    	<polygon id="polygon960" points="34.836 250.82 35.882 248.85" fill="#333"/>
+    	<rect id="rect962" height="2.223" width="0" y="248.72" x="35.359" fill="#333"/>
+    	<polygon id="polygon964" points="35.881 248.85 35.2 248.85 34.836 250.82" fill="#333"/>
+    	<polygon id="polygon966" points="35.881 248.85 34.836 246.89 35.2 248.85" fill="#999"/>
+    	<polygon id="polygon968" points="35.2 248.85 34.836 246.89 33.827 248.85" fill="#fff"/>
+    	<polygon id="polygon970" points="32.065 250.82 33.111 248.85" fill="#333"/>
+    	<polygon id="polygon972" points="32.065 250.82 33.111 248.85 32.428 248.85" fill="#333"/>
+    	<polygon id="polygon974" points="33.111 248.85 32.065 246.89 32.428 248.85" fill="#999"/>
+    	<polygon id="polygon976" points="32.428 248.85 32.065 246.89 31.055 248.85" fill="#fff"/>
+    	<polygon id="polygon978" points="33.463 248.05 34.509 246.08 34.508 246.08" fill="#333"/>
+    	<polygon id="polygon980" points="33.827 246.08 33.463 248.05 34.508 246.08" fill="#333"/>
+    	<polygon id="polygon982" points="34.509 246.08 33.463 244.12 34.508 246.08" fill="#999"/>
+    	<polygon id="polygon984" points="34.508 246.08 33.463 244.12 33.827 246.08" fill="#999"/>
+    	<polygon id="polygon986" points="33.463 244.12 32.454 246.08 33.827 246.08" fill="#fff"/>
+    	<polygon id="polygon988" points="30.667 248.05 31.712 246.08 31.03 246.08" fill="#333"/>
+    	<polygon id="polygon990" points="31.712 246.08 30.667 244.12 31.03 246.08" fill="#999"/>
+    	<polygon id="polygon992" points="30.667 244.12 29.657 246.08 31.03 246.08" fill="#fff"/>
+    	<polygon id="polygon994" points="47.684 254.4 48.691 256.36 48.691 256.36 49.055 254.4" fill="#ccc"/>
+    	<polygon id="polygon996" points="46.967 254.4 45.922 252.43" fill="#ccc"/>
+    	<polygon id="polygon998" points="45.922 256.36" fill="#ccc"/>
+    	<path id="path1000" d="m50.453 254.4l0.35 0.677c-0.004-0.226-0.006-0.451-0.008-0.677h-0.342z" fill="#ccc"/>
+    	<polygon id="polygon1002" points="49.08 251.62 50.092 253.59 50.453 251.62" fill="#ccc"/>
+    	<polygon id="polygon1004" points="47.656 251.62 46.285 251.62 47.295 249.66 46.283 251.62 47.295 253.59" fill="#ccc"/>
+    	<polygon id="polygon1006" points="45.922 256.36 46.967 254.4 46.285 255.68" fill="#333"/>
+    	<polygon id="polygon1008" points="46.285 255.68 46.967 254.4 46.967 254.4" fill="#333"/>
+    	<path id="path1010" d="m50.795 254.4c-0.004-0.218-0.006-0.432-0.008-0.648l-0.334 0.648h0.342z" fill="#fff"/>
+    	<polygon id="polygon1012" points="49.738 254.4 48.691 256.36 48.691 256.36" fill="#333"/>
+    	<polygon id="polygon1014" points="49.055 254.4 48.691 256.36 49.738 254.4" fill="#333"/>
+    	<polygon id="polygon1016" points="49.738 254.4 48.691 252.43 49.055 254.4" fill="#999"/>
+    	<polygon id="polygon1018" points="47.682 254.4 47.684 254.4 48.691 252.43" fill="#fff"/>
+    	<polygon id="polygon1020" points="48.691 252.43 47.684 254.4 49.055 254.4" fill="#fff"/>
+    	<polygon id="polygon1022" points="50.092 253.59 51.137 251.62 50.453 251.62" fill="#333"/>
+    	<polygon id="polygon1024" points="50.453 251.62 51.137 251.62 50.092 249.66" fill="#999"/>
+    	<polygon id="polygon1026" points="50.092 249.66 49.08 251.62 50.453 251.62" fill="#fff"/>
+    	<polygon id="polygon1028" points="47.295 253.59 48.34 251.62 47.656 251.62" fill="#333"/>
+    	<polygon id="polygon1030" points="48.34 251.62 47.295 249.66 47.656 251.62" fill="#999"/>
+    	<polygon id="polygon1032" points="47.656 251.62 47.295 249.66 46.285 251.62" fill="#fff"/>
+    	<polygon id="polygon1034" points="42.141 254.4 43.15 256.36 43.15 256.36 43.514 254.4" fill="#ccc"/>
+    	<polygon id="polygon1036" points="39.369 254.4 40.379 256.36 39.37 254.4" fill="#ccc"/>
+    	<polygon id="polygon1038" points="46.283 254.4 44.912 254.4 45.922 256.36 45.922 256.36" fill="#ccc"/>
+    	<polygon id="polygon1040" points="44.912 251.62 43.539 251.62 44.549 253.59" fill="#ccc"/>
+    	<polygon id="polygon1042" points="40.742 251.62 41.752 253.59 42.115 251.62" fill="#ccc"/>
+    	<polygon id="polygon1044" points="40.379 256.36" fill="#333"/>
+    	<polygon id="polygon1046" points="40.379 252.43 39.369 254.4 39.37 254.4" fill="#fff"/>
+    	<polygon id="polygon1048" points="45.922 256.36" fill="#333"/>
+    	<rect id="rect1050" height="0" width="0" y="256.36" x="45.922" fill="#333"/>
+    	<polygon id="polygon1052" points="45.922 256.36 45.922 256.36 46.285 255.68" fill="#333"/>
+    	<polygon id="polygon1054" points="46.967 254.4 45.922 256.36 45.922 256.36 46.285 255.68" fill="#333"/>
+    		<rect id="rect1056" transform="matrix(.1811 -.9835 .9835 .1811 -213.4 254.46)" height="0" width="1.995" y="255.38" x="45.105" fill="#333"/>
+    	<polygon id="polygon1058" points="46.285 254.4 45.922 256.36 46.967 254.4" fill="#333"/>
+    	<polygon id="polygon1060" points="46.285 254.4 45.922 252.43 46.283 254.4" fill="#999"/>
+    	<polygon id="polygon1062" points="46.967 254.4 45.922 252.43 46.285 254.4" fill="#999"/>
+    	<polygon id="polygon1064" points="45.922 252.43 44.912 254.4 46.283 254.4" fill="#fff"/>
+    	<polygon id="polygon1066" points="43.15 256.36 44.195 254.4" fill="#333"/>
+    	<polygon id="polygon1068" points="43.15 256.36 44.195 254.4 43.514 254.4" fill="#333"/>
+    	<polygon id="polygon1070" points="43.514 254.4 44.195 254.4 43.15 252.43" fill="#999"/>
+    	<polygon id="polygon1072" points="43.15 252.43 42.141 254.4 43.514 254.4" fill="#fff"/>
+    	<polygon id="polygon1074" points="44.549 253.59 45.594 251.62 44.912 251.62" fill="#333"/>
+    	<polygon id="polygon1076" points="45.594 251.62 44.549 249.66 44.912 251.62" fill="#999"/>
+    	<polygon id="polygon1078" points="44.549 249.66 43.539 251.62 44.912 251.62" fill="#fff"/>
+    	<polygon id="polygon1080" points="42.797 251.62 42.797 251.62 41.752 253.59" fill="#333"/>
+    	<polygon id="polygon1082" points="41.752 253.59 42.797 251.62 42.115 251.62" fill="#333"/>
+    	<polygon id="polygon1084" points="42.797 251.62 41.752 249.66 42.115 251.62" fill="#999"/>
+    	<polygon id="polygon1086" points="42.115 251.62 41.752 249.66 40.742 251.62" fill="#fff"/>
+    	<polygon id="polygon1088" points="36.598 254.4 37.608 256.36 37.608 256.36 37.971 254.4" fill="#ccc"/>
+    	<polygon id="polygon1090" points="34.836 256.36" fill="#ccc"/>
+    	<polygon id="polygon1092" points="39.37 254.4 40.379 256.36 40.379 256.36 40.742 254.4" fill="#ccc"/>
+    	<rect id="rect1094" height="1.995" width=".001" y="254.38" x="40.561" fill="#ccc"/>
+    	<polygon id="polygon1096" points="37.997 251.62 39.006 253.59 39.37 251.62" fill="#ccc"/>
+    	<polygon id="polygon1098" points="35.2 251.62 36.209 253.59 36.573 251.62" fill="#ccc"/>
+    	<polygon id="polygon1100" points="35.882 254.4 34.836 252.43 35.881 254.4" fill="#999"/>
+    	<polygon id="polygon1102" points="40.379 256.36 41.424 254.4" fill="#333"/>
+    	<polygon id="polygon1104" points="40.379 256.36 41.424 254.4 40.743 254.4" fill="#333"/>
+    	<polygon id="polygon1106" points="41.424 254.4 40.379 252.43 40.743 254.4" fill="#999"/>
+    	<polygon id="polygon1108" points="40.743 254.4 40.379 252.43 40.742 254.4" fill="#fff"/>
+    	<polygon id="polygon1110" points="40.742 254.4 40.379 252.43 39.37 254.4" fill="#fff"/>
+    	<polygon id="polygon1112" points="37.608 256.36 38.653 254.4" fill="#333"/>
+    	<polygon id="polygon1114" points="37.608 256.36 38.653 254.4 37.971 254.4" fill="#333"/>
+    	<polygon id="polygon1116" points="37.971 254.4 38.653 254.4 37.608 252.43" fill="#999"/>
+    	<polygon id="polygon1118" points="37.608 252.43 36.598 254.4 37.971 254.4" fill="#fff"/>
+    	<polygon id="polygon1120" points="39.006 253.59 40.051 251.62 39.37 251.62" fill="#333"/>
+    	<polygon id="polygon1122" points="39.37 251.62 40.051 251.62 39.006 249.66" fill="#999"/>
+    	<polygon id="polygon1124" points="39.006 249.66 37.997 251.62 39.37 251.62" fill="#fff"/>
+    	<polygon id="polygon1126" points="36.209 253.59 37.254 251.62 36.573 251.62" fill="#333"/>
+    	<polygon id="polygon1128" points="36.573 251.62 37.254 251.62 36.209 249.66" fill="#999"/>
+    	<polygon id="polygon1130" points="36.209 249.66 35.2 251.62 36.573 251.62" fill="#fff"/>
+    	<polygon id="polygon1132" points="31.055 254.4 32.065 256.36 32.065 256.36 32.428 254.4" fill="#ccc"/>
+    	<polygon id="polygon1134" points="35.2 254.4 33.827 254.4 34.836 256.36 34.836 256.36" fill="#ccc"/>
+    	<polygon id="polygon1136" points="33.827 251.62 32.454 251.62 33.463 253.59" fill="#ccc"/>
+    	<polygon id="polygon1138" points="31.03 251.62 29.657 251.62 30.667 253.59" fill="#ccc"/>
+    	<polygon id="polygon1140" points="30.224 254.62 30.224 254.62 30.34 254.4" fill="#333"/>
+    	<path id="path1142" d="m30.224 254.62l0.116-0.219h-0.114c-0.001 0.07-0.002 0.14-0.002 0.22z" fill="#333"/>
+    	<path id="path1144" d="m30.34 254.4l-0.112-0.211c-0.001 0.07-0.001 0.141-0.002 0.211h0.114z" fill="#999"/>
+    	<polygon id="polygon1146" points="35.882 254.4 34.836 256.36 34.836 256.36" fill="#333"/>
+    		<rect id="rect1148" transform="matrix(.4701 -.8826 .8826 .4701 -206.66 166.54)" height="0" width="2.223" y="255.38" x="34.247" fill="#333"/>
+    	<polygon id="polygon1150" points="34.836 256.36 35.881 254.4 35.2 254.4" fill="#333"/>
+    	<polygon id="polygon1152" points="35.881 254.4 34.836 252.43 35.2 254.4" fill="#999"/>
+    	<polygon id="polygon1154" points="34.836 252.43 33.827 254.4 35.2 254.4" fill="#fff"/>
+    	<polygon id="polygon1156" points="33.111 254.4 32.065 256.36 32.065 256.36" fill="#333"/>
+    	<polygon id="polygon1158" points="32.428 254.4 32.065 256.36 33.111 254.4" fill="#333"/>
+    	<polygon id="polygon1160" points="33.111 254.4 32.065 252.43 32.428 254.4" fill="#999"/>
+    	<polygon id="polygon1162" points="32.065 252.43 31.055 254.4 32.428 254.4" fill="#fff"/>
+    	<polygon id="polygon1164" points="33.463 253.59 34.509 251.62 34.508 251.62" fill="#333"/>
+    	<polygon id="polygon1166" points="33.827 251.62 33.463 253.59 34.508 251.62" fill="#333"/>
+    	<polygon id="polygon1168" points="34.509 251.62 33.463 249.66 34.508 251.62" fill="#999"/>
+    	<polygon id="polygon1170" points="34.508 251.62 33.463 249.66 33.827 251.62" fill="#999"/>
+    	<polygon id="polygon1172" points="33.463 249.66 32.454 251.62 33.827 251.62" fill="#fff"/>
+    	<polygon id="polygon1174" points="30.667 253.59 31.712 251.62 31.03 251.62" fill="#333"/>
+    	<polygon id="polygon1176" points="31.712 251.62 30.667 249.66 31.03 251.62" fill="#999"/>
+    	<polygon id="polygon1178" points="30.667 249.66 29.657 251.62 31.03 251.62" fill="#fff"/>
+    	<polygon id="polygon1180" points="47.684 259.94 48.691 261.9 48.691 261.9 49.055 259.94" fill="#ccc"/>
+    	<polygon id="polygon1182" points="46.967 259.94 45.922 257.98" fill="#ccc"/>
+    	<polygon id="polygon1184" points="45.922 261.9" fill="#ccc"/>
+    	<path id="path1186" d="m50.453 259.94l0.41 0.795c-0.004-0.261-0.006-0.524-0.01-0.795h-0.4z" fill="#ccc"/>
+    	<polygon id="polygon1188" points="49.08 257.17 50.092 259.13 50.453 257.17" fill="#ccc"/>
+    	<polygon id="polygon1190" points="47.656 257.17 46.285 257.17 47.295 255.2 46.283 257.17 47.295 259.13" fill="#ccc"/>
+    	<polygon id="polygon1192" points="45.922 261.9 46.967 259.94 46.285 261.22" fill="#333"/>
+    	<polygon id="polygon1194" points="46.285 261.22 46.967 259.94 46.967 259.94" fill="#333"/>
+    	<path id="path1196" d="m50.854 259.94c-0.002-0.251-0.006-0.504-0.008-0.762l-0.393 0.762h0.401z" fill="#fff"/>
+    	<polygon id="polygon1198" points="49.738 259.94 48.691 261.9 48.691 261.9" fill="#333"/>
+    	<polygon id="polygon1200" points="49.055 259.94 48.691 261.9 49.738 259.94" fill="#333"/>
+    	<polygon id="polygon1202" points="49.738 259.94 48.691 257.98 49.055 259.94" fill="#999"/>
+    	<polygon id="polygon1204" points="47.682 259.94 47.684 259.94 48.691 257.98" fill="#fff"/>
+    	<polygon id="polygon1206" points="48.691 257.98 47.684 259.94 49.055 259.94" fill="#fff"/>
+    	<polygon id="polygon1208" points="50.092 259.13 51.137 257.17 50.453 257.17" fill="#333"/>
+    	<polygon id="polygon1210" points="50.453 257.17 51.137 257.17 50.092 255.2" fill="#999"/>
+    	<polygon id="polygon1212" points="50.092 255.2 49.08 257.17 50.453 257.17" fill="#fff"/>
+    	<polygon id="polygon1214" points="47.295 259.13 48.34 257.17 47.656 257.17" fill="#333"/>
+    	<polygon id="polygon1216" points="48.34 257.17 47.295 255.2 47.656 257.17" fill="#999"/>
+    	<polygon id="polygon1218" points="47.656 257.17 47.295 255.2 46.285 257.17" fill="#fff"/>
+    	<polygon id="polygon1220" points="42.141 259.94 43.15 261.9 43.15 261.9 43.514 259.94" fill="#ccc"/>
+    	<polygon id="polygon1222" points="39.369 259.94 40.379 261.9 39.37 259.94" fill="#ccc"/>
+    	<polygon id="polygon1224" points="46.283 259.94 44.912 259.94 45.922 261.9 45.922 261.9" fill="#ccc"/>
+    	<polygon id="polygon1226" points="44.912 257.17 43.539 257.17 44.549 259.13" fill="#ccc"/>
+    	<polygon id="polygon1228" points="42.115 257.17 40.742 257.17 41.752 259.13" fill="#ccc"/>
+    	<polygon id="polygon1230" points="40.379 261.9" fill="#333"/>
+    	<polygon id="polygon1232" points="40.379 257.98 39.369 259.94 39.37 259.94" fill="#fff"/>
+    	<polygon id="polygon1234" points="45.922 261.9" fill="#333"/>
+    	<rect id="rect1236" height="0" width=".001" y="261.9" x="45.921" fill="#333"/>
+    	<polygon id="polygon1238" points="45.922 261.9 45.922 261.9 46.285 261.22" fill="#333"/>
+    	<polygon id="polygon1240" points="46.967 259.94 45.922 261.9 45.922 261.9 46.285 261.22" fill="#333"/>
+    		<rect id="rect1242" transform="matrix(.181 -.9835 .9835 .181 -218.85 259.02)" height=".001" width="1.996" y="260.92" x="45.105" fill="#333"/>
+    	<polygon id="polygon1244" points="46.285 259.94 45.922 261.9 46.967 259.94" fill="#333"/>
+    	<polygon id="polygon1246" points="46.285 259.94 45.922 257.98 46.283 259.94" fill="#999"/>
+    	<polygon id="polygon1248" points="46.967 259.94 45.922 257.98 46.285 259.94" fill="#999"/>
+    	<polygon id="polygon1250" points="45.922 257.98 44.912 259.94 46.283 259.94" fill="#fff"/>
+    	<polygon id="polygon1252" points="44.195 259.94 43.15 261.9 43.15 261.9" fill="#333"/>
+    	<polygon id="polygon1254" points="43.514 259.94 43.15 261.9 44.195 259.94" fill="#333"/>
+    	<polygon id="polygon1256" points="44.195 259.94 43.15 257.98 43.514 259.94" fill="#999"/>
+    	<polygon id="polygon1258" points="43.15 257.98 42.141 259.94 43.514 259.94" fill="#fff"/>
+    	<polygon id="polygon1260" points="44.549 259.13 45.594 257.17 44.912 257.17" fill="#333"/>
+    	<polygon id="polygon1262" points="45.594 257.17 44.549 255.2 44.912 257.17" fill="#999"/>
+    	<polygon id="polygon1264" points="44.549 255.2 43.539 257.17 44.912 257.17" fill="#fff"/>
+    	<polygon id="polygon1266" points="42.797 257.17 42.797 257.17 41.752 259.13" fill="#333"/>
+    	<polygon id="polygon1268" points="41.752 259.13 42.797 257.17 42.115 257.17" fill="#333"/>
+    	<polygon id="polygon1270" points="42.797 257.17 41.752 255.2 42.115 257.17" fill="#999"/>
+    	<polygon id="polygon1272" points="41.752 255.2 40.742 257.17 42.115 257.17" fill="#fff"/>
+    	<polygon id="polygon1274" points="36.598 259.94 37.608 261.9 37.608 261.9 37.971 259.94" fill="#ccc"/>
+    	<polygon id="polygon1276" points="34.836 261.9" fill="#ccc"/>
+    	<polygon id="polygon1278" points="39.37 259.94 40.379 261.9 40.379 261.9 40.742 259.94" fill="#ccc"/>
+    	<rect id="rect1280" height="1.996" width=".001" y="259.92" x="40.561" fill="#ccc"/>
+    	<polygon id="polygon1282" points="39.37 257.17 37.997 257.17 39.006 259.13" fill="#ccc"/>
+    	<polygon id="polygon1284" points="36.573 257.17 35.2 257.17 36.209 259.13" fill="#ccc"/>
+    	<polygon id="polygon1286" points="35.882 259.94 34.836 257.98 35.881 259.94" fill="#999"/>
+    	<polygon id="polygon1288" points="40.379 261.9 41.424 259.94" fill="#333"/>
+    	<polygon id="polygon1290" points="40.379 261.9 41.424 259.94 40.743 259.94" fill="#333"/>
+    	<polygon id="polygon1292" points="41.424 259.94 40.379 257.98 40.743 259.94" fill="#999"/>
+    	<polygon id="polygon1294" points="40.743 259.94 40.379 257.98 40.742 259.94" fill="#fff"/>
+    	<polygon id="polygon1296" points="40.742 259.94 40.379 257.98 39.37 259.94" fill="#fff"/>
+    	<polygon id="polygon1298" points="38.653 259.94 37.608 261.9 37.608 261.9" fill="#333"/>
+    	<polygon id="polygon1300" points="37.971 259.94 37.608 261.9 38.653 259.94" fill="#333"/>
+    	<polygon id="polygon1302" points="38.653 259.94 37.608 257.98 37.971 259.94" fill="#999"/>
+    	<polygon id="polygon1304" points="37.608 257.98 36.598 259.94 37.971 259.94" fill="#fff"/>
+    	<polygon id="polygon1306" points="39.006 259.13 40.051 257.17 39.37 257.17" fill="#333"/>
+    	<polygon id="polygon1308" points="40.051 257.17 39.006 255.2 39.37 257.17" fill="#999"/>
+    	<polygon id="polygon1310" points="39.006 255.2 37.997 257.17 39.37 257.17" fill="#fff"/>
+    	<polygon id="polygon1312" points="36.209 259.13 37.254 257.17 36.573 257.17" fill="#333"/>
+    	<polygon id="polygon1314" points="37.254 257.17 36.209 255.2 36.573 257.17" fill="#999"/>
+    	<polygon id="polygon1316" points="36.209 255.2 35.2 257.17 36.573 257.17" fill="#fff"/>
+    	<polygon id="polygon1318" points="31.055 259.94 32.065 261.9 32.065 261.9 32.428 259.94" fill="#ccc"/>
+    	<polygon id="polygon1320" points="35.2 259.94 33.827 259.94 34.836 261.9 34.836 261.9" fill="#ccc"/>
+    	<polygon id="polygon1322" points="33.827 257.17 32.454 257.17 33.463 259.13" fill="#ccc"/>
+    	<polygon id="polygon1324" points="31.03 257.17 29.657 257.17 30.667 259.13" fill="#ccc"/>
+    	<polygon id="polygon1326" points="30.164 260.27 30.164 260.27 30.34 259.94" fill="#333"/>
+    	<path id="path1328" d="m30.164 260.27l0.177-0.332h-0.174l-0.003 0.33z" fill="#333"/>
+    	<path id="path1330" d="m30.34 259.94l-0.17-0.32c-0.002 0.106-0.003 0.216-0.004 0.32h0.174z" fill="#999"/>
+    	<polygon id="polygon1332" points="35.882 259.94 34.836 261.9 34.836 261.9" fill="#333"/>
+    		<rect id="rect1334" transform="matrix(.4701 -.8826 .8826 .4701 -211.56 169.47)" height="0" width="2.223" y="260.92" x="34.247" fill="#333"/>
+    	<polygon id="polygon1336" points="34.836 261.9 35.881 259.94 35.2 259.94" fill="#333"/>
+    	<polygon id="polygon1338" points="35.881 259.94 34.836 257.98 35.2 259.94" fill="#999"/>
+    	<polygon id="polygon1340" points="34.836 257.98 33.827 259.94 35.2 259.94" fill="#fff"/>
+    	<polygon id="polygon1342" points="33.111 259.94 32.065 261.9 32.065 261.9" fill="#333"/>
+    	<polygon id="polygon1344" points="32.428 259.94 32.065 261.9 33.111 259.94" fill="#333"/>
+    	<polygon id="polygon1346" points="33.111 259.94 32.065 257.98 32.428 259.94" fill="#999"/>
+    	<polygon id="polygon1348" points="32.065 257.98 31.055 259.94 32.428 259.94" fill="#fff"/>
+    	<polygon id="polygon1350" points="33.463 259.13 34.509 257.17 34.508 257.17" fill="#333"/>
+    	<polygon id="polygon1352" points="33.827 257.17 33.463 259.13 34.508 257.17" fill="#333"/>
+    	<polygon id="polygon1354" points="34.509 257.17 33.463 255.2 34.508 257.17" fill="#999"/>
+    	<polygon id="polygon1356" points="34.508 257.17 33.463 255.2 33.827 257.17" fill="#999"/>
+    	<polygon id="polygon1358" points="33.463 255.2 32.454 257.17 33.827 257.17" fill="#fff"/>
+    	<polygon id="polygon1360" points="30.667 259.13 31.712 257.17 31.03 257.17" fill="#333"/>
+    	<polygon id="polygon1362" points="31.712 257.17 30.667 255.2 31.03 257.17" fill="#999"/>
+    	<polygon id="polygon1364" points="30.667 255.2 29.657 257.17 31.03 257.17" fill="#fff"/>
+    	<path id="path1366" d="m49.055 265.48h-1.371l0.803 1.564c0.1-0.019 0.199-0.037 0.289-0.056l0.279-1.5z" fill="#ccc"/>
+    	<polygon id="polygon1368" points="46.967 265.48 45.922 263.52" fill="#ccc"/>
+    	<path id="path1370" d="m50.914 265.48h-0.461l0.455 0.886 0.014-0.007c0-0.13-0.004-0.44-0.008-0.88z" fill="#ccc"/>
+    	<polygon id="polygon1372" points="49.08 262.71 50.092 264.67 50.453 262.71" fill="#ccc"/>
+    	<polygon id="polygon1374" points="46.285 262.71 47.295 260.75 46.283 262.71 47.295 264.67 47.656 262.71" fill="#ccc"/>
+    	<polygon id="polygon1376" points="46.285 266.76 45.943 267.4 45.943 267.4 46.967 265.48" fill="#333"/>
+    	<polygon id="polygon1378" points="46.285 266.76 46.967 265.48 46.967 265.48" fill="#333"/>
+    	<path id="path1380" d="m50.914 265.48c-0.004-0.25-0.006-0.542-0.01-0.875l-0.451 0.875h0.461z" fill="#fff"/>
+    	<polygon id="polygon1382" points="48.955 266.95 48.955 266.95 49.738 265.48" fill="#333"/>
+    	<path id="path1384" d="m48.775 266.99c0.064-0.013 0.119-0.025 0.18-0.038l0.783-1.471h-0.684l-0.279 1.51z" fill="#333"/>
+    	<polygon id="polygon1386" points="49.738 265.48 48.691 263.52 49.055 265.48" fill="#999"/>
+    	<polygon id="polygon1388" points="47.682 265.48 47.684 265.48 48.691 263.52" fill="#fff"/>
+    	<polygon id="polygon1390" points="48.691 263.52 47.684 265.48 49.055 265.48" fill="#fff"/>
+    	<polygon id="polygon1392" points="50.092 264.67 51.137 262.71 50.453 262.71" fill="#333"/>
+    	<polygon id="polygon1394" points="50.453 262.71 51.137 262.71 50.092 260.75" fill="#999"/>
+    	<polygon id="polygon1396" points="50.092 260.75 49.08 262.71 50.453 262.71" fill="#fff"/>
+    	<polygon id="polygon1398" points="47.295 264.67 48.34 262.71 47.656 262.71" fill="#333"/>
+    	<polygon id="polygon1400" points="47.656 262.71 48.34 262.71 47.295 260.75" fill="#999"/>
+    	<polygon id="polygon1402" points="47.656 262.71 47.295 260.75 46.285 262.71" fill="#fff"/>
+    	<polygon id="polygon1404" points="42.141 265.48 43.15 267.44 43.15 267.44 43.514 265.48" fill="#ccc"/>
+    	<polygon id="polygon1406" points="39.369 265.48 40.379 267.44 39.37 265.48" fill="#ccc"/>
+    	<path id="path1408" d="m46.283 265.48h-1.371l0.992 1.928c0.008-0.001 0.016-0.001 0.023-0.002l0.356-1.93z" fill="#ccc"/>
+    	<polygon id="polygon1410" points="43.539 262.71 44.549 264.67 44.912 262.71" fill="#ccc"/>
+    	<polygon id="polygon1412" points="40.742 262.71 41.752 264.67 42.115 262.71" fill="#ccc"/>
+    	<polygon id="polygon1414" points="40.379 267.44" fill="#333"/>
+    	<polygon id="polygon1416" points="40.379 263.52 39.369 265.48 39.37 265.48" fill="#fff"/>
+    	<polygon id="polygon1418" points="45.943 267.4 46.285 266.76 45.941 267.4" fill="#333"/>
+    	<polygon id="polygon1420" points="45.941 267.4 45.941 267.4 46.285 266.76 46.967 265.48" fill="#333"/>
+    	<rect id="rect1422" height="1.958" width=".002" y="265.46" x="46.105" fill="#333"/>
+    	<path id="path1424" d="m45.941 267.4l1.025-1.924h-0.682l-0.357 1.926c0.007-0.01 0.011-0.01 0.014-0.01z" fill="#333"/>
+    	<polygon id="polygon1426" points="46.285 265.48 45.922 263.52 46.283 265.48" fill="#999"/>
+    	<polygon id="polygon1428" points="46.967 265.48 45.922 263.52 46.285 265.48" fill="#999"/>
+    	<polygon id="polygon1430" points="45.922 263.52 44.912 265.48 46.283 265.48" fill="#fff"/>
+    	<polygon id="polygon1432" points="43.15 267.44 44.195 265.48" fill="#333"/>
+    	<polygon id="polygon1434" points="43.15 267.44 44.195 265.48 43.514 265.48" fill="#333"/>
+    	<polygon id="polygon1436" points="43.514 265.48 44.195 265.48 43.15 263.52" fill="#999"/>
+    	<polygon id="polygon1438" points="43.15 263.52 42.141 265.48 43.514 265.48" fill="#fff"/>
+    	<polygon id="polygon1440" points="44.549 264.67 45.594 262.71 44.912 262.71" fill="#333"/>
+    	<polygon id="polygon1442" points="44.912 262.71 45.594 262.71 44.549 260.75" fill="#999"/>
+    	<polygon id="polygon1444" points="44.549 260.75 43.539 262.71 44.912 262.71" fill="#fff"/>
+    	<polygon id="polygon1446" points="42.797 262.71 41.752 264.67" fill="#333"/>
+    	<polygon id="polygon1448" points="42.115 262.71 41.752 264.67 42.797 262.71" fill="#333"/>
+    	<polygon id="polygon1450" points="42.797 262.71 41.752 260.75 42.115 262.71" fill="#999"/>
+    	<polygon id="polygon1452" points="41.752 260.75 40.742 262.71 42.115 262.71" fill="#fff"/>
+    	<polygon id="polygon1454" points="36.598 265.48 37.608 267.44 37.608 267.44 37.971 265.48" fill="#ccc"/>
+    	<polygon id="polygon1456" points="39.37 265.48 40.379 267.44 40.379 267.44 40.742 265.48" fill="#ccc"/>
+    	<rect id="rect1458" height="1.995" width=".001" y="265.46" x="40.561" fill="#ccc"/>
+    	<polygon id="polygon1460" points="37.997 262.71 39.006 264.67 39.37 262.71" fill="#ccc"/>
+    	<polygon id="polygon1462" points="35.2 262.71 36.209 264.67 36.573 262.71" fill="#ccc"/>
+    	<polygon id="polygon1464" points="35.882 265.48 34.836 263.52 35.881 265.48" fill="#999"/>
+    	<polygon id="polygon1466" points="40.379 267.44 41.424 265.48" fill="#333"/>
+    	<polygon id="polygon1468" points="40.379 267.44 41.424 265.48 40.743 265.48" fill="#333"/>
+    	<polygon id="polygon1470" points="40.743 265.48 41.424 265.48 40.379 263.52" fill="#999"/>
+    	<polygon id="polygon1472" points="40.743 265.48 40.379 263.52 40.742 265.48" fill="#fff"/>
+    	<polygon id="polygon1474" points="40.742 265.48 40.379 263.52 39.37 265.48" fill="#fff"/>
+    	<polygon id="polygon1476" points="37.608 267.44 38.653 265.48" fill="#333"/>
+    	<polygon id="polygon1478" points="37.608 267.44 38.653 265.48 37.971 265.48" fill="#333"/>
+    	<polygon id="polygon1480" points="37.971 265.48 38.653 265.48 37.608 263.52" fill="#999"/>
+    	<polygon id="polygon1482" points="37.608 263.52 36.598 265.48 37.971 265.48" fill="#fff"/>
+    	<polygon id="polygon1484" points="39.37 262.71 39.006 264.67 40.051 262.71" fill="#333"/>
+    	<polygon id="polygon1486" points="40.051 262.71 39.006 260.75 39.37 262.71" fill="#999"/>
+    	<polygon id="polygon1488" points="39.006 260.75 37.997 262.71 39.37 262.71" fill="#fff"/>
+    	<polygon id="polygon1490" points="36.573 262.71 36.209 264.67 37.254 262.71" fill="#333"/>
+    	<polygon id="polygon1492" points="37.254 262.71 36.209 260.75 36.573 262.71" fill="#999"/>
+    	<polygon id="polygon1494" points="36.209 260.75 35.2 262.71 36.573 262.71" fill="#fff"/>
+    	<path id="path1496" d="m32.428 265.48h-1.373l0.725 1.409c0.115 0.026 0.244 0.054 0.373 0.08l0.275-1.49z" fill="#ccc"/>
+    	<path id="path1498" d="m35.2 265.48h-1.373l0.976 1.896c0.015 0.002 0.031 0.004 0.046 0.005l0.351-1.9z" fill="#ccc"/>
+    	<polygon id="polygon1500" points="32.454 262.71 33.463 264.67 33.827 262.71" fill="#ccc"/>
+    	<polygon id="polygon1502" points="29.657 262.71 30.667 264.67 31.03 262.71" fill="#ccc"/>
+    	<polygon id="polygon1504" points="30.102 265.93 30.102 265.93 30.34 265.48" fill="#333"/>
+    	<path id="path1506" d="m30.102 265.93l0.238-0.447h-0.233c-0.002 0.17-0.004 0.32-0.005 0.45z" fill="#333"/>
+    	<path id="path1508" d="m30.34 265.48l-0.229-0.43c-0.002 0.154-0.004 0.299-0.005 0.43h0.234z" fill="#999"/>
+    	<polygon id="polygon1510" points="34.869 267.38 34.869 267.38 35.882 265.48" fill="#333"/>
+    	<rect id="rect1512" height="2.156" width="0" y="265.35" x="35.375" fill="#333"/>
+    	<path id="path1514" d="m35.2 265.48l-0.352 1.9c0.007 0.001 0.014 0.002 0.021 0.002l1.013-1.902h-0.682z" fill="#333"/>
+    	<polygon id="polygon1516" points="35.881 265.48 34.836 263.52 35.2 265.48" fill="#999"/>
+    	<polygon id="polygon1518" points="34.836 263.52 33.827 265.48 35.2 265.48" fill="#fff"/>
+    	<polygon id="polygon1520" points="32.3 267 32.3 267 33.111 265.48" fill="#333"/>
+    	<path id="path1522" d="m32.153 266.97c0.051 0.011 0.095 0.021 0.147 0.032l0.811-1.521h-0.683l-0.275 1.49z" fill="#333"/>
+    	<polygon id="polygon1524" points="33.111 265.48 32.065 263.52 32.428 265.48" fill="#999"/>
+    	<polygon id="polygon1526" points="32.065 263.52 31.055 265.48 32.428 265.48" fill="#fff"/>
+    	<polygon id="polygon1528" points="33.463 264.67 34.509 262.71 34.508 262.71" fill="#333"/>
+    	<polygon id="polygon1530" points="33.827 262.71 33.463 264.67 34.508 262.71" fill="#333"/>
+    	<polygon id="polygon1532" points="34.508 262.71 34.509 262.71 33.463 260.75" fill="#999"/>
+    	<polygon id="polygon1534" points="34.508 262.71 33.463 260.75 33.827 262.71" fill="#999"/>
+    	<polygon id="polygon1536" points="33.463 260.75 32.454 262.71 33.827 262.71" fill="#fff"/>
+    	<polygon id="polygon1538" points="30.667 264.67 31.712 262.71 31.03 262.71" fill="#333"/>
+    	<polygon id="polygon1540" points="31.03 262.71 31.712 262.71 30.667 260.75" fill="#999"/>
+    	<polygon id="polygon1542" points="30.667 260.75 29.657 262.71 31.03 262.71" fill="#fff"/>
+    	<polygon id="polygon1544" points="47.295 266.29 46.768 267.31 46.768 267.31" fill="#ccc"/>
+    	<path id="path1546" d="m50.156 266.64c0.039-0.012 0.07-0.022 0.105-0.034l-0.17-0.321 0.065 0.35z" fill="#999"/>
+    	<path id="path1548" d="m50.092 266.29l-0.227 0.44c0.104-0.029 0.205-0.059 0.291-0.085l-0.064-0.35z" fill="#fff"/>
+    	<path id="path1550" d="m47.465 267.22c0.104-0.016 0.201-0.031 0.299-0.047l-0.469-0.882 0.17 0.93z" fill="#999"/>
+    	<path id="path1552" d="m47.465 267.22l-0.17-0.929-0.527 1.022c0.244-0.03 0.478-0.06 0.697-0.09z" fill="#fff"/>
+    	<path id="path1554" d="m44.773 267.5c0.139-0.01 0.273-0.021 0.406-0.031l-0.631-1.186 0.225 1.22z" fill="#999"/>
+    	<path id="path1556" d="m44.549 266.29l-0.654 1.272c0.303-0.017 0.598-0.035 0.879-0.056l-0.225-1.21z" fill="#fff"/>
+    	<path id="path1558" d="m42 267.64c0.16-0.003 0.307-0.01 0.461-0.015l-0.709-1.332 0.248 1.35z" fill="#999"/>
+    	<path id="path1560" d="m41.752 266.29l-0.699 1.357c0.322-0.002 0.645-0.004 0.947-0.011l-0.248-1.35z" fill="#fff"/>
+    	<path id="path1562" d="m39.256 267.64c0.152 0.003 0.314 0.003 0.472 0.005l-0.722-1.355 0.25 1.36z" fill="#999"/>
+    	<path id="path1564" d="m39.006 266.29l-0.682 1.325c0.303 0.01 0.608 0.02 0.932 0.025l-0.25-1.35z" fill="#fff"/>
+    	<path id="path1566" d="m36.437 267.52c0.144 0.011 0.294 0.02 0.442 0.028l-0.67-1.26 0.228 1.23z" fill="#999"/>
+    	<path id="path1568" d="m36.209 266.29l-0.601 1.168c0.264 0.022 0.542 0.044 0.828 0.063l-0.227-1.23z" fill="#fff"/>
+    	<polygon id="polygon1570" points="33.99 267.28 33.991 267.28 33.463 266.29" fill="#999"/>
+    	<path id="path1572" d="m33.99 267.28l-0.526-0.989 0.174 0.941c0.112 0.02 0.234 0.03 0.352 0.05z" fill="#999"/>
+    	<path id="path1574" d="m33.463 266.29l-0.436 0.847c0.192 0.032 0.396 0.063 0.609 0.095l-0.173-0.95z" fill="#fff"/>
+    	<path id="path1576" d="m30.725 266.6c0.042 0.014 0.083 0.027 0.131 0.042l-0.188-0.354 0.057 0.31z" fill="#999"/>
+    	<path id="path1578" d="m30.667 266.29l-0.128 0.249c0.056 0.02 0.118 0.04 0.186 0.062l-0.058-0.31z" fill="#fff"/>
+    </g>
+    <g id="g1580">
+    	<polygon id="polygon1582" points="51.075 223.62 51.026 223.35" fill="#fff"/>
+    	<polygon id="polygon1584" points="51.026 223.35 50.98 223.44 51.075 223.62" fill="#fff"/>
+    	<polygon id="polygon1586" points="50.695 222.55 50.699 222.54 50.695 222.54" fill="#333"/>
+    	<polygon id="polygon1588" points="50.699 222.54 50.695 222.54 50.695 222.54" fill="#999"/>
+    	<path id="path1590" fill="#999" d="m30.332 220.77l-0.102-0.19 0.101 0.544c0-0.12 0.001-0.23 0.001-0.35z"/>
+    	<polygon id="polygon1592" points="51.081 229.19 51.026 228.9" fill="#fff"/>
+    	<polygon id="polygon1594" points="51.026 228.9 50.976 228.99 51.081 229.19" fill="#fff"/>
+    	<path id="path1596" fill="#999" d="m30.312 226.28l-0.081-0.152 0.08 0.437c0.001-0.1 0.001-0.2 0.001-0.29z"/>
+    	<polygon id="polygon1598" points="51.087 234.77 51.026 234.44 51.087 234.76" fill="#fff"/>
+    	<polygon id="polygon1600" points="51.026 234.44 50.971 234.54 51.087 234.76" fill="#fff"/>
+    	<path id="path1602" fill="#999" d="m30.292 231.78l-0.062-0.115 0.061 0.328c0-0.07 0-0.14 0.001-0.21z"/>
+    	<polygon id="polygon1604" points="51.093 240.34 51.026 239.98" fill="#fff"/>
+    	<polygon id="polygon1606" points="51.026 239.98 50.965 240.1 51.093 240.34" fill="#fff"/>
+    	<path id="path1608" fill="#999" d="m30.271 237.29l-0.041-0.078 0.041 0.222v-0.14z"/>
+    	<path id="path1610" fill="none" d="m31.628 221.74v-0.002l-1.009-1.964h-0.001l0.445-0.865c0-0.001-0.006-0.001-0.006-0.001l-0.189 0.07-0.531 0.267s-0.002 0.578-0.005 1.528l0.943 1.772-1.045 1.963-0.533-1.035-0.247 0.464 0.863 1.624c-0.001 0.229-0.001 0.48-0.002 0.716l0.964 1.811-1.045 1.963-0.527-1.024-0.253 0.47 0.844 1.585c-0.001 0.236-0.002 0.462-0.002 0.696l0.983 1.848-1.045 1.963-0.522-1.014-0.258 0.484 0.824 1.548c-0.001 0.232-0.002 0.457-0.003 0.676l1.004 1.885-1.045 1.963-0.517-1.004-0.264 0.495 0.812 1.523 0.483 0.04-0.127-0.247h-0.001l1.01-1.963 1.046 1.963-0.243 0.457c0.362 0.022 0.777 0.047 1.231 0.073l-0.272-0.53 1.01-1.963 1.046 1.963-0.324 0.608c0.449 0.023 0.915 0.045 1.386 0.065l-0.346-0.674 1.01-1.963 1.046 1.963-0.386 0.725c0.51 0.017 1.011 0.03 1.495 0.04l-0.394-0.765 1.01-1.963 0.001 0.001v-0.001l1.046 1.963-0.414 0.777c0.477-0.001 0.988-0.009 1.519-0.021l-0.389-0.757h-0.001l1.01-1.963 1.046 1.963-0.383 0.718c0.48-0.017 0.962-0.036 1.438-0.058l-0.34-0.66 1.01-1.963 1.046 1.963-0.315 0.593c0.458-0.024 0.895-0.048 1.299-0.071l-0.268-0.521h-0.001l1.01-1.963 1.046 1.963-0.227 0.426c0.604-0.038 0.97-0.064 0.97-0.064s0.052-0.031 0.117-0.08l-0.145-0.281 0.948-1.844-0.206-0.388c-0.002-0.494-0.005-1.142-0.007-1.882l-0.735-1.429 0.954-1.854-0.231-0.435c-0.002-0.604-0.005-1.229-0.007-1.862l-0.716-1.391 0.959-1.864-0.258-0.484c-0.002-0.625-0.004-1.241-0.006-1.843l-0.695-1.351 0.964-1.874-0.284-0.534c0-0.123-0.001-0.235-0.001-0.354l-1.041 1.955-1.011-1.963 1.011-1.963 1.041 1.955c-0.002-0.54-0.004-1.028-0.006-1.455l-0.673-1.309 0.353-0.686-0.163-0.082-0.242-0.099s-0.104 0.01-0.292 0.025l-0.018 0.033-0.016-0.03c-0.185 0.016-0.437 0.037-0.75 0.063l0.412 0.774-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l0.345-0.67c-0.424 0.033-0.881 0.068-1.362 0.103l0.303 0.567-1.046 1.964v-0.002 0.001l-1.01-1.963 0.238-0.464c-0.39 0.025-0.779 0.049-1.164 0.07l0.21 0.394-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l0.161-0.314c-0.37 0.014-0.713 0.022-1.029 0.025l0.153 0.289-1.046 1.964v-0.002 0.001l-0.001 0.001v-0.002 0.001l-1.01-1.963 0.16-0.312c-0.345-0.011-0.702-0.026-1.065-0.044l0.189 0.356-1.046 1.964v-0.002 0.001l-1.009-1.963h0.001l0.23-0.447c-0.416-0.026-0.827-0.054-1.228-0.082l0.282 0.529-1.046 1.964v-0.002 0.001l-1.01-1.963 0.328-0.638c-0.549-0.044-1.038-0.085-1.447-0.12l0.403 0.758-1.044 1.92zm-1.009 3.58l1.009-1.963 1.046 1.963-1.046 1.964v-0.002 0.001l-1.009-1.96zm17.636 7.5l-1.009-1.963h-0.001l1.01-1.963 1.046 1.963-1.046 1.96zm-0.353 0.81l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.045-3.58l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm-0.327 0.81l-1.046 1.964v-0.002 0.001l-1.01-1.963 1.01-1.963 1.046 1.96zm-1.373 2.77l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.045-3.58l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm-0.353 0.81l-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l1.01-1.963 1.046 1.96zm-1.399 2.77l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.045-3.58l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm-0.327 0.81l-1.046 1.964v-0.002 0.001l-0.001 0.001v-0.002 0.001l-1.01-1.963 1.01-1.963 0.001 0.001v-0.001l1.046 1.96zm-1.374 2.77l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.045-3.58l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm-0.353 0.81l-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l1.01-1.963 1.046 1.96zm-1.399 2.77l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.045-3.58l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm-0.327 0.81l-1.046 1.964v-0.002 0.001l-1.01-1.963 1.01-1.963 1.046 1.96zm-1.373 2.77l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.045-3.58l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm-2.408 0.81l1.009-1.963 1.046 1.963-1.046 1.964v-0.002 0.001l-1.009-1.96zm1.009 7.5l-1.009-1.963h-0.001l1.01-1.963 1.046 1.963-1.046 1.96zm1.399 2.77l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm1.372-2.77l-1.01-1.963 1.01-1.963 1.046 1.963-1.046 1.96zm1.373 2.77l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm1.398-2.77l-1.009-1.963h-0.001l1.01-1.963 1.046 1.963-1.046 1.96zm1.399 2.77l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm1.373-2.77l-1.011-1.963 1.01-1.963 0.001 0.001v-0.001l1.046 1.963-1.046 1.96zm1.373 2.77l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm1.398-2.77l-1.009-1.963h-0.001l1.01-1.963 1.046 1.963-1.046 1.96zm1.399 2.77l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm1.372-2.77l-1.01-1.963 1.01-1.963 1.046 1.963-1.046 1.96zm1.373 2.77l-1.011-1.963 1.011-1.963 1.045 1.963-1.045 1.96zm1.398-2.77l-1.009-1.963h-0.001l1.01-1.963 1.046 1.963-1.046 1.96zm2.444 0.81l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm0-5.54l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm0-5.54l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96zm-1.398-2.77l-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l1.01-1.963 1.046 1.96zm-2.444-4.74l1.045 1.963-1.045 1.963-1.011-1.963 1.011-1.96zm-0.327 4.74l-1.046 1.964v-0.002 0.001l-1.01-1.963 1.01-1.963 1.046 1.96zm-2.418-4.74l1.045 1.963-1.045 1.963-1.011-1.963 1.011-1.96zm-0.353 4.74l-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l1.01-1.963 1.046 1.96zm-2.444-4.74l1.045 1.963-1.045 1.963-1.011-1.963 1.011-1.96zm-1.373 2.77l1.046 1.962-1.046 1.964v-0.002 0.001l-0.001 0.001v-0.002 0.001l-1.01-1.963 1.011-1.96zm-1.373-2.77l1.045 1.963-1.045 1.963-1.011-1.963 1.011-1.96zm-0.353 4.74l-1.046 1.964v-0.002 0.001l-1.009-1.963h-0.001l1.01-1.963 1.046 1.96zm-2.444-4.74l1.045 1.963-1.045 1.963-1.011-1.963 1.011-1.96zm-0.327 4.74l-1.046 1.964v-0.002 0.001l-1.01-1.963 1.01-1.963 1.046 1.96zm-1.373-2.78l-1.045 1.963-1.011-1.963 1.011-1.963 1.045 1.96z"/>
+    	<polygon id="polygon1612" points="47.246 219.77 48.255 221.74 48.255 221.74 48.618 219.77" fill="#ccc"/>
+    	<path id="path1614" fill="#ccc" d="m50.017 219.77l0.673 1.309c-0.002-0.548-0.004-0.995-0.005-1.309h-0.668z"/>
+    	<path id="path1616" fill="#ccc" d="m49.66 218.93c-0.006 0.001-0.016 0.002-0.021 0.002l0.016 0.03 0.005-0.03z"/>
+    	<path id="path1618" fill="#fff" d="m50.685 219.77c-0.001-0.336-0.002-0.529-0.002-0.529l-0.313-0.156-0.353 0.686h0.668z"/>
+    	<polygon id="polygon1620" points="48.255 221.74 49.301 219.77" fill="#333"/>
+    	<polygon id="polygon1622" points="48.255 221.74 49.301 219.77 48.618 219.77" fill="#333"/>
+    	<path id="path1624" fill="#999" d="m48.618 219.77h0.683l-0.412-0.77c-0.126 0.011-0.266 0.022-0.407 0.033l0.136 0.74z"/>
+    		<rect id="rect1626" transform="matrix(-.4576 .8892 -.8892 -.4576 264.24 277.68)" height=".001" width=".753" y="219.44" x="47.041" fill="#fff"/>
+    	<path id="path1628" fill="#fff" d="m48.481 219.03c-0.271 0.022-0.57 0.046-0.891 0.071l-0.345 0.67h1.372l-0.136-0.74z"/>
+    	<polygon id="polygon1630" points="49.654 218.97 49.672 218.93 49.66 218.93" fill="#333"/>
+    	<polygon id="polygon1632" points="41.704 219.77 42.713 221.74 42.713 221.74 43.076 219.77" fill="#ccc"/>
+    	<rect id="rect1634" height=".327" width=".001" y="219.47" x="40.911" fill="#ccc"/>
+    	<rect id="rect1636" height=".001" width="0" y="221.74" x="39.942" fill="#ccc"/>
+    	<polygon id="polygon1638" points="45.847 219.77 44.475 219.77 45.484 221.74 45.484 221.74 45.848 219.77" fill="#ccc"/>
+    	<polygon id="polygon1640" points="39.942 221.74 40.988 219.77" fill="#333"/>
+    	<rect id="rect1642" height="2.223" width=".001" y="219.64" x="40.465" fill="#333"/>
+    	<polygon id="polygon1644" points="40.834 219.48 40.833 219.48 40.987 219.77" fill="#999"/>
+    	<polygon id="polygon1646" points="45.484 221.74 46.53 219.77" fill="#333"/>
+    	<polygon id="polygon1648" points="45.848 219.77 45.484 221.74 46.53 219.77 46.529 219.77" fill="#333"/>
+    	<rect id="rect1650" height=".643" width=".001" y="219.17" x="46.378" fill="#999"/>
+    	<path id="path1652" fill="#999" d="m46.529 219.77l-0.302-0.567c-0.157 0.012-0.317 0.022-0.479 0.034l0.099 0.533h0.682z"/>
+    	<rect id="rect1654" height=".542" width=".001" y="219.24" x="45.797" fill="#fff"/>
+    	<path id="path1656" fill="#fff" d="m45.847 219.77l-0.099-0.533c-0.341 0.024-0.687 0.047-1.035 0.069l-0.238 0.464h1.372z"/>
+    	<polygon id="polygon1658" points="42.713 221.74 43.759 219.77" fill="#333"/>
+    	<polygon id="polygon1660" points="42.713 221.74 43.759 219.77 43.076 219.77" fill="#333"/>
+    	<path id="path1662" fill="#999" d="m43.076 219.77h0.683l-0.21-0.394c-0.183 0.01-0.361 0.02-0.54 0.029l0.067 0.36z"/>
+    		<rect id="rect1664" transform="matrix(-.456 .89 -.89 -.456 256.29 282.58)" height=".001" width=".353" y="219.62" x="41.608" fill="#fff"/>
+    	<path id="path1666" fill="#fff" d="m43.009 219.41c-0.396 0.02-0.78 0.037-1.144 0.05l-0.161 0.314h1.372l-0.067-0.36z"/>
+    	<polygon id="polygon1668" points="36.161 219.77 37.17 221.74 37.17 221.74 37.533 219.77" fill="#ccc"/>
+    	<polygon id="polygon1670" points="38.933 219.77 38.932 219.77 39.941 221.74 39.941 221.74 39.941 221.74" fill="#ccc"/>
+    	<polygon id="polygon1672" points="40.305 219.77 38.933 219.77 39.941 221.74" fill="#ccc"/>
+    	<rect id="rect1674" height=".001" width=".002" y="221.74" x="39.941" fill="#333"/>
+    	<rect id="rect1676" height=".001" width=".002" y="221.74" x="39.942" fill="#333"/>
+    	<polygon id="polygon1678" points="39.943 221.74 40.987 219.77 39.943 221.73" fill="#333"/>
+    	<polygon id="polygon1680" points="39.941 221.74 39.941 221.74 39.942 221.74" fill="#333"/>
+    	<polygon id="polygon1682" points="40.305 219.77 39.941 221.74 39.942 221.74 39.943 221.73 40.306 219.77" fill="#333"/>
+    	<polygon id="polygon1684" points="39.943 221.73 40.987 219.77 40.306 219.77" fill="#333"/>
+    		<rect id="rect1686" transform="matrix(.1801 .9837 -.9837 .1801 249.07 140.46)" height=".001" width=".293" y="219.63" x="40.132" fill="#999"/>
+    	<path id="path1688" fill="#999" d="m40.253 219.49l0.053 0.288h0.682l-0.154-0.289c-0.107 0.002-0.221 0.004-0.32 0.004h-0.261z"/>
+    	<polygon id="polygon1690" points="40.252 219.49 40.251 219.49 40.305 219.77" fill="#999"/>
+    		<rect id="rect1692" transform="matrix(-.4572 .8894 -.8894 -.4572 252.17 285.34)" height=".001" width=".35" y="219.62" x="38.837" fill="#fff"/>
+    	<path id="path1694" fill="#fff" d="m40.251 219.49c-0.363-0.003-0.749-0.011-1.158-0.023l-0.16 0.312h1.372l-0.054-0.29z"/>
+    	<polygon id="polygon1696" points="37.17 221.74 38.216 219.77" fill="#333"/>
+    	<polygon id="polygon1698" points="37.17 221.74 38.216 219.77 37.533 219.77" fill="#333"/>
+    	<path id="path1700" fill="#999" d="m37.533 219.77h0.683l-0.189-0.356c-0.188-0.009-0.375-0.019-0.564-0.028l0.07 0.39z"/>
+    		<rect id="rect1702" transform="matrix(-.458 .8889 -.8889 -.458 248.06 287.87)" height=".001" width=".503" y="219.55" x="36.024" fill="#fff"/>
+    	<path id="path1704" fill="#fff" d="m37.462 219.39c-0.356-0.02-0.714-0.04-1.07-0.062l-0.23 0.447h1.372l-0.072-0.39z"/>
+    	<polygon id="polygon1706" points="31.628 221.74 31.628 221.74 31.991 219.77 30.619 219.77" fill="#ccc"/>
+    	<polygon id="polygon1708" points="34.762 219.77 33.39 219.77 34.399 221.74 34.399 221.74 34.763 219.77" fill="#ccc"/>
+    	<polygon id="polygon1710" points="34.399 221.74 35.445 219.77" fill="#333"/>
+    	<polygon id="polygon1712" points="34.763 219.77 34.399 221.74 35.445 219.77 35.444 219.77" fill="#333"/>
+    	<rect id="rect1714" height=".6" width=".001" y="219.21" x="35.303" fill="#999"/>
+    	<path id="path1716" fill="#999" d="m35.444 219.77l-0.282-0.529c-0.17-0.013-0.339-0.024-0.504-0.037l0.104 0.566h0.682z"/>
+    	<rect id="rect1718" height=".576" width=".001" y="219.2" x="34.709" fill="#fff"/>
+    	<path id="path1720" fill="#fff" d="m34.762 219.77l-0.104-0.566c-0.326-0.023-0.641-0.048-0.939-0.071l-0.328 0.638h1.371z"/>
+    	<polygon id="polygon1722" points="31.628 221.74 32.674 219.77" fill="#333"/>
+    	<polygon id="polygon1724" points="32.674 219.77 31.991 219.77 31.628 221.74" fill="#333"/>
+    	<path id="path1726" fill="#999" d="m31.991 219.77h0.683l-0.403-0.758c-0.156-0.014-0.297-0.025-0.427-0.037l0.147 0.8z"/>
+    		<rect id="rect1728" transform="matrix(-.4576 .8891 -.8891 -.4576 239.98 292.29)" height=".001" width=".973" y="219.34" x="30.355" fill="#fff"/>
+    	<path id="path1730" fill="#fff" d="m31.991 219.77l-0.147-0.795c-0.473-0.042-0.765-0.069-0.779-0.07l-0.445 0.865h1.371z"/>
+    	<polygon id="polygon1732" points="47.246 225.32 48.255 227.28 48.255 227.28 48.618 225.32" fill="#ccc"/>
+    	<path id="path1734" fill="#ccc" d="m50.017 225.32l0.695 1.351c-0.002-0.464-0.004-0.909-0.006-1.351h-0.689z"/>
+    	<polygon id="polygon1736" points="48.644 222.54 49.654 224.51 50.017 222.54" fill="#ccc"/>
+    	<polygon id="polygon1738" points="47.22 222.54 45.848 222.54 46.857 220.58 45.847 222.54 46.857 224.51" fill="#ccc"/>
+    	<polygon id="polygon1740" points="51.245 223.94 51.075 223.62 51.163 224.09" fill="#999"/>
+    	<rect id="rect1742" height=".481" width="0" y="223.62" x="51.119" fill="#fff"/>
+    	<path id="path1744" fill="#fff" d="m50.706 225.32c-0.001-0.118-0.001-0.246-0.002-0.362l0.459-0.862-0.088-0.473-0.095-0.177-0.964 1.874h0.69z"/>
+    	<polygon id="polygon1746" points="48.255 227.28 49.301 225.32" fill="#333"/>
+    	<polygon id="polygon1748" points="48.255 227.28 49.301 225.32 48.618 225.32" fill="#333"/>
+    	<polygon id="polygon1750" points="49.301 225.32 48.255 223.35 48.618 225.32" fill="#999"/>
+    	<polygon id="polygon1752" points="47.246 225.32 48.255 223.35 47.245 225.32" fill="#fff"/>
+    	<polygon id="polygon1754" points="48.618 225.32 48.255 223.35 47.246 225.32" fill="#fff"/>
+    	<polygon id="polygon1756" points="50.017 222.54 49.654 224.51 50.695 222.55 50.695 222.54" fill="#333"/>
+    	<polygon id="polygon1758" points="50.017 222.54 50.695 222.54 50.695 222.54 49.654 220.58" fill="#999"/>
+    	<polygon id="polygon1760" points="49.654 220.58 48.644 222.54 50.017 222.54" fill="#fff"/>
+    	<polygon id="polygon1762" points="46.857 224.51 47.902 222.54 47.22 222.54" fill="#333"/>
+    	<polygon id="polygon1764" points="47.902 222.54 46.857 220.58 47.22 222.54" fill="#999"/>
+    	<polygon id="polygon1766" points="47.22 222.54 46.857 220.58 45.848 222.54" fill="#fff"/>
+    	<polygon id="polygon1768" points="41.704 225.32 42.713 227.28 42.713 227.28 43.076 225.32" fill="#ccc"/>
+    	<polygon id="polygon1770" points="40.988 225.32 39.942 223.35 40.987 225.32" fill="#ccc"/>
+    	<polygon id="polygon1772" points="39.943 223.36 39.942 223.35 39.942 223.36" fill="#ccc"/>
+    	<rect id="rect1774" height=".001" width="0" y="227.28" x="39.942" fill="#ccc"/>
+    	<polygon id="polygon1776" points="45.847 225.32 44.475 225.32 45.484 227.28 45.484 227.28 45.848 225.32" fill="#ccc"/>
+    	<polygon id="polygon1778" points="44.475 222.54 43.102 222.54 44.112 224.51" fill="#ccc"/>
+    	<polygon id="polygon1780" points="41.678 222.54 40.306 222.54 41.315 220.58 40.305 222.54 41.315 224.51" fill="#ccc"/>
+    	<polygon id="polygon1782" points="39.942 227.28 40.988 225.32" fill="#333"/>
+    	<rect id="rect1784" height="2.223" width=".001" y="225.18" x="40.465" fill="#333"/>
+    	<polygon id="polygon1786" points="40.987 225.32 39.942 223.35 39.943 223.36" fill="#999"/>
+    	<polygon id="polygon1788" points="39.942 223.35 39.942 223.35 39.942 223.36" fill="#fff"/>
+    	<polygon id="polygon1790" points="45.484 227.28 46.53 225.32" fill="#333"/>
+    	<polygon id="polygon1792" points="45.848 225.32 45.484 227.28 46.53 225.32 46.529 225.32" fill="#333"/>
+    	<polygon id="polygon1794" points="46.53 225.32 45.484 223.35 46.529 225.32" fill="#999"/>
+    	<polygon id="polygon1796" points="46.529 225.32 45.484 223.35 45.848 225.32" fill="#999"/>
+    	<polygon id="polygon1798" points="45.848 225.32 45.484 223.35 45.847 225.32" fill="#fff"/>
+    	<polygon id="polygon1800" points="45.847 225.32 45.484 223.35 44.475 225.32" fill="#fff"/>
+    	<polygon id="polygon1802" points="42.713 227.28 43.759 225.32" fill="#333"/>
+    	<polygon id="polygon1804" points="42.713 227.28 43.759 225.32 43.076 225.32" fill="#333"/>
+    	<polygon id="polygon1806" points="43.759 225.32 42.713 223.35 43.076 225.32" fill="#999"/>
+    	<polygon id="polygon1808" points="41.704 225.32 42.713 223.35 41.703 225.32" fill="#fff"/>
+    	<polygon id="polygon1810" points="43.076 225.32 42.713 223.35 41.704 225.32" fill="#fff"/>
+    	<polygon id="polygon1812" points="44.112 224.51 45.157 222.54 44.475 222.54" fill="#333"/>
+    	<polygon id="polygon1814" points="45.157 222.54 44.112 220.58 44.475 222.54" fill="#999"/>
+    	<polygon id="polygon1816" points="44.112 220.58 43.102 222.54 44.475 222.54" fill="#fff"/>
+    	<polygon id="polygon1818" points="41.315 224.51 42.36 222.54 41.678 222.54" fill="#333"/>
+    	<polygon id="polygon1820" points="42.36 222.54 41.315 220.58 41.678 222.54" fill="#999"/>
+    	<polygon id="polygon1822" points="41.678 222.54 41.315 220.58 40.306 222.54" fill="#fff"/>
+    	<polygon id="polygon1824" points="36.161 225.32 37.17 227.28 37.17 227.28 37.533 225.32" fill="#ccc"/>
+    	<polygon id="polygon1826" points="38.933 225.32 38.932 225.32 39.941 227.28 39.941 227.28 39.941 227.28" fill="#ccc"/>
+    	<polygon id="polygon1828" points="40.305 225.32 38.933 225.32 39.941 227.28" fill="#ccc"/>
+    	<polygon id="polygon1830" points="38.932 222.54 37.559 222.54 38.569 224.51" fill="#ccc"/>
+    	<polygon id="polygon1832" points="36.135 222.54 34.763 222.54 35.772 220.58 34.762 222.54 35.772 224.51" fill="#ccc"/>
+    	<rect id="rect1834" height=".001" width=".002" y="227.28" x="39.941" fill="#333"/>
+    	<rect id="rect1836" height=".001" width=".002" y="227.28" x="39.942" fill="#333"/>
+    	<polygon id="polygon1838" points="39.943 227.28 40.987 225.32" fill="#333"/>
+    	<polygon id="polygon1840" points="39.941 227.28 39.941 227.28 39.942 227.28" fill="#333"/>
+    	<polygon id="polygon1842" points="39.942 227.28 39.943 227.28 40.306 225.32 40.305 225.32 39.941 227.28" fill="#333"/>
+    	<polygon id="polygon1844" points="39.943 227.28 40.987 225.32 40.306 225.32" fill="#333"/>
+    	<polygon id="polygon1846" points="39.942 223.35 39.941 223.35 39.941 223.35" fill="#999"/>
+    	<rect id="rect1848" height="1.993" width=".001" y="223.34" x="40.124" fill="#999"/>
+    	<polygon id="polygon1850" points="40.987 225.32 39.943 223.36 40.306 225.32" fill="#999"/>
+    	<polygon id="polygon1852" points="40.305 225.32 39.942 223.36 39.942 223.35 39.941 223.35" fill="#999"/>
+    		<rect id="rect1854" transform="matrix(-.4573 .8893 -.8893 -.4573 256.98 291.85)" height=".001" width="2.206" y="224.33" x="38.334" fill="#fff"/>
+    	<polygon id="polygon1856" points="39.941 223.35 38.933 225.32 40.305 225.32" fill="#fff"/>
+    	<polygon id="polygon1858" points="37.17 227.28 38.216 225.32" fill="#333"/>
+    	<polygon id="polygon1860" points="37.17 227.28 38.216 225.32 37.533 225.32" fill="#333"/>
+    	<polygon id="polygon1862" points="38.216 225.32 37.17 223.35 37.533 225.32" fill="#999"/>
+    	<polygon id="polygon1864" points="36.161 225.32 37.17 223.35 36.16 225.32" fill="#fff"/>
+    	<polygon id="polygon1866" points="37.533 225.32 37.17 223.35 36.161 225.32" fill="#fff"/>
+    	<polygon id="polygon1868" points="38.569 224.51 39.614 222.54 38.932 222.54" fill="#333"/>
+    	<polygon id="polygon1870" points="39.614 222.54 38.569 220.58 38.932 222.54" fill="#999"/>
+    	<polygon id="polygon1872" points="38.569 220.58 37.559 222.54 38.932 222.54" fill="#fff"/>
+    	<polygon id="polygon1874" points="35.772 224.51 36.817 222.54 36.135 222.54" fill="#333"/>
+    	<polygon id="polygon1876" points="36.817 222.54 35.772 220.58 36.135 222.54" fill="#999"/>
+    	<polygon id="polygon1878" points="36.135 222.54 35.772 220.58 34.763 222.54" fill="#fff"/>
+    	<polygon id="polygon1880" points="31.628 227.28 31.991 225.32 30.619 225.32" fill="#ccc"/>
+    	<polygon id="polygon1882" points="34.762 225.32 33.39 225.32 34.399 227.28 34.399 227.28 34.763 225.32" fill="#ccc"/>
+    	<polygon id="polygon1884" points="32.017 222.54 33.027 224.51 33.39 222.54" fill="#ccc"/>
+    	<polygon id="polygon1886" points="30.593 222.54 30.191 222.54 29.697 223.47 30.23 224.51" fill="#ccc"/>
+    	<polygon id="polygon1888" points="34.399 227.28 35.445 225.32" fill="#333"/>
+    	<polygon id="polygon1890" points="34.763 225.32 34.399 227.28 35.445 225.32 35.444 225.32" fill="#333"/>
+    	<polygon id="polygon1892" points="35.445 225.32 34.399 223.35 35.444 225.32" fill="#999"/>
+    	<polygon id="polygon1894" points="35.444 225.32 34.399 223.35 34.763 225.32" fill="#999"/>
+    	<polygon id="polygon1896" points="34.763 225.32 34.399 223.35 34.762 225.32" fill="#fff"/>
+    	<polygon id="polygon1898" points="34.762 225.32 34.399 223.35 33.39 225.32" fill="#fff"/>
+    	<polygon id="polygon1900" points="31.628 227.28 32.674 225.32" fill="#333"/>
+    	<polygon id="polygon1902" points="31.628 227.28 32.674 225.32 31.991 225.32" fill="#333"/>
+    	<polygon id="polygon1904" points="32.674 225.32 31.628 223.35 31.991 225.32" fill="#999"/>
+    	<polygon id="polygon1906" points="30.618 225.32 30.619 225.32 31.628 223.35" fill="#fff"/>
+    	<polygon id="polygon1908" points="31.628 223.35 30.619 225.32 31.991 225.32" fill="#fff"/>
+    	<polygon id="polygon1910" points="33.027 224.51 34.072 222.54 33.39 222.54" fill="#333"/>
+    	<polygon id="polygon1912" points="34.072 222.54 33.027 220.58 33.39 222.54" fill="#999"/>
+    	<polygon id="polygon1914" points="33.39 222.54 33.027 220.58 32.017 222.54" fill="#fff"/>
+    	<polygon id="polygon1916" points="30.23 224.51 31.275 222.54 30.593 222.54" fill="#333"/>
+    	<path id="path1918" fill="#999" d="m30.593 222.54h0.683l-0.943-1.772c0 0.114-0.001 0.229-0.001 0.354l0.261 1.42z"/>
+    	<path id="path1920" fill="#fff" d="m30.327 222.29l-0.136 0.254h0.401l-0.262-1.419c0 0.36-0.002 0.75-0.003 1.17z"/>
+    	<polygon id="polygon1922" points="47.246 230.86 48.255 232.82 48.255 232.82 48.618 230.86" fill="#ccc"/>
+    	<path id="path1924" fill="#ccc" d="m50.017 230.86l0.716 1.391c-0.002-0.458-0.004-0.924-0.006-1.391h-0.71z"/>
+    	<polygon id="polygon1926" points="48.644 228.09 49.654 230.05 50.017 228.09" fill="#ccc"/>
+    	<polygon id="polygon1928" points="45.848 228.09 46.857 226.12 45.847 228.09 46.857 230.05 47.22 228.09" fill="#ccc"/>
+    	<polygon id="polygon1930" points="51.245 229.5 51.081 229.19 51.166 229.65" fill="#999"/>
+    	<rect id="rect1932" height=".465" width="0" y="229.19" x="51.124" fill="#fff"/>
+    	<path id="path1934" fill="#fff" d="m50.727 230.86c0-0.128-0.001-0.253-0.001-0.381l0.44-0.827-0.085-0.457-0.105-0.199-0.959 1.864h0.71z"/>
+    	<polygon id="polygon1936" points="49.301 230.86 48.255 232.82 48.255 232.82" fill="#333"/>
+    	<polygon id="polygon1938" points="48.618 230.86 48.255 232.82 49.301 230.86" fill="#333"/>
+    	<polygon id="polygon1940" points="49.301 230.86 48.255 228.9 48.618 230.86" fill="#999"/>
+    	<polygon id="polygon1942" points="47.245 230.86 47.246 230.86 48.255 228.9" fill="#fff"/>
+    	<polygon id="polygon1944" points="48.255 228.9 47.246 230.86 48.618 230.86" fill="#fff"/>
+    	<polygon id="polygon1946" points="49.654 230.05 50.699 228.09 50.017 228.09" fill="#333"/>
+    	<polygon id="polygon1948" points="50.699 228.09 49.654 226.12 50.017 228.09" fill="#999"/>
+    	<polygon id="polygon1950" points="50.017 228.09 49.654 226.12 48.644 228.09" fill="#fff"/>
+    	<polygon id="polygon1952" points="46.857 230.05 47.902 228.09 47.22 228.09" fill="#333"/>
+    	<polygon id="polygon1954" points="47.22 228.09 47.902 228.09 46.857 226.12" fill="#999"/>
+    	<polygon id="polygon1956" points="47.22 228.09 46.857 226.12 45.848 228.09" fill="#fff"/>
+    	<polygon id="polygon1958" points="41.704 230.86 42.713 232.82 42.713 232.82 43.076 230.86" fill="#ccc"/>
+    	<polygon id="polygon1960" points="40.987 230.86 40.988 230.86 39.942 228.9" fill="#ccc"/>
+    	<rect id="rect1962" height=".001" width="0" y="232.82" x="39.942" fill="#ccc"/>
+    	<polygon id="polygon1964" points="39.943 228.9 39.942 228.9 39.942 228.9" fill="#ccc"/>
+    	<polygon id="polygon1966" points="45.847 230.86 44.475 230.86 45.484 232.82 45.484 232.82 45.848 230.86" fill="#ccc"/>
+    	<polygon id="polygon1968" points="43.102 228.09 44.112 230.05 44.475 228.09" fill="#ccc"/>
+    	<polygon id="polygon1970" points="40.306 228.09 41.315 226.12 40.305 228.09 41.315 230.05 41.678 228.09" fill="#ccc"/>
+    	<polygon id="polygon1972" points="39.942 232.82 40.988 230.86" fill="#333"/>
+    	<rect id="rect1974" height="2.223" width=".001" y="230.73" x="40.465" fill="#333"/>
+    	<polygon id="polygon1976" points="40.987 230.86 39.942 228.9 39.943 228.9" fill="#999"/>
+    	<polygon id="polygon1978" points="39.942 228.9" fill="#fff"/>
+    	<polygon id="polygon1980" points="45.484 232.82 46.53 230.86" fill="#333"/>
+    	<polygon id="polygon1982" points="45.848 230.86 45.484 232.82 46.53 230.86 46.529 230.86" fill="#333"/>
+    	<polygon id="polygon1984" points="46.529 230.86 46.53 230.86 45.484 228.9" fill="#999"/>
+    	<polygon id="polygon1986" points="46.529 230.86 45.484 228.9 45.848 230.86" fill="#999"/>
+    	<polygon id="polygon1988" points="45.848 230.86 45.484 228.9 45.847 230.86" fill="#fff"/>
+    	<polygon id="polygon1990" points="45.484 228.9 44.475 230.86 45.847 230.86" fill="#fff"/>
+    	<polygon id="polygon1992" points="42.713 232.82 43.759 230.86" fill="#333"/>
+    	<polygon id="polygon1994" points="42.713 232.82 43.759 230.86 43.076 230.86" fill="#333"/>
+    	<polygon id="polygon1996" points="43.076 230.86 43.759 230.86 42.713 228.9" fill="#999"/>
+    	<polygon id="polygon1998" points="41.703 230.86 41.704 230.86 42.713 228.9" fill="#fff"/>
+    	<polygon id="polygon2000" points="42.713 228.9 41.704 230.86 43.076 230.86" fill="#fff"/>
+    	<polygon id="polygon2002" points="44.112 230.05 45.157 228.09 44.475 228.09" fill="#333"/>
+    	<polygon id="polygon2004" points="44.475 228.09 45.157 228.09 44.112 226.12" fill="#999"/>
+    	<polygon id="polygon2006" points="44.112 226.12 43.102 228.09 44.475 228.09" fill="#fff"/>
+    	<polygon id="polygon2008" points="41.315 230.05 42.36 228.09 41.678 228.09" fill="#333"/>
+    	<polygon id="polygon2010" points="41.678 228.09 42.36 228.09 41.315 226.12" fill="#999"/>
+    	<polygon id="polygon2012" points="41.678 228.09 41.315 226.12 40.306 228.09" fill="#fff"/>
+    	<polygon id="polygon2014" points="36.161 230.86 37.17 232.82 37.17 232.82 37.533 230.86" fill="#ccc"/>
+    	<polygon id="polygon2016" points="38.933 230.86 38.932 230.86 39.941 232.82 39.941 232.82 39.941 232.82" fill="#ccc"/>
+    	<polygon id="polygon2018" points="38.933 230.86 39.941 232.82 40.305 230.86" fill="#ccc"/>
+    	<polygon id="polygon2020" points="37.559 228.09 38.569 230.05 38.932 228.09" fill="#ccc"/>
+    	<polygon id="polygon2022" points="34.763 228.09 35.772 226.12 34.762 228.09 35.772 230.05 36.135 228.09" fill="#ccc"/>
+    	<rect id="rect2024" height=".001" width=".002" y="232.82" x="39.941" fill="#333"/>
+    	<rect id="rect2026" height=".001" width=".002" y="232.82" x="39.942" fill="#333"/>
+    	<polygon id="polygon2028" points="39.943 232.82 40.987 230.86" fill="#333"/>
+    	<polygon id="polygon2030" points="39.941 232.82 39.941 232.82 39.942 232.82" fill="#333"/>
+    	<polygon id="polygon2032" points="40.305 230.86 39.941 232.82 39.942 232.82 39.943 232.82 40.306 230.86" fill="#333"/>
+    	<polygon id="polygon2034" points="39.943 232.82 40.987 230.86 40.306 230.86" fill="#333"/>
+    	<polygon id="polygon2036" points="39.942 228.9 39.941 228.9 39.941 228.9" fill="#999"/>
+    	<rect id="rect2038" height="1.993" width=".001" y="228.88" x="40.124" fill="#999"/>
+    	<polygon id="polygon2040" points="40.306 230.86 40.987 230.86 39.943 228.9" fill="#999"/>
+    	<polygon id="polygon2042" points="40.305 230.86 39.942 228.9 39.942 228.9 39.941 228.9" fill="#999"/>
+    	<rect id="rect2044" height="2.207" width=".001" y="228.77" x="39.436" fill="#fff"/>
+    	<polygon id="polygon2046" points="39.941 228.9 38.933 230.86 40.305 230.86" fill="#fff"/>
+    	<polygon id="polygon2048" points="37.17 232.82 38.216 230.86" fill="#333"/>
+    	<polygon id="polygon2050" points="37.17 232.82 38.216 230.86 37.533 230.86" fill="#333"/>
+    	<polygon id="polygon2052" points="37.533 230.86 38.216 230.86 37.17 228.9" fill="#999"/>
+    	<polygon id="polygon2054" points="36.16 230.86 36.161 230.86 37.17 228.9" fill="#fff"/>
+    	<polygon id="polygon2056" points="37.17 228.9 36.161 230.86 37.533 230.86" fill="#fff"/>
+    	<polygon id="polygon2058" points="38.569 230.05 39.614 228.09 38.932 228.09" fill="#333"/>
+    	<polygon id="polygon2060" points="38.932 228.09 39.614 228.09 38.569 226.12" fill="#999"/>
+    	<polygon id="polygon2062" points="38.569 226.12 37.559 228.09 38.932 228.09" fill="#fff"/>
+    	<polygon id="polygon2064" points="35.772 230.05 36.817 228.09 36.135 228.09" fill="#333"/>
+    	<polygon id="polygon2066" points="36.135 228.09 36.817 228.09 35.772 226.12" fill="#999"/>
+    	<polygon id="polygon2068" points="36.135 228.09 35.772 226.12 34.763 228.09" fill="#fff"/>
+    	<polygon id="polygon2070" points="31.628 232.82 31.991 230.86 30.619 230.86" fill="#ccc"/>
+    	<polygon id="polygon2072" points="34.762 230.86 33.39 230.86 34.399 232.82 34.399 232.82 34.763 230.86" fill="#ccc"/>
+    	<polygon id="polygon2074" points="32.017 228.09 33.027 230.05 33.39 228.09" fill="#ccc"/>
+    	<polygon id="polygon2076" points="30.593 228.09 30.204 228.09 29.703 229.03 30.23 230.05" fill="#ccc"/>
+    	<polygon id="polygon2078" points="34.399 232.82 35.445 230.86" fill="#333"/>
+    	<polygon id="polygon2080" points="34.763 230.86 34.399 232.82 35.445 230.86 35.444 230.86" fill="#333"/>
+    	<polygon id="polygon2082" points="35.444 230.86 35.445 230.86 34.399 228.9" fill="#999"/>
+    	<polygon id="polygon2084" points="35.444 230.86 34.399 228.9 34.763 230.86" fill="#999"/>
+    	<polygon id="polygon2086" points="34.763 230.86 34.399 228.9 34.762 230.86" fill="#fff"/>
+    	<polygon id="polygon2088" points="34.399 228.9 33.39 230.86 34.762 230.86" fill="#fff"/>
+    	<polygon id="polygon2090" points="31.628 232.82 32.674 230.86" fill="#333"/>
+    	<polygon id="polygon2092" points="31.628 232.82 32.674 230.86 31.991 230.86" fill="#333"/>
+    	<polygon id="polygon2094" points="32.674 230.86 31.628 228.9 31.991 230.86" fill="#999"/>
+    	<polygon id="polygon2096" points="30.618 230.86 30.619 230.86 31.628 228.9" fill="#fff"/>
+    	<polygon id="polygon2098" points="31.628 228.9 30.619 230.86 31.991 230.86" fill="#fff"/>
+    	<polygon id="polygon2100" points="33.027 230.05 34.072 228.09 33.39 228.09" fill="#333"/>
+    	<polygon id="polygon2102" points="33.39 228.09 34.072 228.09 33.027 226.12" fill="#999"/>
+    	<polygon id="polygon2104" points="33.027 226.12 32.017 228.09 33.39 228.09" fill="#fff"/>
+    	<polygon id="polygon2106" points="30.23 230.05 31.275 228.09 30.593 228.09" fill="#333"/>
+    	<path id="path2108" fill="#999" d="m30.593 228.09h0.683l-0.964-1.811c0 0.094 0 0.189-0.001 0.284l0.282 1.53z"/>
+    	<path id="path2110" fill="#fff" d="m30.308 227.89l-0.104 0.194h0.389l-0.282-1.526c-0.001 0.45-0.002 0.89-0.003 1.34z"/>
+    	<polygon id="polygon2112" points="47.246 236.4 48.255 238.36 48.255 238.36 48.618 236.4" fill="#ccc"/>
+    	<path id="path2114" fill="#ccc" d="m50.017 236.4l0.735 1.429c-0.002-0.441-0.004-0.92-0.005-1.429h-0.73z"/>
+    	<polygon id="polygon2116" points="48.644 233.63 49.654 235.59 50.017 233.63" fill="#ccc"/>
+    	<polygon id="polygon2118" points="45.848 233.63 46.857 231.67 45.847 233.63 46.857 235.59 47.22 233.63" fill="#ccc"/>
+    	<polygon id="polygon2120" points="51.245 235.06 51.087 234.77 51.169 235.21" fill="#999"/>
+    	<rect id="rect2122" height=".449" width=".001" y="234.76" x="51.127" fill="#fff"/>
+    	<path id="path2124" fill="#fff" d="m50.747 236.4c-0.001-0.135-0.001-0.26-0.002-0.398l0.424-0.795-0.082-0.441-0.116-0.22-0.954 1.854h0.73z"/>
+    	<polygon id="polygon2126" points="49.301 236.4 48.255 238.36 48.255 238.36" fill="#333"/>
+    	<polygon id="polygon2128" points="48.618 236.4 48.255 238.36 49.301 236.4" fill="#333"/>
+    	<polygon id="polygon2130" points="49.301 236.4 48.255 234.44 48.618 236.4" fill="#999"/>
+    	<polygon id="polygon2132" points="47.245 236.4 47.246 236.4 48.255 234.44" fill="#fff"/>
+    	<polygon id="polygon2134" points="48.255 234.44 47.246 236.4 48.618 236.4" fill="#fff"/>
+    	<polygon id="polygon2136" points="49.654 235.59 50.699 233.63 50.017 233.63" fill="#333"/>
+    	<polygon id="polygon2138" points="50.017 233.63 50.699 233.63 49.654 231.67" fill="#999"/>
+    	<polygon id="polygon2140" points="49.654 231.67 48.644 233.63 50.017 233.63" fill="#fff"/>
+    	<polygon id="polygon2142" points="46.857 235.59 47.902 233.63 47.22 233.63" fill="#333"/>
+    	<polygon id="polygon2144" points="47.22 233.63 47.902 233.63 46.857 231.67" fill="#999"/>
+    	<polygon id="polygon2146" points="47.22 233.63 46.857 231.67 45.848 233.63" fill="#fff"/>
+    	<polygon id="polygon2148" points="41.704 236.4 42.713 238.36 42.713 238.36 43.076 236.4" fill="#ccc"/>
+    	<polygon id="polygon2150" points="40.988 236.4 39.942 234.44 40.987 236.4" fill="#ccc"/>
+    	<polygon id="polygon2152" points="39.943 234.44 39.942 234.44 39.942 234.44" fill="#ccc"/>
+    	<rect id="rect2154" height=".001" width="0" y="238.36" x="39.942" fill="#ccc"/>
+    	<polygon id="polygon2156" points="45.847 236.4 44.475 236.4 45.484 238.36 45.484 238.36 45.848 236.4" fill="#ccc"/>
+    	<polygon id="polygon2158" points="43.102 233.63 44.112 235.59 44.475 233.63" fill="#ccc"/>
+    	<polygon id="polygon2160" points="40.306 233.63 41.315 231.67 40.305 233.63 41.315 235.59 41.678 233.63" fill="#ccc"/>
+    	<polygon id="polygon2162" points="40.988 236.4 39.942 238.36 39.942 238.36" fill="#333"/>
+    		<rect id="rect2164" transform="matrix(.4699 -.8827 .8827 .4699 -188.09 161.55)" height=".001" width="2.222" y="237.38" x="39.354" fill="#333"/>
+    	<polygon id="polygon2166" points="40.987 236.4 39.942 234.44 39.943 234.44" fill="#999"/>
+    	<polygon id="polygon2168" points="39.942 234.44" fill="#fff"/>
+    	<polygon id="polygon2170" points="46.53 236.4 45.484 238.36 45.484 238.36" fill="#333"/>
+    	<polygon id="polygon2172" points="46.529 236.4 45.848 236.4 45.484 238.36 46.53 236.4" fill="#333"/>
+    	<polygon id="polygon2174" points="46.53 236.4 45.484 234.44 46.529 236.4" fill="#999"/>
+    	<polygon id="polygon2176" points="46.529 236.4 45.484 234.44 45.848 236.4" fill="#999"/>
+    	<polygon id="polygon2178" points="45.848 236.4 45.484 234.44 45.847 236.4" fill="#fff"/>
+    	<polygon id="polygon2180" points="45.484 234.44 44.475 236.4 45.847 236.4" fill="#fff"/>
+    	<polygon id="polygon2182" points="43.759 236.4 42.713 238.36 42.713 238.36" fill="#333"/>
+    	<polygon id="polygon2184" points="43.076 236.4 42.713 238.36 43.759 236.4" fill="#333"/>
+    	<polygon id="polygon2186" points="43.759 236.4 42.713 234.44 43.076 236.4" fill="#999"/>
+    	<polygon id="polygon2188" points="41.703 236.4 41.704 236.4 42.713 234.44" fill="#fff"/>
+    	<polygon id="polygon2190" points="42.713 234.44 41.704 236.4 43.076 236.4" fill="#fff"/>
+    	<polygon id="polygon2192" points="44.112 235.59 45.157 233.63 44.475 233.63" fill="#333"/>
+    	<polygon id="polygon2194" points="44.475 233.63 45.157 233.63 44.112 231.67" fill="#999"/>
+    	<polygon id="polygon2196" points="44.112 231.67 43.102 233.63 44.475 233.63" fill="#fff"/>
+    	<polygon id="polygon2198" points="41.315 235.59 42.36 233.63 41.678 233.63" fill="#333"/>
+    	<polygon id="polygon2200" points="41.678 233.63 42.36 233.63 41.315 231.67" fill="#999"/>
+    	<polygon id="polygon2202" points="41.678 233.63 41.315 231.67 40.306 233.63" fill="#fff"/>
+    	<polygon id="polygon2204" points="36.161 236.4 37.17 238.36 37.17 238.36 37.533 236.4" fill="#ccc"/>
+    	<polygon id="polygon2206" points="38.933 236.4 38.932 236.4 39.941 238.36 39.941 238.36 39.941 238.36" fill="#ccc"/>
+    	<polygon id="polygon2208" points="38.933 236.4 39.941 238.36 40.305 236.4" fill="#ccc"/>
+    	<polygon id="polygon2210" points="37.559 233.63 38.569 235.59 38.932 233.63" fill="#ccc"/>
+    	<polygon id="polygon2212" points="34.763 233.63 35.772 231.67 34.762 233.63 35.772 235.59 36.135 233.63" fill="#ccc"/>
+    	<rect id="rect2214" height=".001" width=".002" y="238.36" x="39.941" fill="#333"/>
+    	<rect id="rect2216" height=".001" width=".002" y="238.36" x="39.942" fill="#333"/>
+    	<polygon id="polygon2218" points="39.943 238.36 40.987 236.4" fill="#333"/>
+    	<polygon id="polygon2220" points="39.941 238.36 39.941 238.36 39.942 238.36" fill="#333"/>
+    	<polygon id="polygon2222" points="40.305 236.4 39.941 238.36 39.942 238.36 39.943 238.36 40.306 236.4" fill="#333"/>
+    	<polygon id="polygon2224" points="39.943 238.36 40.987 236.4 40.306 236.4" fill="#333"/>
+    	<polygon id="polygon2226" points="39.942 234.44 39.941 234.44 39.941 234.44" fill="#999"/>
+    	<rect id="rect2228" height="1.993" width=".001" y="234.42" x="40.124" fill="#999"/>
+    	<polygon id="polygon2230" points="40.306 236.4 40.987 236.4 39.943 234.44" fill="#999"/>
+    	<polygon id="polygon2232" points="40.305 236.4 39.942 234.44 39.942 234.44 39.941 234.44" fill="#999"/>
+    	<rect id="rect2234" height="2.207" width=".001" y="234.32" x="39.436" fill="#fff"/>
+    	<polygon id="polygon2236" points="39.941 234.44 38.933 236.4 40.305 236.4" fill="#fff"/>
+    	<polygon id="polygon2238" points="38.216 236.4 37.17 238.36 37.17 238.36" fill="#333"/>
+    	<polygon id="polygon2240" points="37.533 236.4 37.17 238.36 38.216 236.4" fill="#333"/>
+    	<polygon id="polygon2242" points="38.216 236.4 37.17 234.44 37.533 236.4" fill="#999"/>
+    	<polygon id="polygon2244" points="36.16 236.4 36.161 236.4 37.17 234.44" fill="#fff"/>
+    	<polygon id="polygon2246" points="37.17 234.44 36.161 236.4 37.533 236.4" fill="#fff"/>
+    	<polygon id="polygon2248" points="38.569 235.59 39.614 233.63 38.932 233.63" fill="#333"/>
+    	<polygon id="polygon2250" points="38.932 233.63 39.614 233.63 38.569 231.67" fill="#999"/>
+    	<polygon id="polygon2252" points="38.569 231.67 37.559 233.63 38.932 233.63" fill="#fff"/>
+    	<polygon id="polygon2254" points="35.772 235.59 36.817 233.63 36.135 233.63" fill="#333"/>
+    	<polygon id="polygon2256" points="36.135 233.63 36.817 233.63 35.772 231.67" fill="#999"/>
+    	<polygon id="polygon2258" points="36.135 233.63 35.772 231.67 34.763 233.63" fill="#fff"/>
+    	<polygon id="polygon2260" points="30.619 236.4 31.628 238.36 31.628 238.36 31.991 236.4" fill="#ccc"/>
+    	<polygon id="polygon2262" points="34.762 236.4 33.39 236.4 34.399 238.36 34.399 238.36 34.763 236.4" fill="#ccc"/>
+    	<polygon id="polygon2264" points="32.017 233.63 33.027 235.59 33.39 233.63" fill="#ccc"/>
+    	<polygon id="polygon2266" points="30.593 233.63 30.214 233.63 29.708 234.58 30.23 235.59" fill="#ccc"/>
+    	<polygon id="polygon2268" points="35.445 236.4 34.399 238.36 34.399 238.36" fill="#333"/>
+    	<polygon id="polygon2270" points="35.444 236.4 34.763 236.4 34.399 238.36 35.445 236.4" fill="#333"/>
+    	<polygon id="polygon2272" points="35.445 236.4 34.399 234.44 35.444 236.4" fill="#999"/>
+    	<polygon id="polygon2274" points="35.444 236.4 34.399 234.44 34.763 236.4" fill="#999"/>
+    	<polygon id="polygon2276" points="34.763 236.4 34.399 234.44 34.762 236.4" fill="#fff"/>
+    	<polygon id="polygon2278" points="34.399 234.44 33.39 236.4 34.762 236.4" fill="#fff"/>
+    	<polygon id="polygon2280" points="32.674 236.4 31.628 238.36 31.628 238.36" fill="#333"/>
+    	<polygon id="polygon2282" points="31.991 236.4 31.628 238.36 32.674 236.4" fill="#333"/>
+    	<polygon id="polygon2284" points="32.674 236.4 31.628 234.44 31.991 236.4" fill="#999"/>
+    	<polygon id="polygon2286" points="30.618 236.4 30.619 236.4 31.628 234.44" fill="#fff"/>
+    	<polygon id="polygon2288" points="31.628 234.44 30.619 236.4 31.991 236.4" fill="#fff"/>
+    	<polygon id="polygon2290" points="33.027 235.59 34.072 233.63 33.39 233.63" fill="#333"/>
+    	<polygon id="polygon2292" points="33.39 233.63 34.072 233.63 33.027 231.67" fill="#999"/>
+    	<polygon id="polygon2294" points="33.027 231.67 32.017 233.63 33.39 233.63" fill="#fff"/>
+    	<polygon id="polygon2296" points="30.23 235.59 31.275 233.63 30.593 233.63" fill="#333"/>
+    	<path id="path2298" fill="#999" d="m30.593 233.63h0.683l-0.983-1.848c-0.001 0.071-0.001 0.142-0.001 0.213l0.301 1.64z"/>
+    	<path id="path2300" fill="#fff" d="m30.286 233.49l-0.072 0.136h0.379l-0.302-1.635c-0.002 0.5-0.004 1.01-0.005 1.49z"/>
+    	<path id="path2302" fill="#ccc" d="m48.618 241.94h-1.372l0.268 0.521c0.369-0.021 0.714-0.042 1.02-0.062l0.084-0.46z"/>
+    	<path id="path2304" fill="#ccc" d="m50.435 242.15l0.11-0.207h-0.528l0.145 0.281c0.025-0.019 0.046-0.031 0.076-0.058l0.197-0.01z"/>
+    	<polygon id="polygon2306" points="48.644 239.17 49.654 241.13 50.017 239.17" fill="#ccc"/>
+    	<polygon id="polygon2308" points="45.848 239.17 46.857 237.21 45.847 239.17 46.857 241.13 47.22 239.17" fill="#ccc"/>
+    	<polygon id="polygon2310" points="51.245 240.62 51.093 240.34 51.172 240.76" fill="#999"/>
+    	<rect id="rect2312" height=".432" width="0" y="240.34" x="51.132" fill="#fff"/>
+    	<polygon id="polygon2314" points="50.545 241.94 51.171 240.76 51.093 240.34 50.965 240.1 50.017 241.94" fill="#fff"/>
+    	<polygon id="polygon2316" points="49.073 242.37 49.074 242.37 49.301 241.94" fill="#333"/>
+    	<path id="path2318" fill="#333" d="m48.533 242.4c0.195-0.012 0.378-0.023 0.54-0.034l0.228-0.426h-0.683l-0.085 0.46z"/>
+    	<polygon id="polygon2320" points="49.301 241.94 48.255 239.98 48.618 241.94" fill="#999"/>
+    	<polygon id="polygon2322" points="47.245 241.94 47.246 241.94 48.255 239.98" fill="#fff"/>
+    	<polygon id="polygon2324" points="48.255 239.98 47.246 241.94 48.618 241.94" fill="#fff"/>
+    	<polygon id="polygon2326" points="49.654 241.13 50.699 239.17 50.017 239.17" fill="#333"/>
+    	<polygon id="polygon2328" points="50.017 239.17 50.699 239.17 49.654 237.21" fill="#999"/>
+    	<polygon id="polygon2330" points="49.654 237.21 48.644 239.17 50.017 239.17" fill="#fff"/>
+    	<polygon id="polygon2332" points="46.857 241.13 47.902 239.17 47.22 239.17" fill="#333"/>
+    	<polygon id="polygon2334" points="47.22 239.17 47.902 239.17 46.857 237.21" fill="#999"/>
+    	<polygon id="polygon2336" points="47.22 239.17 46.857 237.21 45.848 239.17" fill="#fff"/>
+    	<path id="path2338" fill="#ccc" d="m43.076 241.94h-1.372l0.389 0.757c0.278-0.007 0.562-0.015 0.848-0.024l0.135-0.74z"/>
+    	<polygon id="polygon2340" points="40.988 241.94 39.942 239.98 40.987 241.94" fill="#ccc"/>
+    	<polygon id="polygon2342" points="39.943 239.98 39.942 239.98 39.942 239.98" fill="#ccc"/>
+    	<path id="path2344" fill="#ccc" d="m45.848 241.94h-1.373l0.34 0.66c0.311-0.014 0.618-0.028 0.919-0.043l0.114-0.62z"/>
+    	<polygon id="polygon2346" points="43.102 239.17 44.112 241.13 44.475 239.17" fill="#ccc"/>
+    	<polygon id="polygon2348" points="40.306 239.17 41.315 237.21 40.305 239.17 41.315 241.13 41.678 239.17" fill="#ccc"/>
+    	<polygon id="polygon2350" points="40.574 242.72 40.574 242.72 40.988 241.94" fill="#333"/>
+    	<rect id="rect2352" height=".881" width=".001" y="241.89" x="40.78" fill="#333"/>
+    	<polygon id="polygon2354" points="40.987 241.94 39.942 239.98 39.943 239.98" fill="#999"/>
+    	<polygon id="polygon2356" points="39.942 239.98" fill="#fff"/>
+    	<polygon id="polygon2358" points="46.215 242.54 46.215 242.54 46.53 241.94" fill="#333"/>
+    	<path id="path2360" fill="#333" d="m45.848 241.94l-0.114 0.617c0.163-0.009 0.322-0.017 0.481-0.024l0.315-0.593h-0.682z"/>
+    	<polygon id="polygon2362" points="46.53 241.94 45.484 239.98 46.529 241.94" fill="#999"/>
+    	<polygon id="polygon2364" points="46.529 241.94 45.484 239.98 45.848 241.94" fill="#999"/>
+    	<polygon id="polygon2366" points="45.848 241.94 45.484 239.98 45.847 241.94" fill="#fff"/>
+    	<polygon id="polygon2368" points="45.484 239.98 44.475 241.94 45.847 241.94" fill="#fff"/>
+    	<polygon id="polygon2370" points="43.376 242.66 43.376 242.66 43.759 241.94" fill="#333"/>
+    	<path id="path2372" fill="#333" d="m42.94 242.67c0.145-0.004 0.29-0.009 0.436-0.015l0.383-0.718h-0.683l-0.136 0.73z"/>
+    	<polygon id="polygon2374" points="43.759 241.94 42.713 239.98 43.076 241.94" fill="#999"/>
+    	<polygon id="polygon2376" points="41.703 241.94 41.704 241.94 42.713 239.98" fill="#fff"/>
+    	<polygon id="polygon2378" points="42.713 239.98 41.704 241.94 43.076 241.94" fill="#fff"/>
+    	<polygon id="polygon2380" points="44.112 241.13 45.157 239.17 44.475 239.17" fill="#333"/>
+    	<polygon id="polygon2382" points="44.475 239.17 45.157 239.17 44.112 237.21" fill="#999"/>
+    	<polygon id="polygon2384" points="44.112 237.21 43.102 239.17 44.475 239.17" fill="#fff"/>
+    	<polygon id="polygon2386" points="41.315 241.13 42.36 239.17 41.678 239.17" fill="#333"/>
+    	<polygon id="polygon2388" points="41.678 239.17 42.36 239.17 41.315 237.21" fill="#999"/>
+    	<polygon id="polygon2390" points="41.678 239.17 41.315 237.21 40.306 239.17" fill="#fff"/>
+    	<path id="path2392" fill="#ccc" d="m37.533 241.94h-1.372l0.346 0.674c0.298 0.013 0.597 0.024 0.896 0.036l0.13-0.71z"/>
+    	<rect id="rect2394" height=".86" width=".001" y="241.89" x="39.128" fill="#ccc"/>
+    	<path id="path2396" fill="#ccc" d="m40.305 241.94h-1.372l0.394 0.765c0.286 0.005 0.564 0.009 0.835 0.011l0.143-0.77z"/>
+    	<polygon id="polygon2398" points="37.559 239.17 38.569 241.13 38.932 239.17" fill="#ccc"/>
+    	<polygon id="polygon2400" points="34.763 239.17 35.772 237.21 34.762 239.17 35.772 241.13 36.135 239.17" fill="#ccc"/>
+    	<polygon id="polygon2402" points="40.573 242.72 40.573 242.72 40.987 241.94" fill="#333"/>
+    		<rect id="rect2404" transform="matrix(-.182 .9833 -.9833 -.182 285.84 246.88)" height=".001" width=".789" y="242.33" x="39.839" fill="#333"/>
+    	<path id="path2406" fill="#333" d="m40.162 242.72c0.117 0 0.237 0.002 0.351 0.002h0.061l0.414-0.777h-0.682l-0.144 0.78z"/>
+    	<polygon id="polygon2408" points="39.942 239.98 39.941 239.98 39.941 239.98" fill="#999"/>
+    	<rect id="rect2410" height="1.993" width=".001" y="239.96" x="40.124" fill="#999"/>
+    	<polygon id="polygon2412" points="40.987 241.94 39.943 239.98 40.306 241.94" fill="#999"/>
+    	<polygon id="polygon2414" points="40.305 241.94 39.942 239.98 39.942 239.98 39.941 239.98" fill="#999"/>
+    	<rect id="rect2416" height="2.207" width=".001" y="239.86" x="39.436" fill="#fff"/>
+    	<polygon id="polygon2418" points="39.941 239.98 38.933 241.94 40.305 241.94" fill="#fff"/>
+    	<polygon id="polygon2420" points="37.83 242.67 37.83 242.67 38.216 241.94" fill="#333"/>
+    	<path id="path2422" fill="#333" d="m37.402 242.65c0.143 0.005 0.285 0.01 0.428 0.015l0.386-0.725h-0.683l-0.131 0.71z"/>
+    	<polygon id="polygon2424" points="38.216 241.94 37.17 239.98 37.533 241.94" fill="#999"/>
+    	<polygon id="polygon2426" points="36.16 241.94 36.161 241.94 37.17 239.98" fill="#fff"/>
+    	<polygon id="polygon2428" points="37.17 239.98 36.161 241.94 37.533 241.94" fill="#fff"/>
+    	<polygon id="polygon2430" points="38.569 241.13 39.614 239.17 38.932 239.17" fill="#333"/>
+    	<polygon id="polygon2432" points="38.932 239.17 39.614 239.17 38.569 237.21" fill="#999"/>
+    	<polygon id="polygon2434" points="38.569 237.21 37.559 239.17 38.932 239.17" fill="#fff"/>
+    	<polygon id="polygon2436" points="35.772 241.13 36.817 239.17 36.135 239.17" fill="#333"/>
+    	<polygon id="polygon2438" points="36.135 239.17 36.817 239.17 35.772 237.21" fill="#999"/>
+    	<polygon id="polygon2440" points="36.135 239.17 35.772 237.21 34.763 239.17" fill="#fff"/>
+    	<path id="path2442" fill="#ccc" d="m30.823 242.2c0.053 0.043 0.1 0.074 0.125 0.091l0.014 0.01 0.002-0.002c0.006 0.002 0.014 0.008 0.014 0.008s0.354 0.025 0.936 0.062l0.078-0.424h-1.372l0.127 0.247 0.075 0.006 0.001-0.01z"/>
+    	<path id="path2444" fill="#ccc" d="m34.763 241.94h-1.373l0.272 0.53c0.313 0.018 0.648 0.036 0.992 0.055l0.109-0.58z"/>
+    	<polygon id="polygon2446" points="32.017 239.17 33.027 241.13 33.39 239.17" fill="#ccc"/>
+    	<polygon id="polygon2448" points="30.593 239.17 30.225 239.17 29.714 240.13 30.23 241.13" fill="#ccc"/>
+    	<polygon id="polygon2450" points="35.121 242.55 35.121 242.55 35.445 241.94" fill="#333"/>
+    	<path id="path2452" fill="#333" d="m34.763 241.94l-0.108 0.585c0.155 0.008 0.308 0.016 0.467 0.023l0.324-0.608h-0.683z"/>
+    	<polygon id="polygon2454" points="35.445 241.94 34.399 239.98 35.444 241.94" fill="#999"/>
+    	<polygon id="polygon2456" points="35.444 241.94 34.399 239.98 34.763 241.94" fill="#999"/>
+    	<polygon id="polygon2458" points="34.763 241.94 34.399 239.98 34.762 241.94" fill="#fff"/>
+    	<polygon id="polygon2460" points="34.399 239.98 33.39 241.94 34.762 241.94" fill="#fff"/>
+    	<polygon id="polygon2462" points="32.431 242.4 32.431 242.4 32.674 241.94" fill="#333"/>
+    	<path id="path2464" fill="#333" d="m31.913 242.37c0.157 0.01 0.328 0.021 0.518 0.033l0.243-0.457h-0.683l-0.078 0.43z"/>
+    	<polygon id="polygon2466" points="32.674 241.94 31.628 239.98 31.991 241.94" fill="#999"/>
+    	<polygon id="polygon2468" points="30.618 241.94 30.619 241.94 31.628 239.98" fill="#fff"/>
+    	<polygon id="polygon2470" points="31.628 239.98 30.619 241.94 31.991 241.94" fill="#fff"/>
+    	<polygon id="polygon2472" points="33.027 241.13 34.072 239.17 33.39 239.17" fill="#333"/>
+    	<polygon id="polygon2474" points="33.39 239.17 34.072 239.17 33.027 237.21" fill="#999"/>
+    	<polygon id="polygon2476" points="33.027 237.21 32.017 239.17 33.39 239.17" fill="#fff"/>
+    	<polygon id="polygon2478" points="30.23 241.13 31.275 239.17 30.593 239.17" fill="#333"/>
+    	<path id="path2480" fill="#999" d="m30.593 239.17h0.683l-1.004-1.885v0.144l0.321 1.75z"/>
+    	<path id="path2482" fill="#fff" d="m30.267 239.09l-0.042 0.079h0.368l-0.321-1.741c-0.002 0.62-0.004 1.19-0.005 1.66z"/>
+    </g>
+    <metadata><rdf:RDF><cc:Work><dc:format>image/svg+xml</dc:format><dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/><cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/><dc:publisher><cc:Agent rdf:about="http://openclipart.org/"><dc:title>Openclipart</dc:title></cc:Agent></dc:publisher><dc:title>Dart</dc:title><dc:date>2013-09-25T07:34:23</dc:date><dc:description>Dart</dc:description><dc:source>http://openclipart.org/detail/183880/dart-by-muga-183880</dc:source><dc:creator><cc:Agent><dc:title>Muga</dc:title></cc:Agent></dc:creator><dc:subject><rdf:Bag><rdf:li>dart</rdf:li><rdf:li>darts</rdf:li><rdf:li>fl&#xC3;&#xA9;chette</rdf:li><rdf:li>game</rdf:li><rdf:li>games</rdf:li><rdf:li>jeu</rdf:li><rdf:li>sport</rdf:li><rdf:li>sports</rdf:li></rdf:Bag></dc:subject></cc:Work><cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/"><cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/><cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/><cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/></cc:License></rdf:RDF></metadata>
+  </g>
+</svg>

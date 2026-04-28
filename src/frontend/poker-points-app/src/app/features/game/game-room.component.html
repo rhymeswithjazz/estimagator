@@ -365,13 +365,19 @@
         <!-- Participants around the table -->
         @for (voter of sortedVoters(); track voter.id; let i = $index) {
           <div
-            class="absolute flex flex-col items-center transition-all duration-500"
+            class="emoji-throw-target absolute flex flex-col items-center transition-all duration-500"
             [class]="sizeMode() === 'compact' ? 'gap-1' : 'gap-2'"
             [style]="getParticipantPosition(i, sortedVoters().length)"
+            [attr.data-participant-id]="voter.id"
+            (mouseenter)="showEmojiPalette(voter)"
+            (mouseleave)="hideEmojiPalette()"
+            (focusin)="showEmojiPalette(voter)"
+            (focusout)="hideEmojiPalette()"
           >
             <!-- Card - size varies by sizeMode: large (56x84), normal (48x72), compact (36x54) -->
             <div
               class="relative rounded-lg flex items-center justify-center font-bold transition-all duration-300 overflow-hidden"
+              [attr.data-emoji-impact-target-id]="voter.id"
               [class.w-14]="sizeMode() === 'large'"
               [class.h-[84px]]="sizeMode() === 'large'"
               [class.text-2xl]="sizeMode() === 'large'"
@@ -416,6 +422,23 @@
                 <span class="badge badge-green text-[10px] py-0">Host</span>
               }
             </div>
+            @if (canThrowAt(voter)) {
+              @if (openEmojiTargetId() === voter.id) {
+                <div
+                  class="emoji-throw-hover-bridge"
+                  aria-hidden="true"
+                  (mouseenter)="showEmojiPalette(voter)"
+                  (mouseleave)="hideEmojiPalette()"
+                ></div>
+              }
+              <app-emoji-throw-palette
+                [targetDisplayName]="voter.displayName"
+                [open]="openEmojiTargetId() === voter.id"
+                (mouseenter)="showEmojiPalette(voter)"
+                (mouseleave)="hideEmojiPalette()"
+                (emojiSelected)="throwEmoji(voter.id, $event)"
+              />
+            }
           </div>
         }
       </div>
@@ -451,14 +474,37 @@
           <div class="space-y-1">
             @for (observer of observers(); track observer.id) {
               <div
-                class="text-sm px-2 py-1 rounded flex items-center gap-2"
+                class="emoji-throw-target relative text-sm px-2 py-1 rounded flex items-center gap-2"
                 [class]="observer.isConnected ? 'text-gray-900' : 'text-gray-400'"
+                [attr.data-participant-id]="observer.id"
+                [attr.data-emoji-impact-target-id]="observer.id"
+                (mouseenter)="showEmojiPalette(observer)"
+                (mouseleave)="hideEmojiPalette()"
+                (focusin)="showEmojiPalette(observer)"
+                (focusout)="hideEmojiPalette()"
               >
                 <span
                   class="w-1.5 h-1.5 rounded-full"
                   [class]="observer.isConnected ? 'bg-emerald-500' : 'bg-gray-300'"
                 ></span>
                 {{ observer.displayName }}
+                @if (canThrowAt(observer)) {
+                  @if (openEmojiTargetId() === observer.id) {
+                    <div
+                      class="emoji-throw-hover-bridge"
+                      aria-hidden="true"
+                      (mouseenter)="showEmojiPalette(observer)"
+                      (mouseleave)="hideEmojiPalette()"
+                    ></div>
+                  }
+                  <app-emoji-throw-palette
+                    [targetDisplayName]="observer.displayName"
+                    [open]="openEmojiTargetId() === observer.id"
+                    (mouseenter)="showEmojiPalette(observer)"
+                    (mouseleave)="hideEmojiPalette()"
+                    (emojiSelected)="throwEmoji(observer.id, $event)"
+                  />
+                }
               </div>
             }
           </div>
@@ -691,6 +737,38 @@
     }
   </div>
 </main>
+
+@for (dart of stuckDartAnimations(); track dart.id) {
+  <div
+    class="emoji-stuck-dart"
+    [attr.title]="dart.senderDisplayName"
+    [style]="getEmojiStuckDartStyle(dart)"
+  >
+    <span class="emoji-flight-glyph">
+      <app-emoji-throw-icon class="emoji-throw-icon--flight" [emoji]="dart.emoji" />
+    </span>
+  </div>
+}
+
+@for (splat of poopSplatEffects(); track splat.id) {
+  <div class="emoji-poop-splat" aria-hidden="true" [style]="getEmojiPoopSplatStyle(splat)"></div>
+}
+
+@for (animation of emojiAnimations(); track animation.id) {
+  <div
+    class="emoji-flight"
+    [class.emoji-flight--travel]="animation.mode === 'travel'"
+    [class.emoji-flight--pop]="animation.mode === 'pop'"
+    [class.emoji-flight--dart]="animation.profile === 'dart'"
+    [class.emoji-flight--airplane]="animation.profile === 'airplane'"
+    [attr.title]="animation.senderDisplayName"
+    [style]="getEmojiAnimationStyle(animation)"
+  >
+    <span class="emoji-flight-glyph">
+      <app-emoji-throw-icon class="emoji-throw-icon--flight" [emoji]="animation.emoji" />
+    </span>
+  </div>
+}
 
 <!-- History Panel (all participants) -->
 @if (isHistoryPanelOpen()) {

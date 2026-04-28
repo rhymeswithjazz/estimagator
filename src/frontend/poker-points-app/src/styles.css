@@ -597,3 +597,172 @@
 .dark ::selection {
   background-color: rgba(139, 192, 83, 0.35);
 }
+
+.emoji-poop-splat {
+  position: fixed;
+  z-index: 75;
+  width: 2.75rem;
+  height: 2.65rem;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(var(--splat-scale));
+  transform-origin: center;
+  animation: emojiPoopSplat 1150ms ease-out forwards;
+}
+
+.emoji-poop-splat::before,
+.emoji-poop-splat::after {
+  position: absolute;
+  content: '';
+  border-radius: 9999px;
+  background: rgb(103 58 21);
+  box-shadow:
+    0.68rem -0.28rem 0 -0.18rem rgb(120 67 25),
+    -0.66rem -0.12rem 0 -0.2rem rgb(92 51 18),
+    0.34rem 0.58rem 0 -0.24rem rgb(71 39 14),
+    -0.36rem 0.55rem 0 -0.24rem rgb(146 82 31);
+}
+
+.emoji-poop-splat::before {
+  inset: 0.36rem 0.26rem 0.3rem;
+  background:
+    radial-gradient(circle at 32% 38%, rgb(160 94 39) 0 18%, transparent 20%),
+    radial-gradient(circle at 62% 62%, rgb(76 43 16) 0 14%, transparent 16%),
+    rgb(103 58 21);
+  transform: scaleX(1.05) rotate(-8deg);
+}
+
+.emoji-poop-splat::after {
+  left: 50%;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  transform: translate(-50%, -50%);
+  background: rgb(71 39 14);
+}
+
+@keyframes emojiPoopSplat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(0.2);
+  }
+  18% {
+    opacity: 0.94;
+    transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(var(--splat-scale));
+  }
+  72% {
+    opacity: 0.88;
+    transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(var(--splat-scale));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(0.92);
+  }
+}
+
+@keyframes emojiDartTravel {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  16% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.16) + (var(--e-arc) * 0.25)),
+      calc(-50% + (var(--e-dy) * 0.16))
+    );
+  }
+  38% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.4) + (var(--e-arc) * 0.42)),
+      calc(-50% + (var(--e-dy) * 0.4))
+    );
+  }
+  64% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.68) + (var(--e-arc) * 0.32)),
+      calc(-50% + (var(--e-dy) * 0.68))
+    );
+  }
+  100% {
+    transform: translate(calc(-50% + var(--e-dx)), calc(-50% + var(--e-dy)));
+  }
+}
+
+@keyframes emojiTravel {
+  0% {
+    transform: translate(-50%, -50%);
+  }
+  7% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.055) + (var(--e-arc) * 0.259)),
+      calc(-50% + (var(--e-dy) * 0.076))
+    );
+  }
+  14% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.133) + (var(--e-arc) * 0.461)),
+      calc(-50% + (var(--e-dy) * 0.167))
+    );
+  }
+  22% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.229) + (var(--e-arc) * 0.605)),
+      calc(-50% + (var(--e-dy) * 0.271))
+    );
+  }
+  29% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.338) + (var(--e-arc) * 0.691)),
+      calc(-50% + (var(--e-dy) * 0.384))
+    );
+  }
+  36% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.455) + (var(--e-arc) * 0.72)),
+      calc(-50% + (var(--e-dy) * 0.5))
+    );
+  }
+  43% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.576) + (var(--e-arc) * 0.691)),
+      calc(-50% + (var(--e-dy) * 0.616))
+    );
+  }
+  50% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.696) + (var(--e-arc) * 0.605)),
+      calc(-50% + (var(--e-dy) * 0.729))
+    );
+  }
+  58% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.81) + (var(--e-arc) * 0.461)),
+      calc(-50% + (var(--e-dy) * 0.833))
+    );
+  }
+  65% {
+    transform: translate(
+      calc(-50% + (var(--e-dx) * 0.913) + (var(--e-arc) * 0.259)),
+      calc(-50% + (var(--e-dy) * 0.924))
+    );
+  }
+  72% {
+    transform: translate(calc(-50% + var(--e-dx)), calc(-50% + var(--e-dy)));
+  }
+  82% {
+    transform: translate(
+      calc(-50% + var(--e-dx) + (var(--e-cx) * 0.55) + var(--e-bx)),
+      calc(-50% + var(--e-dy) + (var(--e-cy) * 0.55) + var(--e-by))
+    );
+  }
+  92% {
+    transform: translate(
+      calc(-50% + var(--e-dx) + (var(--e-cx) * 0.84) + (var(--e-bx) * -0.22)),
+      calc(-50% + var(--e-dy) + (var(--e-cy) * 0.84) + (var(--e-by) * -0.22))
+    );
+  }
+  100% {
+    transform: translate(
+      calc(-50% + var(--e-dx) + var(--e-cx)),
+      calc(-50% + var(--e-dy) + var(--e-cy))
+    );
+  }
+}

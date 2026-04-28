@@ -1,15 +1,51 @@
-import { Component, inject, OnInit, OnDestroy, computed, signal, effect } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  OnDestroy,
+  computed,
+  signal,
+  effect,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DOCUMENT, DecimalPipe, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Participant, Vote } from '../../core/models/session.models';
+import {
+  EmojiThrownEvent,
+  Participant,
+  POOP_THROW_OPTION,
+  Vote,
+} from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
 import { StoryHistoryPanelComponent } from './story-history-panel.component';
 import { AccountDropdownComponent } from './account-dropdown.component';
 import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
+import { EmojiThrowIconComponent } from './emoji-throw-icon.component';
+import { EmojiThrowPaletteComponent } from './emoji-throw-palette.component';
+import {
+  createEmojiAnimation,
+  createEmojiPoopSplat,
+  EmojiAnimation,
+  EmojiPoopSplat,
+  EmojiTargetGeometry,
+  EmojiThrowPoint,
+  EmojiThrowRect,
+  getEmojiAnimationCleanupMs,
+  getEmojiAnimationStyle,
+  getEmojiImpactDelayMs,
+  getEmojiPoopSplatStyle,
+  getEmojiStuckDartStyle,
+  MAX_ACTIVE_EMOJI_ANIMATIONS,
+  MAX_POOP_SPLATS,
+  MAX_STUCK_DARTS,
+  POOP_SPLAT_LIFETIME_MS,
+  STUCK_DART_LIFETIME_MS,
+} from './emoji-throw-animation.utils';
 import confetti from 'canvas-confetti';
 
 @Component({
@@ -24,14 +60,234 @@ import confetti from 'canvas-confetti';
     StoryHistoryPanelComponent,
     AccountDropdownComponent,
     ThemeSelectorComponent,
+    EmojiThrowIconComponent,
+    EmojiThrowPaletteComponent,
   ],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },
+  styles: [
+    `
+      .emoji-flight {
+        position: fixed;
+        z-index: 80;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+      }
+
+      .emoji-throw-hover-bridge {
+        position: absolute;
+        left: 50%;
+        top: -3.35rem;
+        z-index: 29;
+        width: 15rem;
+        height: 4.25rem;
+        pointer-events: auto;
+        transform: translateX(-50%);
+      }
+
+      .emoji-flight--travel {
+        animation: emojiTravel var(--e-duration, 700ms) linear forwards;
+      }
+
+      .emoji-flight--pop {
+        animation: emojiPopPath 400ms ease-out forwards;
+      }
+
+      .emoji-flight-glyph {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.35rem;
+        line-height: 1;
+        filter: drop-shadow(0 8px 12px rgb(0 0 0 / 0.28));
+        transform-origin: center;
+      }
+
+      .emoji-flight--travel .emoji-flight-glyph {
+        animation: emojiTravelGlyph var(--e-duration, 700ms) ease-out forwards;
+      }
+
+      .emoji-flight--dart .emoji-flight-glyph {
+        animation-name: emojiDartGlyph;
+      }
+
+      .emoji-flight--dart.emoji-flight--travel {
+        animation-name: emojiDartTravel;
+        animation-timing-function: cubic-bezier(0.18, 0.86, 0.22, 1);
+      }
+
+      .emoji-stuck-dart {
+        position: fixed;
+        z-index: 70;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        animation: emojiDartStickFade 3000ms ease-out forwards;
+      }
+
+      .emoji-stuck-dart .emoji-flight-glyph {
+        transform: rotate(var(--e-angle));
+      }
+
+      .emoji-flight--airplane .emoji-flight-glyph {
+        animation-name: emojiAirplaneGlyph;
+      }
+
+      .emoji-flight--pop .emoji-flight-glyph {
+        animation: emojiPopGlyph 400ms ease-out forwards;
+      }
+
+      @keyframes emojiTravelGlyph {
+        0% {
+          opacity: 0;
+          transform: translateY(0) scale(0.7) rotate(-10deg);
+        }
+        10% {
+          opacity: 1;
+          transform: translateY(0) scale(0.92) rotate(-6deg);
+        }
+        48% {
+          opacity: 1;
+          transform: translateY(0) scale(1.12) rotate(6deg);
+        }
+        58% {
+          opacity: 1;
+          transform: translateY(0) scale(1.08) rotate(8deg);
+        }
+        72% {
+          opacity: 1;
+          transform: translateY(0) scale(0.9) rotate(10deg);
+        }
+        82% {
+          opacity: 1;
+          transform: translateY(0) scale(1.18) rotate(13deg);
+        }
+        92% {
+          opacity: 1;
+          transform: translateY(0) scale(0.98) rotate(12deg);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(0) scale(0.86) rotate(12deg);
+        }
+      }
+
+      @keyframes emojiDartGlyph {
+        0% {
+          opacity: 0;
+          transform: scale(0.72) rotate(var(--e-angle));
+        }
+        8% {
+          opacity: 1;
+          transform: scale(1.05) rotate(var(--e-angle));
+        }
+        72% {
+          opacity: 1;
+          transform: scale(1.08) rotate(var(--e-angle));
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) rotate(var(--e-angle));
+        }
+      }
+
+      @keyframes emojiDartStickFade {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.96);
+        }
+        8% {
+          opacity: 0.96;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        84% {
+          opacity: 0.96;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.98);
+        }
+      }
+
+      @keyframes emojiAirplaneGlyph {
+        0% {
+          opacity: 0;
+          transform: translateY(0) rotate(var(--e-angle)) scale(0.72) scaleY(var(--e-flip-y));
+        }
+        12% {
+          opacity: 1;
+          transform: translateY(-4px) rotate(var(--e-angle)) scale(0.92) scaleY(var(--e-flip-y));
+        }
+        34% {
+          opacity: 1;
+          transform: translateY(5px) rotate(var(--e-angle)) scale(1.04) scaleY(var(--e-flip-y));
+        }
+        56% {
+          opacity: 1;
+          transform: translateY(-6px) rotate(var(--e-angle)) scale(1) scaleY(var(--e-flip-y));
+        }
+        72% {
+          opacity: 1;
+          transform: translateY(0) rotate(var(--e-angle)) scale(0.94) scaleY(var(--e-flip-y));
+        }
+        86% {
+          opacity: 1;
+          transform: translateY(-5px) rotate(var(--e-angle)) scale(1.04) scaleY(var(--e-flip-y));
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(2px) rotate(var(--e-angle)) scale(0.86) scaleY(var(--e-flip-y));
+        }
+      }
+
+      @keyframes emojiPopPath {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%);
+        }
+        100% {
+          opacity: 1;
+          transform: translate(-50%, -70%);
+        }
+      }
+
+      @keyframes emojiPopGlyph {
+        0% {
+          opacity: 0;
+          transform: scale(0.72);
+        }
+        24% {
+          opacity: 1;
+          transform: scale(1.14);
+        }
+        70% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.86);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .emoji-flight--travel {
+          animation: emojiPopPath 700ms ease-out forwards;
+        }
+
+        .emoji-flight--travel .emoji-flight-glyph {
+          animation: emojiPopGlyph 700ms ease-out forwards;
+        }
+      }
+    `,
+  ],
 })
 export class GameRoomComponent implements OnInit, OnDestroy {
   private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private emojiPaletteCloseTimeout: ReturnType<typeof window.setTimeout> | null = null;
   readonly gameState = inject(GameStateService); // public for debug access
   private readonly signalR = inject(SignalRService);
   readonly authService = inject(AuthService);
@@ -77,6 +333,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Expose Math for template
   readonly Math = Math;
+  readonly getEmojiAnimationStyle = getEmojiAnimationStyle;
+  readonly getEmojiStuckDartStyle = getEmojiStuckDartStyle;
+  readonly getEmojiPoopSplatStyle = getEmojiPoopSplatStyle;
 
   // Sorted voters: host at top (index 0), current user at bottom (index ~half)
   readonly sortedVoters = computed(() => {
@@ -150,6 +409,10 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Share link state
   readonly shareUrlCopied = signal(false);
+  readonly openEmojiTargetId = signal<string | null>(null);
+  readonly emojiAnimations = signal<EmojiAnimation[]>([]);
+  readonly stuckDartAnimations = signal<EmojiAnimation[]>([]);
+  readonly poopSplatEffects = signal<EmojiPoopSplat[]>([]);
 
   // Timer state (delegated to GameStateService)
   readonly timerSecondsRemaining = this.gameState.timerSecondsRemaining;
@@ -166,6 +429,10 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       if (results?.isConsensus && revealed) {
         this.triggerConfetti();
       }
+    });
+
+    this.signalR.emojiThrown$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      this.queueEmojiAnimation(event);
     });
   }
 
@@ -218,6 +485,42 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     return this.participantVoteMap().get(participantId) ?? false;
   }
 
+  canThrowAt(participant: Participant): boolean {
+    return participant.isConnected && participant.id !== this.currentParticipant()?.id;
+  }
+
+  showEmojiPalette(participant: Participant): void {
+    if (this.canThrowAt(participant)) {
+      this.cancelEmojiPaletteClose();
+      this.openEmojiTargetId.set(participant.id);
+    }
+  }
+
+  hideEmojiPalette(): void {
+    this.cancelEmojiPaletteClose();
+    this.emojiPaletteCloseTimeout = window.setTimeout(() => {
+      this.openEmojiTargetId.set(null);
+      this.emojiPaletteCloseTimeout = null;
+    }, 140);
+  }
+
+  closeEmojiPalette(): void {
+    this.cancelEmojiPaletteClose();
+    this.openEmojiTargetId.set(null);
+  }
+
+  async throwEmoji(targetParticipantId: string, emoji: string): Promise<void> {
+    this.cancelEmojiPaletteClose();
+    await this.gameState.throwEmoji(targetParticipantId, emoji);
+  }
+
+  private cancelEmojiPaletteClose(): void {
+    if (this.emojiPaletteCloseTimeout) {
+      window.clearTimeout(this.emojiPaletteCloseTimeout);
+      this.emojiPaletteCloseTimeout = null;
+    }
+  }
+
   // Calculate position for participant around the table
   getParticipantPosition(index: number, total: number): string {
     // Distribute participants around the table using a "superellipse" approach
@@ -262,6 +565,105 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
     // No vote yet - empty card placeholder
     return 'bg-white border-2 border-dashed border-gray-300 shadow-sm';
+  }
+
+  private queueEmojiAnimation(event: EmojiThrownEvent): void {
+    const targetGeometry = this.getParticipantTargetGeometry(event.targetParticipantId);
+    if (!targetGeometry) return;
+
+    const reducedMotion =
+      this.document.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches ?? false;
+    const senderCenter = this.getParticipantCenter(event.senderParticipantId);
+    const animation = createEmojiAnimation(event, targetGeometry, senderCenter, reducedMotion);
+
+    this.emojiAnimations.update((animations) =>
+      [...animations, animation].slice(-MAX_ACTIVE_EMOJI_ANIMATIONS),
+    );
+
+    if (event.emoji === POOP_THROW_OPTION) {
+      const impactDelayMs = getEmojiImpactDelayMs(animation);
+      window.setTimeout(() => {
+        const splat = createEmojiPoopSplat(animation);
+        this.poopSplatEffects.update((splats) => [...splats, splat].slice(-MAX_POOP_SPLATS));
+        this.emojiAnimations.update((animations) =>
+          animations.filter((item) => item.id !== event.throwId),
+        );
+        window.setTimeout(() => {
+          this.poopSplatEffects.update((splats) =>
+            splats.filter((item) => item.id !== event.throwId),
+          );
+        }, POOP_SPLAT_LIFETIME_MS);
+      }, impactDelayMs);
+      return;
+    }
+
+    if (animation.profile === 'dart' && animation.mode === 'travel') {
+      window.setTimeout(() => {
+        this.stuckDartAnimations.update((animations) =>
+          [...animations, animation].slice(-MAX_STUCK_DARTS),
+        );
+        this.emojiAnimations.update((animations) =>
+          animations.filter((item) => item.id !== event.throwId),
+        );
+        window.setTimeout(() => {
+          this.stuckDartAnimations.update((animations) =>
+            animations.filter((item) => item.id !== event.throwId),
+          );
+        }, STUCK_DART_LIFETIME_MS);
+      }, animation.durationMs);
+      return;
+    }
+
+    window.setTimeout(() => {
+      this.emojiAnimations.update((animations) =>
+        animations.filter((item) => item.id !== event.throwId),
+      );
+    }, getEmojiAnimationCleanupMs(animation));
+  }
+
+  private getParticipantTargetGeometry(participantId: string): EmojiTargetGeometry | null {
+    const impactElement = this.document.querySelector<HTMLElement>(
+      `[data-emoji-impact-target-id="${participantId}"]`,
+    );
+    const impactRect = impactElement?.getBoundingClientRect();
+    if (impactRect) {
+      const surfaceRect = this.toEmojiThrowRect(impactRect);
+
+      return {
+        center: {
+          x: surfaceRect.left + surfaceRect.width / 2,
+          y: surfaceRect.top + surfaceRect.height / 2,
+        },
+        surfaceRect,
+      };
+    }
+
+    const center = this.getParticipantCenter(participantId);
+    return center ? { center, surfaceRect: null } : null;
+  }
+
+  private getParticipantCenter(participantId: string): EmojiThrowPoint | null {
+    const element = this.document.querySelector<HTMLElement>(
+      `[data-participant-id="${participantId}"]`,
+    );
+    const rect = element?.getBoundingClientRect();
+    if (!rect) return null;
+
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+  }
+
+  private toEmojiThrowRect(rect: DOMRect): EmojiThrowRect {
+    return {
+      left: rect.left,
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height,
+    };
   }
 
   // Get CSS classes for selectable card in deck

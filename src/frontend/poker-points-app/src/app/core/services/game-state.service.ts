@@ -10,6 +10,7 @@ import {
   DeckType,
   DECK_VALUES,
 } from '../models/session.models';
+import { canThrowEmojiAt } from './emoji-throw.utils';
 
 interface StoredSessionIdentity {
   sessionCode: string;
@@ -369,6 +370,15 @@ export class GameStateService {
   async stopTimer(): Promise<void> {
     if (!this.isOrganizer()) return;
     await this.signalR.stopTimer();
+  }
+
+  async throwEmoji(targetParticipantId: string, emoji: string): Promise<void> {
+    if (
+      !canThrowEmojiAt(this._currentParticipant(), this._participants(), targetParticipantId, emoji)
+    )
+      return;
+
+    await this.signalR.throwEmoji(targetParticipantId, emoji);
   }
 
   dismissTimerExpired(): void {

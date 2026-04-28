@@ -71,6 +71,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Services
 builder.Services.AddSingleton<ITimerService, TimerService>();
+builder.Services.AddSingleton<IEmojiThrowRateLimiter, EmojiThrowRateLimiter>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<IVotingService, VotingService>();
@@ -85,7 +86,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularDev", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();

@@ -14,6 +14,7 @@ public class PokerHub : Hub
     private readonly IVotingService _votingService;
     private readonly IAuthService _authService;
     private readonly ITimerService _timerService;
+    private readonly IEmojiThrowRateLimiter _emojiThrowRateLimiter;
 
     public PokerHub(
         ILogger<PokerHub> logger,
@@ -21,7 +22,8 @@ public class PokerHub : Hub
         IParticipantService participantService,
         IVotingService votingService,
         IAuthService authService,
-        ITimerService timerService)
+        ITimerService timerService,
+        IEmojiThrowRateLimiter emojiThrowRateLimiter)
     {
         _logger = logger;
         _sessionService = sessionService;
@@ -29,6 +31,7 @@ public class PokerHub : Hub
         _votingService = votingService;
         _authService = authService;
         _timerService = timerService;
+        _emojiThrowRateLimiter = emojiThrowRateLimiter;
     }
 
     public override async Task OnConnectedAsync()
@@ -571,6 +574,59 @@ public class PokerHub : Hub
 
         _logger.LogInformation("Timer stopped for session {AccessCode}", session.AccessCode);
         await Clients.Group(session.AccessCode).SendAsync("TimerStopped");
+    }
+
+    public async Task ThrowEmoji(Guid targetParticipantId, string emoji)
+    {
+        var sender = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (sender == null)
+        {
+            await Clients.Caller.SendAsync("Error", "Not in a session");
+            return;
+        }
+
+        if (!EmojiThrowOptions.AllowedEmojis.Contains(emoji))
+        {
+            await Clients.Caller.SendAsync("Error", "That emoji is not available");
+            return;
+        }
+
+        if (sender.Id == targetParticipantId)
+        {
+            await Clients.Caller.SendAsync("Error", "You cannot throw an emoji at yourself");
+            return;
+        }
+
+        var target = await _participantService.GetByIdAsync(targetParticipantId);
+        if (target == null || target.SessionId != sender.SessionId || target.ConnectionId == null)
+        {
+            await Clients.Caller.SendAsync("Error", "That user is not available");
+            return;
+        }
+
+        if (!_emojiThrowRateLimiter.TryAcquire(Context.ConnectionId, EmojiThrowOptions.Cooldown))
+        {
+            await Clients.Caller.SendAsync("Error", "Give it a second before throwing another emoji");
+            return;
+        }
+
+        var throwEvent = new EmojiThrownEvent(
+            Guid.NewGuid(),
+            sender.Id,
+            sender.DisplayName,
+            targetParticipantId,
+            emoji,
+            DateTimeOffset.UtcNow
+        );
+
+        _logger.LogInformation(
+            "Emoji thrown in session {AccessCode}: {SenderParticipantId} -> {TargetParticipantId} {Emoji}",
+            sender.Session.AccessCode,
+            sender.Id,
+            targetParticipantId,
+            emoji);
+
+        await Clients.Group(sender.Session.AccessCode).SendAsync("EmojiThrown", throwEvent);
     }
 
     public async Task<GameStateResponse?> GetSessionState()
