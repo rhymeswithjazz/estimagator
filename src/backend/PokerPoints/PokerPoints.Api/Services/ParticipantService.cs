@@ -12,6 +12,7 @@ public interface IParticipantService
     Task DisconnectAsync(string connectionId);
     Task<Participant?> GetByConnectionIdAsync(string connectionId);
     Task<Participant?> GetByIdAsync(Guid participantId);
+    Task<Participant?> UpdateRoleAsync(string connectionId, bool isObserver);
     Task<bool> IsOrganizerAsync(string connectionId, Guid sessionId);
 }
 
@@ -76,6 +77,20 @@ public class ParticipantService : IParticipantService
         return await _db.Participants
             .Include(p => p.Session)
             .FirstOrDefaultAsync(p => p.Id == participantId);
+    }
+
+    public async Task<Participant?> UpdateRoleAsync(string connectionId, bool isObserver)
+    {
+        var participant = await _db.Participants
+            .Include(p => p.Session)
+            .FirstOrDefaultAsync(p => p.ConnectionId == connectionId);
+
+        if (participant == null) return null;
+
+        participant.IsObserver = isObserver;
+        await _db.SaveChangesAsync();
+
+        return participant;
     }
 
     public async Task<bool> IsOrganizerAsync(string connectionId, Guid sessionId)

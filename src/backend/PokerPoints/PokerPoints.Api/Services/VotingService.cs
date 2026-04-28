@@ -10,6 +10,7 @@ public interface IVotingService
     Task<Vote> CastVoteAsync(Guid storyId, Guid participantId, string cardValue);
     Task<List<VoteStatusDto>> GetVoteStatusesAsync(Guid storyId, List<Guid> participantIds);
     Task<VotesRevealedEvent> RevealVotesAsync(Guid storyId);
+    Task RemoveVoteAsync(Guid storyId, Guid participantId);
     Task ResetVotesAsync(Guid storyId);
 }
 
@@ -77,6 +78,17 @@ public class VotingService : IVotingService
         var (average, isConsensus) = CalculateResults(votes);
 
         return new VotesRevealedEvent(voteDtos, average, isConsensus);
+    }
+
+    public async Task RemoveVoteAsync(Guid storyId, Guid participantId)
+    {
+        var vote = await _db.Votes
+            .FirstOrDefaultAsync(v => v.StoryId == storyId && v.ParticipantId == participantId);
+
+        if (vote == null) return;
+
+        _db.Votes.Remove(vote);
+        await _db.SaveChangesAsync();
     }
 
     public async Task ResetVotesAsync(Guid storyId)

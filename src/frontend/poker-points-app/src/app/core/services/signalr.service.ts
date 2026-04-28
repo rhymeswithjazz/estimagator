@@ -212,6 +212,13 @@ export class SignalRService {
     await this.connection.invoke('CastVote', cardValue);
   }
 
+  async switchRole(isObserver: boolean): Promise<Participant | null> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    return this.connection.invoke<Participant | null>('SwitchRole', isObserver);
+  }
+
   async revealVotes(): Promise<void> {
     if (!this.connection) {
       throw new Error('Not connected to SignalR hub');

@@ -224,6 +224,18 @@ export class GameStateService {
     this._deckType.set(state.session.deckType as DeckType);
     this._sessionName.set(state.session.name);
 
+    const currentParticipant = this._currentParticipant();
+    if (currentParticipant) {
+      const updatedParticipant = state.participants.find((p) => p.id === currentParticipant.id);
+      if (updatedParticipant) {
+        this._currentParticipant.set(updatedParticipant);
+      }
+    }
+
+    if (this._currentParticipant()?.isObserver) {
+      this._myVote.set(null);
+    }
+
     if (state.revealedVotes) {
       const myParticipant = this._currentParticipant();
       if (myParticipant) {
@@ -305,6 +317,30 @@ export class GameStateService {
 
     await this.signalR.castVote(cardValue);
     this._myVote.set(cardValue);
+  }
+
+  async switchRole(isObserver: boolean): Promise<void> {
+    const participant = await this.signalR.switchRole(isObserver);
+    if (!participant) return;
+
+    this._currentParticipant.set(participant);
+    this._participants.update((participants) =>
+      participants.map((item) => (item.id === participant.id ? participant : item)),
+    );
+
+    if (participant.isObserver) {
+      this._myVote.set(null);
+    }
+
+    const sessionCode = this._sessionCode();
+    if (sessionCode) {
+      this.storeIdentity({
+        sessionCode,
+        participantId: participant.id,
+        displayName: participant.displayName,
+        isObserver: participant.isObserver,
+      });
+    }
   }
 
   async revealVotes(): Promise<void> {

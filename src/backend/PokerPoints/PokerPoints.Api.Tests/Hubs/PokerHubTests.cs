@@ -16,6 +16,101 @@ public class PokerHubTests
     private static readonly Guid SessionId = Guid.NewGuid();
     private static readonly Guid SenderId = Guid.NewGuid();
     private static readonly Guid TargetId = Guid.NewGuid();
+    private static readonly Guid StoryId = Guid.NewGuid();
+
+    [Fact]
+    public async Task SwitchRole_ShouldUpdateParticipantRoleAndBroadcastSessionState()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        var currentParticipant = CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection");
+        var updatedParticipant = CreateParticipant(
+            SenderId,
+            "Sender",
+            "ABC123",
+            "sender-connection",
+            isObserver: true);
+        var gameState = CreateGameState(updatedParticipant, currentStory: null);
+
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(currentParticipant);
+        fixture.ParticipantService
+            .Setup(s => s.UpdateRoleAsync(SenderConnectionId, true))
+            .ReturnsAsync(updatedParticipant);
+        fixture.SessionService
+            .Setup(s => s.GetGameStateAsync("ABC123"))
+            .ReturnsAsync(gameState);
+
+        // Act
+        var result = await fixture.Hub.SwitchRole(true);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.IsObserver);
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "SessionState",
+                It.Is<object?[]>(args => ReferenceEquals(args.SingleOrDefault(), gameState)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SwitchRole_ShouldRemoveVote_WhenSwitchingToObserverDuringActiveStory()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        var currentParticipant = CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection");
+        var updatedParticipant = CreateParticipant(
+            SenderId,
+            "Sender",
+            "ABC123",
+            "sender-connection",
+            isObserver: true);
+        var gameState = CreateGameState(updatedParticipant, new StoryDto(StoryId, "Story", null, "active", null));
+        var refreshedGameState = CreateGameState(updatedParticipant, new StoryDto(StoryId, "Story", null, "active", null));
+
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(currentParticipant);
+        fixture.ParticipantService
+            .Setup(s => s.UpdateRoleAsync(SenderConnectionId, true))
+            .ReturnsAsync(updatedParticipant);
+        fixture.SessionService
+            .SetupSequence(s => s.GetGameStateAsync("ABC123"))
+            .ReturnsAsync(gameState)
+            .ReturnsAsync(refreshedGameState);
+
+        // Act
+        await fixture.Hub.SwitchRole(true);
+
+        // Assert
+        fixture.VotingService.Verify(s => s.RemoveVoteAsync(StoryId, SenderId), Times.Once);
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "SessionState",
+                It.Is<object?[]>(args => ReferenceEquals(args.SingleOrDefault(), refreshedGameState)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SwitchRole_ShouldSendError_WhenParticipantIsMissing()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync((Participant?)null);
+
+        // Act
+        var result = await fixture.Hub.SwitchRole(true);
+
+        // Assert
+        Assert.Null(result);
+        VerifyError(fixture.CallerClient, "Not in a session");
+    }
 
     [Fact]
     public async Task ThrowEmoji_ShouldBroadcastEmojiThrown_WhenRequestIsValid()
@@ -194,7 +289,9 @@ public class PokerHubTests
 
     private static HubFixture CreateFixture()
     {
+        var sessionService = new Mock<ISessionService>();
         var participantService = new Mock<IParticipantService>();
+        var votingService = new Mock<IVotingService>();
         var rateLimiter = new Mock<IEmojiThrowRateLimiter>();
         var callerClient = new Mock<ISingleClientProxy>();
         var groupClient = new Mock<IClientProxy>();
@@ -207,9 +304,9 @@ public class PokerHubTests
 
         var hub = new PokerHub(
             NullLogger<PokerHub>.Instance,
-            Mock.Of<ISessionService>(),
+            sessionService.Object,
             participantService.Object,
-            Mock.Of<IVotingService>(),
+            votingService.Object,
             Mock.Of<IAuthService>(),
             Mock.Of<ITimerService>(),
             rateLimiter.Object)
@@ -220,7 +317,9 @@ public class PokerHubTests
 
         return new HubFixture(
             hub,
+            sessionService,
             participantService,
+            votingService,
             rateLimiter,
             callerClient,
             groupClient);
@@ -231,7 +330,8 @@ public class PokerHubTests
         string displayName,
         string accessCode,
         string? connectionId,
-        Guid? sessionId = null)
+        Guid? sessionId = null,
+        bool isObserver = false)
     {
         var actualSessionId = sessionId ?? SessionId;
         return new Participant
@@ -239,6 +339,7 @@ public class PokerHubTests
             Id = id,
             SessionId = actualSessionId,
             DisplayName = displayName,
+            IsObserver = isObserver,
             ConnectionId = connectionId,
             Session = new Session
             {
@@ -246,6 +347,33 @@ public class PokerHubTests
                 AccessCode = accessCode
             }
         };
+    }
+
+    private static GameStateResponse CreateGameState(Participant participant, StoryDto? currentStory)
+    {
+        var participantDto = new ParticipantDto(
+            participant.Id,
+            participant.DisplayName,
+            participant.IsObserver,
+            participant.IsOrganizer,
+            !string.IsNullOrEmpty(participant.ConnectionId));
+
+        return new GameStateResponse(
+            new SessionInfoResponse(
+                participant.Session.Id,
+                participant.Session.AccessCode,
+                null,
+                "fibonacci",
+                120,
+                true,
+                DateTime.UtcNow,
+                new List<ParticipantDto> { participantDto },
+                currentStory),
+            currentStory,
+            new List<ParticipantDto> { participantDto },
+            new List<VoteStatusDto>(),
+            null,
+            null);
     }
 
     private static bool IsExpectedEmojiThrownEvent(object?[] args)
@@ -282,7 +410,9 @@ public class PokerHubTests
 
     private sealed record HubFixture(
         PokerHub Hub,
+        Mock<ISessionService> SessionService,
         Mock<IParticipantService> ParticipantService,
+        Mock<IVotingService> VotingService,
         Mock<IEmojiThrowRateLimiter> RateLimiter,
         Mock<ISingleClientProxy> CallerClient,
         Mock<IClientProxy> GroupClient);

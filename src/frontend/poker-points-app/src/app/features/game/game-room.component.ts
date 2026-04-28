@@ -409,6 +409,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   // Share link state
   readonly shareUrlCopied = signal(false);
+  readonly roleChangePending = signal(false);
   readonly openEmojiTargetId = signal<string | null>(null);
   readonly emojiAnimations = signal<EmojiAnimation[]>([]);
   readonly stuckDartAnimations = signal<EmojiAnimation[]>([]);
@@ -717,6 +718,17 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   async selectCard(value: string): Promise<void> {
     if (!this.canVote()) return;
     await this.gameState.castVote(value);
+  }
+
+  async toggleObserverMode(): Promise<void> {
+    if (this.roleChangePending()) return;
+
+    this.roleChangePending.set(true);
+    try {
+      await this.gameState.switchRole(!this.isObserver());
+    } finally {
+      this.roleChangePending.set(false);
+    }
   }
 
   async revealVotes(): Promise<void> {

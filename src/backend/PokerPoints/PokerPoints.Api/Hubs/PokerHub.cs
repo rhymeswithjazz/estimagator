@@ -194,6 +194,47 @@ public class PokerHub : Hub
         await Clients.Group(session.AccessCode).SendAsync("VoteCast", new VoteCastEvent(participant.Id));
     }
 
+    public async Task<ParticipantDto?> SwitchRole(bool isObserver)
+    {
+        var currentParticipant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (currentParticipant == null)
+        {
+            await Clients.Caller.SendAsync("Error", "Not in a session");
+            return null;
+        }
+
+        var session = currentParticipant.Session;
+        var participant = await _participantService.UpdateRoleAsync(Context.ConnectionId, isObserver);
+        if (participant == null) return null;
+
+        var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
+        if (isObserver && gameState?.CurrentStory != null)
+        {
+            await _votingService.RemoveVoteAsync(gameState.CurrentStory.Id, participant.Id);
+            gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
+        }
+
+        var participantDto = new ParticipantDto(
+            participant.Id,
+            participant.DisplayName,
+            participant.IsObserver,
+            participant.IsOrganizer,
+            true
+        );
+
+        _logger.LogInformation(
+            "Participant role changed: {ParticipantId}, Observer={IsObserver}",
+            participant.Id,
+            participant.IsObserver);
+
+        if (gameState != null)
+        {
+            await Clients.Group(session.AccessCode).SendAsync("SessionState", gameState);
+        }
+
+        return participantDto;
+    }
+
     public async Task RevealVotes()
     {
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
