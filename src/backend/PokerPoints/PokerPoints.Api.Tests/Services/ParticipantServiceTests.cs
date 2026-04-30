@@ -48,6 +48,75 @@ public class ParticipantServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task ClaimGuestHostAsync_ShouldPromoteTokenHolderAndMarkTokenClaimed()
+    {
+        var token = GuestHostToken.Generate();
+        var session = CreateSession();
+        session.GuestHostTokenHash = GuestHostToken.Hash(token);
+        var accidentalHost = CreateParticipant(session, "Other", "other-connection", isOrganizer: true);
+        _db.Sessions.Add(session);
+        _db.Participants.Add(accidentalHost);
+        await _db.SaveChangesAsync();
+
+        var host = await _service.ClaimGuestHostAsync(
+            session.Id,
+            "Creator",
+            isObserver: false,
+            connectionId: "creator-connection",
+            guestHostToken: token);
+
+        host.Should().NotBeNull();
+        host!.IsOrganizer.Should().BeTrue();
+        host.DisplayName.Should().Be("Creator");
+        host.ConnectionId.Should().Be("creator-connection");
+
+        var updatedOther = await _db.Participants.FindAsync(accidentalHost.Id);
+        updatedOther!.IsOrganizer.Should().BeFalse();
+
+        var updatedSession = await _db.Sessions.FindAsync(session.Id);
+        updatedSession!.GuestHostClaimedAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ClaimGuestHostAsync_ShouldRejectInvalidToken()
+    {
+        var session = CreateSession();
+        session.GuestHostTokenHash = GuestHostToken.Hash("correct-token");
+        _db.Sessions.Add(session);
+        await _db.SaveChangesAsync();
+
+        var host = await _service.ClaimGuestHostAsync(
+            session.Id,
+            "Creator",
+            isObserver: false,
+            connectionId: "creator-connection",
+            guestHostToken: "wrong-token");
+
+        host.Should().BeNull();
+        (await _db.Participants.CountAsync()).Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ReconnectAsync_ShouldRejectParticipantFromAnotherSession()
+    {
+        var session = CreateSession();
+        var otherSession = CreateSession("ZZZ999");
+        var otherParticipant = CreateParticipant(otherSession, "Other", "old-connection");
+        _db.Sessions.AddRange(session, otherSession);
+        _db.Participants.Add(otherParticipant);
+        await _db.SaveChangesAsync();
+
+        var reconnected = await _service.ReconnectAsync(
+            session.Id,
+            otherParticipant.Id,
+            "new-connection");
+
+        reconnected.Should().BeNull();
+        var unchangedParticipant = await _db.Participants.FindAsync(otherParticipant.Id);
+        unchangedParticipant!.ConnectionId.Should().Be("old-connection");
+    }
+
+    [Fact]
     public async Task TransferHostAsync_ShouldTransferToConnectedParticipantAndSetOrganizerId()
     {
         var userId = Guid.NewGuid();

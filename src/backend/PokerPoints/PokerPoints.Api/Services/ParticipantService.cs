@@ -7,7 +7,8 @@ namespace PokerPoints.Api.Services;
 public interface IParticipantService
 {
     Task<Participant> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId, Guid? userId = null);
-    Task<Participant?> ReconnectAsync(Guid participantId, string connectionId, Guid? userId = null);
+    Task<Participant?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null);
+    Task<Participant?> ClaimGuestHostAsync(Guid sessionId, string displayName, bool isObserver, string connectionId, string guestHostToken, Guid? existingParticipantId = null, Guid? userId = null);
     Task DisconnectAsync(string connectionId);
     Task<Participant?> GetByConnectionIdAsync(string connectionId);
     Task<Participant?> GetByIdAsync(Guid participantId);
@@ -67,9 +68,10 @@ public class ParticipantService : IParticipantService
         return participant;
     }
 
-    public async Task<Participant?> ReconnectAsync(Guid participantId, string connectionId, Guid? userId = null)
+    public async Task<Participant?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null)
     {
-        var participant = await _db.Participants.FindAsync(participantId);
+        var participant = await _db.Participants
+            .FirstOrDefaultAsync(p => p.Id == participantId && p.SessionId == sessionId);
         if (participant == null) return null;
 
         participant.ConnectionId = connectionId;
@@ -77,6 +79,78 @@ public class ParticipantService : IParticipantService
         await _db.SaveChangesAsync();
 
         return participant;
+    }
+
+    public async Task<Participant?> ClaimGuestHostAsync(
+        Guid sessionId,
+        string displayName,
+        bool isObserver,
+        string connectionId,
+        string guestHostToken,
+        Guid? existingParticipantId = null,
+        Guid? userId = null)
+    {
+        if (string.IsNullOrWhiteSpace(guestHostToken))
+        {
+            return null;
+        }
+
+        await using var transaction = _db.Database.IsRelational()
+            ? await _db.Database.BeginTransactionAsync()
+            : null;
+
+        var session = await _db.Sessions
+            .Include(s => s.Participants)
+            .FirstOrDefaultAsync(s => s.Id == sessionId && s.IsActive);
+
+        if (session == null ||
+            string.IsNullOrEmpty(session.GuestHostTokenHash) ||
+            session.GuestHostClaimedAt.HasValue ||
+            !GuestHostToken.Verify(guestHostToken, session.GuestHostTokenHash))
+        {
+            return null;
+        }
+
+        foreach (var participant in session.Participants.Where(p => p.IsOrganizer))
+        {
+            participant.IsOrganizer = false;
+        }
+
+        var host = existingParticipantId.HasValue
+            ? session.Participants.FirstOrDefault(p => p.Id == existingParticipantId.Value)
+            : null;
+
+        if (host == null)
+        {
+            host = new Participant
+            {
+                SessionId = sessionId,
+                DisplayName = displayName,
+                IsObserver = isObserver,
+                ConnectionId = connectionId,
+                UserId = userId
+            };
+            _db.Participants.Add(host);
+        }
+        else
+        {
+            host.DisplayName = displayName;
+            host.IsObserver = isObserver;
+            host.ConnectionId = connectionId;
+            host.UserId ??= userId;
+        }
+
+        host.IsOrganizer = true;
+        session.GuestHostClaimedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
+
+        if (transaction != null)
+        {
+            await transaction.CommitAsync();
+        }
+
+        return host;
     }
 
     public async Task DisconnectAsync(string connectionId)

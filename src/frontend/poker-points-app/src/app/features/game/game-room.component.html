@@ -418,18 +418,21 @@
           <div
             class="emoji-throw-target absolute flex flex-col items-center transition-all duration-500"
             [class]="sizeMode() === 'compact' ? 'gap-1' : 'gap-2'"
-            [class.z-40]="openEmojiTargetId() === voter.id"
+            [class.z-40]="
+              openEmojiTargetId() === voter.id || openEmojiReactionParticipantId() === voter.id
+            "
             [style]="getParticipantPosition(i, sortedVoters().length)"
             [attr.data-participant-id]="voter.id"
-            (mouseenter)="showEmojiPalette(voter)"
-            (mouseleave)="hideEmojiPalette()"
-            (focusin)="showEmojiPalette(voter)"
-            (focusout)="hideEmojiPalette()"
+            (mouseenter)="showParticipantEmojiPalette(voter)"
+            (mouseleave)="hideParticipantEmojiPalette()"
+            (focusin)="showParticipantEmojiPalette(voter)"
+            (focusout)="hideParticipantEmojiPalette()"
           >
             <!-- Card - size varies by sizeMode: large (56x84), normal (48x72), compact (36x54) -->
             <div
               class="relative rounded-lg flex items-center justify-center font-bold transition-all duration-300 overflow-hidden"
               [attr.data-emoji-impact-target-id]="voter.id"
+              [attr.data-emoji-reaction-anchor-id]="voter.id"
               [class.w-14]="sizeMode() === 'large'"
               [class.h-[84px]]="sizeMode() === 'large'"
               [class.text-2xl]="sizeMode() === 'large'"
@@ -491,6 +494,22 @@
                 (emojiSelected)="throwEmoji(voter.id, $event)"
               />
             }
+            @if (canReactFrom(voter)) {
+              @if (openEmojiReactionParticipantId() === voter.id) {
+                <div
+                  class="emoji-throw-hover-bridge"
+                  aria-hidden="true"
+                  (mouseenter)="showEmojiReactionPalette(voter)"
+                  (mouseleave)="hideEmojiReactionPalette()"
+                ></div>
+              }
+              <app-emoji-reaction-palette
+                [open]="openEmojiReactionParticipantId() === voter.id"
+                (mouseenter)="showEmojiReactionPalette(voter)"
+                (mouseleave)="hideEmojiReactionPalette()"
+                (emojiSelected)="sendEmojiReaction($event)"
+              />
+            }
           </div>
         }
       </div>
@@ -528,13 +547,17 @@
               <div
                 class="emoji-throw-target relative text-sm px-2 py-1 rounded flex items-center gap-2"
                 [class]="observer.isConnected ? 'text-gray-900' : 'text-gray-400'"
-                [class.z-40]="openEmojiTargetId() === observer.id"
+                [class.z-40]="
+                  openEmojiTargetId() === observer.id ||
+                  openEmojiReactionParticipantId() === observer.id
+                "
                 [attr.data-participant-id]="observer.id"
                 [attr.data-emoji-impact-target-id]="observer.id"
-                (mouseenter)="showEmojiPalette(observer)"
-                (mouseleave)="hideEmojiPalette()"
-                (focusin)="showEmojiPalette(observer)"
-                (focusout)="hideEmojiPalette()"
+                [attr.data-emoji-reaction-anchor-id]="observer.id"
+                (mouseenter)="showParticipantEmojiPalette(observer)"
+                (mouseleave)="hideParticipantEmojiPalette()"
+                (focusin)="showParticipantEmojiPalette(observer)"
+                (focusout)="hideParticipantEmojiPalette()"
               >
                 <span
                   class="w-1.5 h-1.5 rounded-full"
@@ -556,6 +579,22 @@
                     (mouseenter)="showEmojiPalette(observer)"
                     (mouseleave)="hideEmojiPalette()"
                     (emojiSelected)="throwEmoji(observer.id, $event)"
+                  />
+                }
+                @if (canReactFrom(observer)) {
+                  @if (openEmojiReactionParticipantId() === observer.id) {
+                    <div
+                      class="emoji-throw-hover-bridge"
+                      aria-hidden="true"
+                      (mouseenter)="showEmojiReactionPalette(observer)"
+                      (mouseleave)="hideEmojiReactionPalette()"
+                    ></div>
+                  }
+                  <app-emoji-reaction-palette
+                    [open]="openEmojiReactionParticipantId() === observer.id"
+                    (mouseenter)="showEmojiReactionPalette(observer)"
+                    (mouseleave)="hideEmojiReactionPalette()"
+                    (emojiSelected)="sendEmojiReaction($event)"
                   />
                 }
               </div>
@@ -817,6 +856,16 @@
     } @else if (splat.kind === 'egg') {
       <img src="fried-egg-splat.svg" alt="" />
     }
+  </div>
+}
+
+@for (reaction of emojiReactionAnimations(); track reaction.id) {
+  <div
+    class="emoji-reaction-balloon"
+    [attr.title]="reaction.senderDisplayName"
+    [style]="getEmojiReactionAnimationStyle(reaction)"
+  >
+    <span class="emoji-reaction-balloon-glyph">{{ reaction.emoji }}</span>
   </div>
 }
 

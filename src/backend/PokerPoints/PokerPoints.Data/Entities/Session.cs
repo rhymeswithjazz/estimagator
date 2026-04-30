@@ -9,6 +9,8 @@ public class Session
     public string? Name { get; set; }
     public string DeckType { get; set; } = "fibonacci";
     public int TimerDurationSeconds { get; set; } = 300;
+    public string? GuestHostTokenHash { get; set; }
+    public DateTime? GuestHostClaimedAt { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; }
 

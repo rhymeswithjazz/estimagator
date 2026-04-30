@@ -8,7 +8,13 @@ public record CreateSessionRequest(
     int TimerDurationSeconds = 300
 );
 
-public record CreateSessionResponse(Guid SessionId, string AccessCode, string? Name, int TimerDurationSeconds);
+public record CreateSessionResponse(
+    Guid SessionId,
+    string AccessCode,
+    string? Name,
+    int TimerDurationSeconds,
+    string? GuestHostToken = null
+);
 
 public record SessionInfoResponse(
     Guid Id,
@@ -73,4 +79,3 @@ public record UserSessionResponse(
     StoryDto? CurrentStory,
     bool IsOrganizer
 );
-

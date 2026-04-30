@@ -10,13 +10,14 @@ import {
   DeckType,
   DECK_VALUES,
 } from '../models/session.models';
-import { canThrowEmojiAt } from './emoji-throw.utils';
+import { canSendEmojiReaction, canThrowEmojiAt } from './emoji-throw.utils';
 
 interface StoredSessionIdentity {
   sessionCode: string;
-  participantId: string;
+  participantId?: string;
   displayName: string;
   isObserver: boolean;
+  guestHostToken?: string;
 }
 
 const SESSION_STORAGE_KEY_PREFIX = 'poker-points-session-';
@@ -288,18 +289,21 @@ export class GameStateService {
     sessionCode: string,
     displayName: string,
     isObserver: boolean,
+    guestHostToken?: string,
   ): Promise<boolean> {
     try {
       await this.signalR.connect();
 
       const storedIdentity = this.getStoredIdentityForSession(sessionCode);
-      const existingParticipantId = storedIdentity?.participantId;
+      const existingParticipantId = storedIdentity?.participantId || undefined;
+      const effectiveGuestHostToken = guestHostToken ?? storedIdentity?.guestHostToken;
 
       const participant = await this.signalR.joinSession(
         sessionCode,
         displayName,
         isObserver,
         existingParticipantId,
+        effectiveGuestHostToken,
       );
 
       if (!participant) {
@@ -314,6 +318,7 @@ export class GameStateService {
         participantId: participant.id,
         displayName: participant.displayName,
         isObserver: participant.isObserver,
+        guestHostToken: effectiveGuestHostToken,
       });
 
       // Fetch full game state
@@ -484,6 +489,12 @@ export class GameStateService {
     await this.signalR.throwEmoji(targetParticipantId, emoji);
   }
 
+  async sendEmojiReaction(emoji: string): Promise<void> {
+    if (!canSendEmojiReaction(this._currentParticipant(), emoji)) return;
+
+    await this.signalR.sendEmojiReaction(emoji);
+  }
+
   dismissTimerExpired(): void {
     this._timerJustExpired.set(false);
   }
@@ -601,6 +612,17 @@ export class GameStateService {
   private storeIdentity(identity: StoredSessionIdentity): void {
     const key = this.getStorageKey(identity.sessionCode);
     localStorage.setItem(key, JSON.stringify(identity));
+  }
+
+  storeGuestHostToken(sessionCode: string, guestHostToken: string): void {
+    const existing = this.getStoredIdentityForSession(sessionCode);
+    this.storeIdentity({
+      sessionCode: sessionCode.toUpperCase(),
+      participantId: existing?.participantId,
+      displayName: existing?.displayName ?? '',
+      isObserver: existing?.isObserver ?? false,
+      guestHostToken,
+    });
   }
 
   getStoredIdentityForSession(sessionCode: string): StoredSessionIdentity | null {

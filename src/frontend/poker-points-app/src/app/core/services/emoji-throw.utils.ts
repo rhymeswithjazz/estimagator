@@ -1,4 +1,4 @@
-import { EMOJI_THROW_OPTIONS, Participant } from '../models/session.models';
+import { EMOJI_REACTION_OPTIONS, EMOJI_THROW_OPTIONS, Participant } from '../models/session.models';
 
 export function canThrowEmojiAt(
   currentParticipant: Participant | null,
@@ -11,4 +11,15 @@ export function canThrowEmojiAt(
 
   const target = participants.find((p) => p.id === targetParticipantId);
   return target?.isConnected ?? false;
+}
+
+export function canSendEmojiReaction(
+  currentParticipant: Participant | null,
+  emoji: string,
+): boolean {
+  if (!EMOJI_REACTION_OPTIONS.includes(emoji as (typeof EMOJI_REACTION_OPTIONS)[number])) {
+    return false;
+  }
+
+  return currentParticipant?.isConnected ?? false;
 }

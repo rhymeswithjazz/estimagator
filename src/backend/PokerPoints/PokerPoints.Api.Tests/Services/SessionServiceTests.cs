@@ -52,12 +52,28 @@ public class SessionServiceTests : IDisposable
         result.Should().NotBeNull();
         result.AccessCode.Should().HaveLength(6);
         result.Name.Should().Be(name);
+        result.GuestHostToken.Should().BeNull();
 
         var sessionInDb = await _db.Sessions.FirstOrDefaultAsync(s => s.AccessCode == result.AccessCode);
         sessionInDb.Should().NotBeNull();
         sessionInDb!.DeckType.Should().Be(deckType);
         sessionInDb.IsActive.Should().BeTrue();
         sessionInDb.OrganizerId.Should().Be(organizerId);
+        sessionInDb.GuestHostTokenHash.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CreateSessionAsync_ShouldReturnGuestHostTokenAndStoreOnlyHash_WhenOrganizerIsNull()
+    {
+        var result = await _service.CreateSessionAsync("fibonacci", "Guest Game");
+
+        result.GuestHostToken.Should().NotBeNullOrWhiteSpace();
+
+        var sessionInDb = await _db.Sessions.FirstAsync(s => s.AccessCode == result.AccessCode);
+        sessionInDb.OrganizerId.Should().BeNull();
+        sessionInDb.GuestHostTokenHash.Should().NotBeNullOrWhiteSpace();
+        sessionInDb.GuestHostTokenHash.Should().NotBe(result.GuestHostToken);
+        GuestHostToken.Verify(result.GuestHostToken!, sessionInDb.GuestHostTokenHash!).Should().BeTrue();
     }
 
     [Fact]

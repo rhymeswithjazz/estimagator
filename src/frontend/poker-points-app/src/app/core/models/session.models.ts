@@ -9,6 +9,7 @@ export interface CreateSessionResponse {
   accessCode: string;
   name: string | null;
   timerDurationSeconds: number;
+  guestHostToken: string | null;
 }
 
 export interface SessionInfo {
@@ -118,6 +119,14 @@ export interface EmojiThrownEvent {
   sentAtUtc: string;
 }
 
+export interface EmojiReactionSentEvent {
+  reactionId: string;
+  senderParticipantId: string;
+  senderDisplayName: string;
+  emoji: string;
+  sentAtUtc: string;
+}
+
 export const DART_THROW_OPTION = '🎯';
 export const AIRPLANE_THROW_OPTION = '✈️';
 export const PAPER_BALL_THROW_OPTION = 'paper-ball';
@@ -199,6 +208,67 @@ export const EMOJI_THROW_OPTION_METADATA: Record<EmojiThrowOption, EmojiThrowOpt
 
 export function getEmojiThrowOptionMetadata(emoji: string): EmojiThrowOptionMetadata | undefined {
   return EMOJI_THROW_OPTION_METADATA[emoji as EmojiThrowOption];
+}
+
+export const EMOJI_REACTION_OPTIONS = [
+  '❤️',
+  '👍',
+  '💯',
+  '🎉',
+  '👏',
+  '🔥',
+  '👀',
+  '☕',
+] as const;
+export type EmojiReactionOption = (typeof EMOJI_REACTION_OPTIONS)[number];
+
+export interface EmojiReactionOptionMetadata {
+  value: EmojiReactionOption;
+  label: string;
+}
+
+export const EMOJI_REACTION_OPTION_METADATA: Record<
+  EmojiReactionOption,
+  EmojiReactionOptionMetadata
+> = {
+  '❤️': {
+    value: '❤️',
+    label: 'heart',
+  },
+  '👍': {
+    value: '👍',
+    label: 'thumbs up',
+  },
+  '💯': {
+    value: '💯',
+    label: 'one hundred',
+  },
+  '🎉': {
+    value: '🎉',
+    label: 'party',
+  },
+  '👏': {
+    value: '👏',
+    label: 'clap',
+  },
+  '🔥': {
+    value: '🔥',
+    label: 'fire',
+  },
+  '👀': {
+    value: '👀',
+    label: 'eyes',
+  },
+  '☕': {
+    value: '☕',
+    label: 'coffee',
+  },
+};
+
+export function getEmojiReactionOptionMetadata(
+  emoji: string,
+): EmojiReactionOptionMetadata | undefined {
+  return EMOJI_REACTION_OPTION_METADATA[emoji as EmojiReactionOption];
 }
 
 // Deck configurations

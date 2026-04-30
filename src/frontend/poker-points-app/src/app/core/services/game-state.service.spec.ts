@@ -15,6 +15,7 @@ import {
   VotesRevealedEvent,
   StoryUpdatedEvent,
   EmojiThrownEvent,
+  EmojiReactionSentEvent,
 } from '../models/session.models';
 import { GameStateService } from './game-state.service';
 import { SignalRService } from './signalr.service';
@@ -37,6 +38,7 @@ class MockSignalRService {
   readonly timerStopped$ = new Subject<void>();
   readonly timerExpired$ = new Subject<void>();
   readonly emojiThrown$ = new Subject<EmojiThrownEvent>();
+  readonly emojiReactionSent$ = new Subject<EmojiReactionSentEvent>();
   readonly reconnected$ = new Subject<void>();
   readonly sessionEnded$ = new Subject<void>();
 
@@ -46,6 +48,7 @@ class MockSignalRService {
   readonly getSessionState = vi.fn();
   readonly getStoryQueue = vi.fn().mockResolvedValue([]);
   readonly transferHost = vi.fn();
+  readonly sendEmojiReaction = vi.fn().mockResolvedValue(undefined);
 }
 
 describe('GameStateService', () => {
@@ -88,6 +91,18 @@ describe('GameStateService', () => {
     expect(
       service.participants().find((participant) => participant.id === 'target-id')?.isOrganizer,
     ).toBe(true);
+  });
+
+  it('sends allowed emoji reactions for the current participant', async () => {
+    await service.sendEmojiReaction('💯');
+
+    expect(signalR.sendEmojiReaction).toHaveBeenCalledWith('💯');
+  });
+
+  it('does not send unsupported emoji reactions', async () => {
+    await service.sendEmojiReaction('🎯');
+
+    expect(signalR.sendEmojiReaction).not.toHaveBeenCalled();
   });
 
   async function joinAsHost(): Promise<void> {

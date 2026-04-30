@@ -55,26 +55,26 @@ public class PokerHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task<ParticipantDto?> JoinSession(string sessionCode, string displayName, bool isObserver, Guid? existingParticipantId = null)
+    public async Task<ParticipantDto?> JoinSession(
+        string sessionCode,
+        string displayName,
+        bool isObserver,
+        Guid? existingParticipantId = null,
+        string? guestHostToken = null)
     {
         _logger.LogInformation(
             "JoinSession: {SessionCode}, {DisplayName}, Observer={IsObserver}, ExistingId={ExistingId}",
             sessionCode, displayName, isObserver, existingParticipantId);
 
-        // Check if authenticated user has verified email
         var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var authenticatedUserId = Guid.TryParse(userIdClaim, out var userId)
-            ? userId
-            : (Guid?)null;
+        Guid? verifiedUserId = null;
 
-        if (authenticatedUserId.HasValue)
+        if (Guid.TryParse(userIdClaim, out var userId))
         {
-            var user = await _authService.GetUserByIdAsync(authenticatedUserId.Value);
-            if (user != null && !user.EmailVerified)
+            var user = await _authService.GetUserByIdAsync(userId);
+            if (user?.EmailVerified == true)
             {
-                _logger.LogWarning("Unverified user {UserId} attempted to join session", authenticatedUserId.Value);
-                await Clients.Caller.SendAsync("Error", "Please verify your email address before joining sessions");
-                return null;
+                verifiedUserId = userId;
             }
         }
 
@@ -86,13 +86,51 @@ public class PokerHub : Hub
             return null;
         }
 
+        if (!string.IsNullOrWhiteSpace(guestHostToken) && !session.GuestHostClaimedAt.HasValue)
+        {
+            var guestHost = await _participantService.ClaimGuestHostAsync(
+                session.Id,
+                displayName,
+                isObserver,
+                Context.ConnectionId,
+                guestHostToken,
+                existingParticipantId,
+                verifiedUserId);
+
+            if (guestHost != null)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
+
+                var guestHostDto = new ParticipantDto(
+                    guestHost.Id,
+                    guestHost.DisplayName,
+                    guestHost.IsObserver,
+                    guestHost.IsOrganizer,
+                    true
+                );
+
+                await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("UserJoined", new UserJoinedEvent(guestHostDto));
+
+                var story = await _sessionService.GetOrCreateActiveStoryAsync(session.Id);
+                if (story != null)
+                {
+                    await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("StoryUpdated", new StoryUpdatedEvent(
+                        new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+                    ));
+                }
+
+                return guestHostDto;
+            }
+        }
+
         // Check if this is a reconnection
         if (existingParticipantId.HasValue)
         {
             var existingParticipant = await _participantService.ReconnectAsync(
+                session.Id,
                 existingParticipantId.Value,
                 Context.ConnectionId,
-                authenticatedUserId);
+                verifiedUserId);
             if (existingParticipant != null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
@@ -120,8 +158,8 @@ public class PokerHub : Hub
 
         // Determine if this participant is the session organizer
         var isOrganizer = session.OrganizerId.HasValue
-            ? session.OrganizerId == authenticatedUserId  // Match session creator
-            : session.Participants.Count == 0;  // Fallback for legacy sessions without a creator
+            ? session.OrganizerId == verifiedUserId  // Match session creator
+            : string.IsNullOrEmpty(session.GuestHostTokenHash) && session.Participants.Count == 0;  // Fallback for legacy sessions without a creator
 
         var participant = await _participantService.JoinSessionAsync(
             session.Id,
@@ -129,7 +167,7 @@ public class PokerHub : Hub
             isObserver,
             isOrganizer,
             Context.ConnectionId,
-            authenticatedUserId
+            verifiedUserId
         );
 
         await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
@@ -751,6 +789,44 @@ public class PokerHub : Hub
             emoji);
 
         await Clients.Group(sender.Session.AccessCode).SendAsync("EmojiThrown", throwEvent);
+    }
+
+    public async Task SendEmojiReaction(string emoji)
+    {
+        var sender = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (sender == null)
+        {
+            await Clients.Caller.SendAsync("Error", "Not in a session");
+            return;
+        }
+
+        if (!EmojiReactionOptions.AllowedEmojis.Contains(emoji))
+        {
+            await Clients.Caller.SendAsync("Error", "That reaction is not available");
+            return;
+        }
+
+        if (!_emojiThrowRateLimiter.TryAcquire(Context.ConnectionId, EmojiReactionOptions.Cooldown))
+        {
+            await Clients.Caller.SendAsync("Error", "Give it a second before sending another reaction");
+            return;
+        }
+
+        var reactionEvent = new EmojiReactionSentEvent(
+            Guid.NewGuid(),
+            sender.Id,
+            sender.DisplayName,
+            emoji,
+            DateTimeOffset.UtcNow
+        );
+
+        _logger.LogInformation(
+            "Emoji reaction sent in session {AccessCode}: {SenderParticipantId} {Emoji}",
+            sender.Session.AccessCode,
+            sender.Id,
+            emoji);
+
+        await Clients.Group(sender.Session.AccessCode).SendAsync("EmojiReactionSent", reactionEvent);
     }
 
     public async Task<GameStateResponse?> GetSessionState()

@@ -54,7 +54,7 @@ export class JoinSessionComponent implements OnInit {
 
     // Check if user has previously joined this session
     const storedIdentity = this.gameState.getStoredIdentityForSession(code);
-    if (storedIdentity) {
+    if (storedIdentity?.participantId && storedIdentity.displayName) {
       this.returningUser.set({
         displayName: storedIdentity.displayName,
         isObserver: storedIdentity.isObserver,

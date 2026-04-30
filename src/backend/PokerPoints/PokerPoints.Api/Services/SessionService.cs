@@ -42,6 +42,7 @@ public class SessionService : ISessionService
     public async Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120)
     {
         var accessCode = await GenerateUniqueAccessCodeAsync();
+        var guestHostToken = organizerId.HasValue ? null : GuestHostToken.Generate();
 
         var session = new Session
         {
@@ -50,13 +51,19 @@ public class SessionService : ISessionService
             DeckType = deckType,
             TimerDurationSeconds = timerDurationSeconds,
             IsActive = true,
-            OrganizerId = organizerId
+            OrganizerId = organizerId,
+            GuestHostTokenHash = guestHostToken != null ? GuestHostToken.Hash(guestHostToken) : null
         };
 
         _db.Sessions.Add(session);
         await _db.SaveChangesAsync();
 
-        return new CreateSessionResponse(session.Id, session.AccessCode, session.Name, session.TimerDurationSeconds);
+        return new CreateSessionResponse(
+            session.Id,
+            session.AccessCode,
+            session.Name,
+            session.TimerDurationSeconds,
+            guestHostToken);
     }
 
     public async Task<List<UserSessionResponse>> GetUserSessionsAsync(Guid userId)

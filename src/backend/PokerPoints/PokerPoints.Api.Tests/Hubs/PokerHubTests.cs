@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -17,6 +18,139 @@ public class PokerHubTests
     private static readonly Guid SenderId = Guid.NewGuid();
     private static readonly Guid TargetId = Guid.NewGuid();
     private static readonly Guid StoryId = Guid.NewGuid();
+
+    [Fact]
+    public async Task JoinSession_ShouldTreatUnverifiedAuthenticatedUserAsGuest()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var fixture = CreateFixture(CreatePrincipal(userId));
+        var session = new Session
+        {
+            Id = SessionId,
+            AccessCode = "ABC123",
+            IsActive = true,
+            Participants = new List<Participant>()
+        };
+        var participant = CreateParticipant(
+            SenderId,
+            "Sender",
+            "ABC123",
+            SenderConnectionId,
+            isOrganizer: true);
+
+        fixture.AuthService
+            .Setup(s => s.GetUserByIdAsync(userId))
+            .ReturnsAsync(new User { Id = userId, EmailVerified = false });
+        fixture.SessionService
+            .Setup(s => s.GetSessionByCodeAsync("ABC123"))
+            .ReturnsAsync(session);
+        fixture.ParticipantService
+            .Setup(s => s.JoinSessionAsync(SessionId, "Sender", false, true, SenderConnectionId, null))
+            .ReturnsAsync(participant);
+        fixture.SessionService
+            .Setup(s => s.GetOrCreateActiveStoryAsync(SessionId))
+            .ReturnsAsync((Story?)null);
+
+        // Act
+        var result = await fixture.Hub.JoinSession("ABC123", "Sender", false);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.IsOrganizer);
+        fixture.ParticipantService.Verify(
+            s => s.JoinSessionAsync(SessionId, "Sender", false, true, SenderConnectionId, null),
+            Times.Once);
+        fixture.CallerClient.Verify(
+            c => c.SendCoreAsync("Error", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task JoinSession_ShouldNotMakeFirstParticipantHost_WhenGuestSessionHasReservationToken()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        var session = new Session
+        {
+            Id = SessionId,
+            AccessCode = "ABC123",
+            IsActive = true,
+            GuestHostTokenHash = GuestHostToken.Hash("creator-token"),
+            Participants = new List<Participant>()
+        };
+        var participant = CreateParticipant(
+            SenderId,
+            "Sender",
+            "ABC123",
+            SenderConnectionId,
+            isOrganizer: false);
+
+        fixture.SessionService
+            .Setup(s => s.GetSessionByCodeAsync("ABC123"))
+            .ReturnsAsync(session);
+        fixture.ParticipantService
+            .Setup(s => s.JoinSessionAsync(SessionId, "Sender", false, false, SenderConnectionId, null))
+            .ReturnsAsync(participant);
+
+        // Act
+        var result = await fixture.Hub.JoinSession("ABC123", "Sender", false);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.False(result.IsOrganizer);
+        fixture.SessionService.Verify(s => s.GetOrCreateActiveStoryAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task JoinSession_ShouldClaimGuestHostWithValidToken_WhenOthersJoinedFirst()
+    {
+        // Arrange
+        const string token = "creator-token";
+        var fixture = CreateFixture();
+        var otherParticipant = CreateParticipant(TargetId, "Other", "ABC123", "other-connection");
+        var session = new Session
+        {
+            Id = SessionId,
+            AccessCode = "ABC123",
+            IsActive = true,
+            GuestHostTokenHash = GuestHostToken.Hash(token),
+            Participants = new List<Participant> { otherParticipant }
+        };
+        var guestHost = CreateParticipant(
+            SenderId,
+            "Creator",
+            "ABC123",
+            SenderConnectionId,
+            isOrganizer: true);
+
+        fixture.SessionService
+            .Setup(s => s.GetSessionByCodeAsync("ABC123"))
+            .ReturnsAsync(session);
+        fixture.ParticipantService
+            .Setup(s => s.ClaimGuestHostAsync(
+                SessionId,
+                "Creator",
+                false,
+                SenderConnectionId,
+                token,
+                null,
+                null))
+            .ReturnsAsync(guestHost);
+        fixture.SessionService
+            .Setup(s => s.GetOrCreateActiveStoryAsync(SessionId))
+            .ReturnsAsync((Story?)null);
+
+        // Act
+        var result = await fixture.Hub.JoinSession("ABC123", "Creator", false, guestHostToken: token);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.True(result.IsOrganizer);
+        fixture.ParticipantService.Verify(
+            s => s.JoinSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<Guid?>()),
+            Times.Never);
+    }
 
     [Fact]
     public async Task SwitchRole_ShouldUpdateParticipantRoleAndBroadcastSessionState()
@@ -405,33 +539,156 @@ public class PokerHubTests
         VerifyNoBroadcast(fixture.GroupClient);
     }
 
-    private static HubFixture CreateFixture()
+    [Fact]
+    public async Task SendEmojiReaction_ShouldBroadcastEmojiReactionSent_WhenRequestIsValid()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection"));
+        fixture.RateLimiter
+            .Setup(r => r.TryAcquire(SenderConnectionId, TimeSpan.FromMilliseconds(200)))
+            .Returns(true);
+
+        // Act
+        await fixture.Hub.SendEmojiReaction("👍");
+
+        // Assert
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "EmojiReactionSent",
+                It.Is<object?[]>(args => IsEmojiReactionSentEvent(args, "👍")),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+        fixture.CallerClient.Verify(
+            c => c.SendCoreAsync("Error", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Theory]
+    [InlineData("❤️")]
+    [InlineData("💯")]
+    [InlineData("🎉")]
+    [InlineData("👏")]
+    [InlineData("🔥")]
+    [InlineData("👀")]
+    [InlineData("☕")]
+    public async Task SendEmojiReaction_ShouldAllowPositiveReactions(string emoji)
+    {
+        // Arrange
+        var fixture = CreateFixture();
+
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection"));
+        fixture.RateLimiter
+            .Setup(r => r.TryAcquire(SenderConnectionId, TimeSpan.FromMilliseconds(200)))
+            .Returns(true);
+
+        // Act
+        await fixture.Hub.SendEmojiReaction(emoji);
+
+        // Assert
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "EmojiReactionSent",
+                It.Is<object?[]>(args => IsEmojiReactionSentEvent(args, emoji)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SendEmojiReaction_ShouldSendError_WhenSenderIsMissing()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync((Participant?)null);
+
+        // Act
+        await fixture.Hub.SendEmojiReaction("👍");
+
+        // Assert
+        VerifyError(fixture.CallerClient, "Not in a session");
+        VerifyNoReactionBroadcast(fixture.GroupClient);
+    }
+
+    [Fact]
+    public async Task SendEmojiReaction_ShouldSendError_WhenEmojiIsNotAllowed()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection"));
+
+        // Act
+        await fixture.Hub.SendEmojiReaction("🎯");
+
+        // Assert
+        VerifyError(fixture.CallerClient, "That reaction is not available");
+        VerifyNoReactionBroadcast(fixture.GroupClient);
+    }
+
+    [Fact]
+    public async Task SendEmojiReaction_ShouldSendError_WhenSenderIsRateLimited()
+    {
+        // Arrange
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", "sender-connection"));
+        fixture.RateLimiter
+            .Setup(r => r.TryAcquire(SenderConnectionId, TimeSpan.FromMilliseconds(200)))
+            .Returns(false);
+
+        // Act
+        await fixture.Hub.SendEmojiReaction("👍");
+
+        // Assert
+        VerifyError(fixture.CallerClient, "Give it a second before sending another reaction");
+        VerifyNoReactionBroadcast(fixture.GroupClient);
+    }
+
+    private static HubFixture CreateFixture(ClaimsPrincipal? user = null)
     {
         var sessionService = new Mock<ISessionService>();
         var participantService = new Mock<IParticipantService>();
         var votingService = new Mock<IVotingService>();
+        var authService = new Mock<IAuthService>();
         var timerService = new Mock<ITimerService>();
         var rateLimiter = new Mock<IEmojiThrowRateLimiter>();
         var callerClient = new Mock<ISingleClientProxy>();
         var groupClient = new Mock<IClientProxy>();
         var clients = new Mock<IHubCallerClients>();
         var context = new Mock<HubCallerContext>();
+        var groups = new Mock<IGroupManager>();
 
         clients.SetupGet(c => c.Caller).Returns(callerClient.Object);
         clients.Setup(c => c.Group("ABC123")).Returns(groupClient.Object);
         context.SetupGet(c => c.ConnectionId).Returns(SenderConnectionId);
+        context.SetupGet(c => c.User).Returns(user);
+        groups.Setup(g => g.AddToGroupAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         var hub = new PokerHub(
             NullLogger<PokerHub>.Instance,
             sessionService.Object,
             participantService.Object,
             votingService.Object,
-            Mock.Of<IAuthService>(),
+            authService.Object,
             timerService.Object,
             rateLimiter.Object)
         {
             Clients = clients.Object,
-            Context = context.Object
+            Context = context.Object,
+            Groups = groups.Object
         };
 
         return new HubFixture(
@@ -439,6 +696,7 @@ public class PokerHubTests
             sessionService,
             participantService,
             votingService,
+            authService,
             timerService,
             rateLimiter,
             callerClient,
@@ -513,6 +771,15 @@ public class PokerHubTests
                evt.Emoji == emoji;
     }
 
+    private static bool IsEmojiReactionSentEvent(object?[] args, string emoji)
+    {
+        var evt = args.SingleOrDefault() as EmojiReactionSentEvent;
+        return evt != null &&
+               evt.SenderParticipantId == SenderId &&
+               evt.SenderDisplayName == "Sender" &&
+               evt.Emoji == emoji;
+    }
+
     private static bool IsExpectedHostTransferredEvent(object?[] args)
     {
         var evt = args.SingleOrDefault() as HostTransferredEvent;
@@ -520,6 +787,14 @@ public class PokerHubTests
                evt.PreviousHostParticipantId == SenderId &&
                evt.NewHost.Id == TargetId &&
                evt.NewHost.IsOrganizer;
+    }
+
+    private static ClaimsPrincipal CreatePrincipal(Guid userId)
+    {
+        var identity = new ClaimsIdentity(
+            new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) },
+            "TestAuth");
+        return new ClaimsPrincipal(identity);
     }
 
     private static void VerifyError(Mock<ISingleClientProxy> callerClient, string message)
@@ -539,11 +814,19 @@ public class PokerHubTests
             Times.Never);
     }
 
+    private static void VerifyNoReactionBroadcast(Mock<IClientProxy> groupClient)
+    {
+        groupClient.Verify(
+            c => c.SendCoreAsync("EmojiReactionSent", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
     private sealed record HubFixture(
         PokerHub Hub,
         Mock<ISessionService> SessionService,
         Mock<IParticipantService> ParticipantService,
         Mock<IVotingService> VotingService,
+        Mock<IAuthService> AuthService,
         Mock<ITimerService> TimerService,
         Mock<IEmojiThrowRateLimiter> RateLimiter,
         Mock<ISingleClientProxy> CallerClient,

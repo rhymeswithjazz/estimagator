@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DeckType, DECK_VALUES } from '../../core/models/session.models';
+import { GameStateService } from '../../core/services/game-state.service';
 import { AccountDropdownComponent } from '../game/account-dropdown.component';
 import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 
@@ -16,10 +17,12 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 export class HomeComponent {
   private readonly sessionService = inject(SessionService);
   private readonly authService = inject(AuthService);
+  private readonly gameState = inject(GameStateService);
   private readonly router = inject(Router);
 
   readonly isAuthenticated = this.authService.isAuthenticated;
   readonly user = this.authService.user;
+  readonly shouldCollectHostName = computed(() => this.user()?.emailVerified !== true);
 
   readonly joinCode = signal('');
   readonly selectedDeck = signal<DeckType>('fibonacci');
@@ -28,6 +31,8 @@ export class HomeComponent {
   readonly joinError = signal<string | null>(null);
   readonly showCreateOptions = signal(false);
   readonly sessionName = signal('');
+  readonly hostName = signal('');
+  readonly selectedCreateRole = signal<'host-voter' | 'host-observer'>('host-voter');
   readonly createError = signal<string | null>(null);
 
   readonly selectedTimerDuration = signal(300);
@@ -65,9 +70,17 @@ export class HomeComponent {
   ];
 
   async createSession(): Promise<void> {
-    if (!this.isAuthenticated()) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: '/' } });
-      return;
+    const displayName = this.getCreateDisplayName();
+    if (this.shouldCollectHostName()) {
+      if (!displayName) {
+        this.createError.set('Please enter your name');
+        return;
+      }
+
+      if (displayName.length < 2) {
+        this.createError.set('Name must be at least 2 characters');
+        return;
+      }
     }
 
     this.isCreating.set(true);
@@ -79,7 +92,23 @@ export class HomeComponent {
         name,
         this.selectedTimerDuration(),
       );
-      this.router.navigate(['/join', response.accessCode], { queryParams: { new: 'true' } });
+
+      if (response.guestHostToken) {
+        this.gameState.storeGuestHostToken(response.accessCode, response.guestHostToken);
+      }
+
+      const joined = await this.gameState.joinSession(
+        response.accessCode,
+        displayName || 'Host',
+        this.selectedCreateRole() === 'host-observer',
+        response.guestHostToken ?? undefined,
+      );
+
+      if (joined) {
+        this.router.navigate(['/game', response.accessCode]);
+      } else {
+        this.createError.set('Game created, but failed to join. Use the game code to join.');
+      }
     } catch (err) {
       console.error('Failed to create session:', err);
       this.createError.set('Failed to create game. Please try again.');
@@ -127,8 +156,18 @@ export class HomeComponent {
     this.sessionName.set(input.value);
   }
 
+  onHostNameInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.hostName.set(input.value);
+    this.createError.set(null);
+  }
+
   selectDeck(deck: DeckType): void {
     this.selectedDeck.set(deck);
+  }
+
+  selectCreateRole(role: 'host-voter' | 'host-observer'): void {
+    this.selectedCreateRole.set(role);
   }
 
   selectTimerDuration(duration: number): void {
@@ -143,5 +182,11 @@ export class HomeComponent {
       this.selectedTimerDuration.set(mins * 60);
       this.isCustomTimer.set(true);
     }
+  }
+
+  private getCreateDisplayName(): string {
+    return this.shouldCollectHostName()
+      ? this.hostName().trim()
+      : this.user()?.displayName?.trim() || 'Host';
   }
 }

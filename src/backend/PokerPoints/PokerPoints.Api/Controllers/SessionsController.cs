@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using PokerPoints.Api.Authentication;
 using PokerPoints.Api.Models;
 using PokerPoints.Api.Services;
@@ -20,25 +21,26 @@ public class SessionsController : ControllerBase
         _authService = authService;
     }
 
-    [Authorize]
+    [EnableRateLimiting("CreateSession")]
     [HttpPost]
     public async Task<ActionResult<CreateSessionResponse>> CreateSession([FromBody] CreateSessionRequest? request)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!Guid.TryParse(userIdClaim, out var userId))
-            return Unauthorized();
+        Guid? organizerId = null;
 
-        var user = await _authService.GetUserByIdAsync(userId);
-        if (user == null)
-            return Unauthorized();
-
-        if (!user.EmailVerified)
-            return StatusCode(403, new { message = "Please verify your email address before creating sessions" });
+        if (Guid.TryParse(userIdClaim, out var userId))
+        {
+            var user = await _authService.GetUserByIdAsync(userId);
+            if (user?.EmailVerified == true)
+            {
+                organizerId = userId;
+            }
+        }
 
         var deckType = request?.DeckType ?? "fibonacci";
         var name = request?.Name;
         var timerDuration = request?.TimerDurationSeconds ?? 300;
-        var result = await _sessionService.CreateSessionAsync(deckType, name, userId, timerDuration);
+        var result = await _sessionService.CreateSessionAsync(deckType, name, organizerId, timerDuration);
         return Created($"/api/sessions/{result.AccessCode}", result);
     }
 

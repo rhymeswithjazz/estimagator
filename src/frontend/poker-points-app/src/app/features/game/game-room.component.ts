@@ -15,13 +15,19 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { AuthService } from '../../core/services/auth.service';
-import { EmojiThrownEvent, Participant, Vote } from '../../core/models/session.models';
+import {
+  EmojiReactionSentEvent,
+  EmojiThrownEvent,
+  Participant,
+  Vote,
+} from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
 import { StoryHistoryPanelComponent } from './story-history-panel.component';
 import { AccountDropdownComponent } from './account-dropdown.component';
 import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
 import { EmojiThrowIconComponent } from './emoji-throw-icon.component';
 import { EmojiThrowPaletteComponent } from './emoji-throw-palette.component';
+import { EmojiReactionPaletteComponent } from './emoji-reaction-palette.component';
 import {
   createEmojiAnimation,
   EmojiAnimation,
@@ -42,6 +48,13 @@ import {
   EMOJI_SPLAT_LIFETIME_MS,
   STUCK_DART_LIFETIME_MS,
 } from './emoji-throw-animation.utils';
+import {
+  createEmojiReactionAnimation,
+  EmojiReactionAnimation,
+  getEmojiReactionAnimationStyle,
+  getEmojiReactionCleanupMs,
+  MAX_ACTIVE_EMOJI_REACTIONS,
+} from './emoji-reaction-animation.utils';
 import confetti from 'canvas-confetti';
 
 @Component({
@@ -58,6 +71,7 @@ import confetti from 'canvas-confetti';
     ThemeSelectorComponent,
     EmojiThrowIconComponent,
     EmojiThrowPaletteComponent,
+    EmojiReactionPaletteComponent,
   ],
   templateUrl: './game-room.component.html',
   host: { class: 'block h-full' },
@@ -123,6 +137,23 @@ import confetti from 'canvas-confetti';
 
       .emoji-stuck-dart .emoji-flight-glyph {
         transform: rotate(var(--e-angle));
+      }
+
+      .emoji-reaction-balloon {
+        position: fixed;
+        z-index: 78;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        animation: emojiReactionBalloon var(--r-duration, 3600ms) ease-in-out forwards;
+      }
+
+      .emoji-reaction-balloon-glyph {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.35rem;
+        line-height: 1;
+        filter: drop-shadow(0 8px 12px rgb(0 0 0 / 0.28));
       }
 
       .emoji-flight--airplane .emoji-flight-glyph {
@@ -298,6 +329,33 @@ import confetti from 'canvas-confetti';
         }
       }
 
+      @keyframes emojiReactionBalloon {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.76);
+        }
+        8% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.14);
+        }
+        16% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        61% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(
+              calc(-50% + var(--r-dx, 0px)),
+              calc(-50% - var(--r-float, 96px))
+            )
+            scale(0.94);
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .emoji-flight--travel {
           animation: emojiPopPath 700ms ease-out forwards;
@@ -305,6 +363,10 @@ import confetti from 'canvas-confetti';
 
         .emoji-flight--travel .emoji-flight-glyph {
           animation: emojiPopGlyph 700ms ease-out forwards;
+        }
+
+        .emoji-reaction-balloon {
+          animation-timing-function: ease-out;
         }
       }
     `,
@@ -316,6 +378,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private emojiPaletteCloseTimeout: ReturnType<typeof window.setTimeout> | null = null;
+  private emojiReactionPaletteCloseTimeout: ReturnType<typeof window.setTimeout> | null = null;
   readonly gameState = inject(GameStateService); // public for debug access
   private readonly signalR = inject(SignalRService);
   readonly authService = inject(AuthService);
@@ -369,6 +432,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly getEmojiAnimationStyle = getEmojiAnimationStyle;
   readonly getEmojiStuckDartStyle = getEmojiStuckDartStyle;
   readonly getEmojiImpactSplatStyle = getEmojiImpactSplatStyle;
+  readonly getEmojiReactionAnimationStyle = getEmojiReactionAnimationStyle;
 
   // Sorted voters: host at top (index 0), current user at bottom (index ~half)
   readonly sortedVoters = computed(() => {
@@ -449,7 +513,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly hostLeaveTransferPending = signal(false);
   readonly hostLeaveError = signal<string | null>(null);
   readonly openEmojiTargetId = signal<string | null>(null);
+  readonly openEmojiReactionParticipantId = signal<string | null>(null);
   readonly emojiAnimations = signal<EmojiAnimation[]>([]);
+  readonly emojiReactionAnimations = signal<EmojiReactionAnimation[]>([]);
   readonly stuckDartAnimations = signal<EmojiAnimation[]>([]);
   readonly emojiSplatEffects = signal<EmojiImpactSplat[]>([]);
 
@@ -473,6 +539,12 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     this.signalR.emojiThrown$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this.queueEmojiAnimation(event);
     });
+
+    this.signalR.emojiReactionSent$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        this.queueEmojiReactionAnimation(event);
+      });
 
     this.signalR.sessionEnded$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.router.navigate(['/']);
@@ -532,9 +604,28 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     return participant.isConnected && participant.id !== this.currentParticipant()?.id;
   }
 
+  canReactFrom(participant: Participant): boolean {
+    return participant.isConnected && participant.id === this.currentParticipant()?.id;
+  }
+
+  showParticipantEmojiPalette(participant: Participant): void {
+    if (this.canReactFrom(participant)) {
+      this.showEmojiReactionPalette(participant);
+      return;
+    }
+
+    this.showEmojiPalette(participant);
+  }
+
+  hideParticipantEmojiPalette(): void {
+    this.hideEmojiPalette();
+    this.hideEmojiReactionPalette();
+  }
+
   showEmojiPalette(participant: Participant): void {
     if (this.canThrowAt(participant)) {
       this.cancelEmojiPaletteClose();
+      this.openEmojiReactionParticipantId.set(null);
       this.openEmojiTargetId.set(participant.id);
     }
   }
@@ -557,10 +648,39 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     await this.gameState.throwEmoji(targetParticipantId, emoji);
   }
 
+  showEmojiReactionPalette(participant: Participant): void {
+    if (this.canReactFrom(participant)) {
+      this.cancelEmojiReactionPaletteClose();
+      this.openEmojiTargetId.set(null);
+      this.openEmojiReactionParticipantId.set(participant.id);
+    }
+  }
+
+  hideEmojiReactionPalette(): void {
+    this.cancelEmojiReactionPaletteClose();
+    this.emojiReactionPaletteCloseTimeout = window.setTimeout(() => {
+      this.openEmojiReactionParticipantId.set(null);
+      this.emojiReactionPaletteCloseTimeout = null;
+    }, 140);
+  }
+
+  async sendEmojiReaction(emoji: string): Promise<void> {
+    this.cancelEmojiReactionPaletteClose();
+    this.openEmojiReactionParticipantId.set(null);
+    await this.gameState.sendEmojiReaction(emoji);
+  }
+
   private cancelEmojiPaletteClose(): void {
     if (this.emojiPaletteCloseTimeout) {
       window.clearTimeout(this.emojiPaletteCloseTimeout);
       this.emojiPaletteCloseTimeout = null;
+    }
+  }
+
+  private cancelEmojiReactionPaletteClose(): void {
+    if (this.emojiReactionPaletteCloseTimeout) {
+      window.clearTimeout(this.emojiReactionPaletteCloseTimeout);
+      this.emojiReactionPaletteCloseTimeout = null;
     }
   }
 
@@ -665,6 +785,25 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }, getEmojiAnimationCleanupMs(animation));
   }
 
+  private queueEmojiReactionAnimation(event: EmojiReactionSentEvent): void {
+    const anchorCenter = this.getEmojiReactionAnchorCenter(event.senderParticipantId);
+    if (!anchorCenter) return;
+
+    const reducedMotion =
+      this.document.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches ?? false;
+    const animation = createEmojiReactionAnimation(event, anchorCenter, reducedMotion);
+
+    this.emojiReactionAnimations.update((animations) =>
+      [...animations, animation].slice(-MAX_ACTIVE_EMOJI_REACTIONS),
+    );
+
+    window.setTimeout(() => {
+      this.emojiReactionAnimations.update((animations) =>
+        animations.filter((item) => item.id !== event.reactionId),
+      );
+    }, getEmojiReactionCleanupMs(animation));
+  }
+
   private getParticipantTargetGeometry(participantId: string): EmojiTargetGeometry | null {
     const impactElement = this.document.querySelector<HTMLElement>(
       `[data-emoji-impact-target-id="${participantId}"]`,
@@ -684,6 +823,19 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
     const center = this.getParticipantCenter(participantId);
     return center ? { center, surfaceRect: null } : null;
+  }
+
+  private getEmojiReactionAnchorCenter(participantId: string): EmojiThrowPoint | null {
+    const element = this.document.querySelector<HTMLElement>(
+      `[data-emoji-reaction-anchor-id="${participantId}"]`,
+    );
+    const rect = element?.getBoundingClientRect();
+    if (!rect) return this.getParticipantCenter(participantId);
+
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
   }
 
   private getParticipantCenter(participantId: string): EmojiThrowPoint | null {
@@ -753,6 +905,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.cancelEmojiPaletteClose();
+    this.cancelEmojiReactionPaletteClose();
   }
 
   async leaveGame(): Promise<void> {

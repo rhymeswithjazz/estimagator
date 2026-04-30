@@ -15,6 +15,7 @@ import {
   TimerExtendedEvent,
   Story,
   EmojiThrownEvent,
+  EmojiReactionSentEvent,
   HostTransferredEvent,
 } from '../models/session.models';
 import { AuthService } from './auth.service';
@@ -51,6 +52,7 @@ export class SignalRService {
   readonly timerStopped$ = new Subject<void>();
   readonly timerExpired$ = new Subject<void>();
   readonly emojiThrown$ = new Subject<EmojiThrownEvent>();
+  readonly emojiReactionSent$ = new Subject<EmojiReactionSentEvent>();
   readonly reconnected$ = new Subject<void>();
   readonly sessionEnded$ = new Subject<void>();
 
@@ -169,6 +171,10 @@ export class SignalRService {
       this.emojiThrown$.next(event);
     });
 
+    this.connection.on('EmojiReactionSent', (event: EmojiReactionSentEvent) => {
+      this.emojiReactionSent$.next(event);
+    });
+
     this.connection.on('SessionEnded', () => {
       this.sessionEnded$.next();
     });
@@ -200,6 +206,7 @@ export class SignalRService {
     displayName: string,
     isObserver: boolean,
     existingParticipantId?: string,
+    guestHostToken?: string,
   ): Promise<Participant | null> {
     if (!this.connection) {
       throw new Error('Not connected to SignalR hub');
@@ -210,6 +217,7 @@ export class SignalRService {
       displayName,
       isObserver,
       existingParticipantId ?? null,
+      guestHostToken ?? null,
     );
   }
 
@@ -349,5 +357,12 @@ export class SignalRService {
       throw new Error('Not connected to SignalR hub');
     }
     await this.connection.invoke('ThrowEmoji', targetParticipantId, emoji);
+  }
+
+  async sendEmojiReaction(emoji: string): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('SendEmojiReaction', emoji);
   }
 }

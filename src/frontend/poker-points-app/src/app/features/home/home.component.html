@@ -81,45 +81,24 @@
             </div>
           }
           @if (!showCreateOptions()) {
-            @if (isAuthenticated()) {
-              <button
-                (click)="toggleCreateOptions()"
-                class="btn-primary w-full text-lg py-4"
-                [disabled]="isCreating()"
-              >
-                <span class="flex items-center justify-center gap-2">
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Start New Game
-                </span>
-              </button>
-            } @else {
-              <a
-                routerLink="/login"
-                [queryParams]="{ returnUrl: '/' }"
-                class="btn-primary w-full text-lg py-4 block text-center"
-              >
-                <span class="flex items-center justify-center gap-2">
-                  <svg
-                    class="w-5 h-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Sign in to Start Game
-                </span>
-              </a>
-            }
+            <button
+              (click)="toggleCreateOptions()"
+              class="btn-primary w-full text-lg py-4"
+              [disabled]="isCreating()"
+            >
+              <span class="flex items-center justify-center gap-2">
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Start New Game
+              </span>
+            </button>
           } @else {
             <div class="space-y-4">
               <div class="flex items-center justify-between">
@@ -140,6 +119,22 @@
                 </button>
               </div>
 
+              @if (shouldCollectHostName()) {
+                <div>
+                  <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
+                    >Your Name</label
+                  >
+                  <input
+                    type="text"
+                    [value]="hostName()"
+                    (input)="onHostNameInput($event)"
+                    placeholder="e.g., Riley"
+                    maxlength="50"
+                    class="input-field text-sm"
+                  />
+                </div>
+              }
+
               <!-- Optional Session Name -->
               <div>
                 <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
@@ -153,6 +148,36 @@
                   maxlength="100"
                   class="input-field text-sm"
                 />
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
+                  >Your Role</label
+                >
+                <div class="grid grid-cols-2 gap-2">
+                  <button
+                    (click)="selectCreateRole('host-voter')"
+                    class="py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border-2"
+                    [class]="
+                      selectedCreateRole() === 'host-voter'
+                        ? 'bg-poker-green-50 border-poker-green-500 text-poker-green-700'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-poker-green-50 hover:border-poker-green-200'
+                    "
+                  >
+                    Vote
+                  </button>
+                  <button
+                    (click)="selectCreateRole('host-observer')"
+                    class="py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border-2"
+                    [class]="
+                      selectedCreateRole() === 'host-observer'
+                        ? 'bg-poker-green-50 border-poker-green-500 text-poker-green-700'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-poker-green-50 hover:border-poker-green-200'
+                    "
+                  >
+                    Spectate
+                  </button>
+                </div>
               </div>
 
               <div class="space-y-2">

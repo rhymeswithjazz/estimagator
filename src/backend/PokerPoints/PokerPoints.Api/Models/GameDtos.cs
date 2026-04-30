@@ -50,6 +50,14 @@ public record EmojiThrownEvent(
     DateTimeOffset SentAtUtc
 );
 
+public record EmojiReactionSentEvent(
+    Guid ReactionId,
+    Guid SenderParticipantId,
+    string SenderDisplayName,
+    string Emoji,
+    DateTimeOffset SentAtUtc
+);
+
 public static class EmojiThrowOptions
 {
     public static readonly TimeSpan Cooldown = TimeSpan.FromMilliseconds(200);
@@ -64,5 +72,22 @@ public static class EmojiThrowOptions
         "🍅",
         "🪨",
         "🥚"
+    };
+}
+
+public static class EmojiReactionOptions
+{
+    public static readonly TimeSpan Cooldown = EmojiThrowOptions.Cooldown;
+
+    public static readonly IReadOnlySet<string> AllowedEmojis = new HashSet<string>
+    {
+        "❤️",
+        "👍",
+        "💯",
+        "🎉",
+        "👏",
+        "🔥",
+        "👀",
+        "☕"
     };
 }
