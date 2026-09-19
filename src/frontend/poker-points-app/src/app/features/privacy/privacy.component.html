@@ -1,0 +1,116 @@
+<div class="min-h-screen bg-white text-gray-900">
+  <header class="border-b border-gray-200 bg-white">
+    <div class="max-w-3xl mx-auto px-5 py-4 flex items-center justify-between gap-4">
+      <a routerLink="/" class="flex items-center gap-2" aria-label="Estimagator home">
+        <img src="brand/logo.svg" alt="" class="w-8 h-8" />
+        <span class="font-display text-2xl font-bold"
+          >Estima<span class="text-poker-green-600 italic">gator</span></span
+        >
+      </a>
+      <app-theme-selector />
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-5 py-10 sm:py-14">
+    <h1 class="font-display text-3xl sm:text-4xl font-bold">Privacy policy</h1>
+    <p class="text-sm text-gray-500 mt-3">Last updated September 19, 2026</p>
+    <p class="text-gray-600 leading-relaxed mt-6">
+      Estimagator helps teams estimate work together. This page explains how this service uses
+      information when you create an account, join a session, or connect Jira.
+    </p>
+
+    <div class="glass-card p-6 sm:p-8 mt-8 space-y-8 text-gray-600 leading-relaxed">
+      <section aria-labelledby="information">
+        <h2 id="information" class="font-display text-xl font-bold text-gray-900 mb-3">
+          Information we store
+        </h2>
+        <p>
+          Registered accounts include an email address, display name, password hash, and
+          authentication records. Guest participation includes a display name and session identity.
+          Session records include participants, story titles and links, votes, estimates, and
+          session history.
+        </p>
+        <p class="mt-3">
+          When you connect Jira, we store encrypted authorization tokens, accessible site details,
+          field selections, and imported issue identifiers, summaries, links, and estimates. We also
+          record publishing attempts, including the acting user, value, time, and result. We do not
+          import issue descriptions or Jira user profiles. Issue summaries may contain personal
+          information supplied by your team.
+        </p>
+      </section>
+
+      <section aria-labelledby="use">
+        <h2 id="use" class="font-display text-xl font-bold text-gray-900 mb-3">
+          How information is used and shared
+        </h2>
+        <p>
+          We use this information to sign you in, send account verification and password-reset
+          emails, run shared estimation sessions, retain history, and carry out requested Jira
+          imports and estimate updates. Jira receives requests under the connected user's
+          permissions; publishing an estimate requires an explicit action.
+        </p>
+        <p class="mt-3">
+          People with a session's access code can join it and see shared session content, including
+          imported Jira summaries and revealed votes. Authorized participants can view session
+          history. Import only content suitable for that audience. Service administrators can access
+          stored account and session records to operate and support the service.
+        </p>
+        <p class="mt-3">
+          Hosting and email infrastructure process information needed to deliver the service.
+          Connecting Jira also involves Atlassian. Pages load fonts from Google Fonts, which causes
+          your browser to send network information, such as your IP address, to Google.
+        </p>
+      </section>
+
+      <section aria-labelledby="storage">
+        <h2 id="storage" class="font-display text-xl font-bold text-gray-900 mb-3">
+          Browser storage and logs
+        </h2>
+        <p>
+          Browser storage remembers your sign-in, session identity, and theme preference. The Jira
+          connection flow uses a temporary security cookie. Jira tokens are stored on the server,
+          not in browser storage. Server logs can include IP addresses, request details, errors, and
+          story titles or links for operation and troubleshooting.
+        </p>
+      </section>
+
+      <section aria-labelledby="retention">
+        <h2 id="retention" class="font-display text-xl font-bold text-gray-900 mb-3">
+          Retention and your choices
+        </h2>
+        <p>
+          Account and session records do not currently have a scheduled automatic deletion period;
+          they remain until removed through administration. Closing a session does not delete its
+          history. Backup copies may remain after records are removed from the running service.
+        </p>
+        <p class="mt-3">
+          You can disconnect Jira in your profile to remove its stored credentials. Imported
+          stories, estimates, and publishing history remain. You can separately revoke the grant in
+          your Atlassian account's Connected apps settings. You can participate as a guest without
+          connecting Jira, and clear this site's browser storage through your browser settings.
+        </p>
+      </section>
+
+      <section aria-labelledby="contact">
+        <h2 id="contact" class="font-display text-xl font-bold text-gray-900 mb-3">
+          Privacy questions and requests
+        </h2>
+        <p>
+          Contact Ras Fincher at
+          <a href="mailto:ras@rhymeswithjazz.com" class="underline">ras&#64;rhymeswithjazz.com</a>
+          to ask about access, correction, or
+          deletion of your information. Include enough detail to identify your account or session,
+          but do not send passwords, authorization tokens, or confidential Jira content.
+        </p>
+      </section>
+
+      <section aria-labelledby="changes">
+        <h2 id="changes" class="font-display text-xl font-bold text-gray-900 mb-3">
+          Changes to this policy
+        </h2>
+        <p>Updates will be published on this page with a revised date.</p>
+      </section>
+    </div>
+    <a routerLink="/" class="btn-secondary inline-block mt-8">Back to Estimagator</a>
+  </main>
+</div>

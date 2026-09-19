@@ -21,6 +21,8 @@ Create an OAuth 2.0 (3LO) application in the [Atlassian developer console](https
 - `write:jira-work`
 - `offline_access`
 
+The public privacy policy is available at `/privacy`, including when Jira is disabled. After deploying, use `https://YOUR_APP/privacy` in the Atlassian distribution settings. The page links to the operator contact for privacy and deletion requests; review the policy when changing hosting, retention, or data processing.
+
 For production, the callback is `https://YOUR_APP/api/integrations/jira/callback`. Enable sharing in the app's distribution settings so accounts other than the developer can authorize it. Your organization's app-access controls may require administrator approval. The app operates under the connecting user's Jira permissions; OAuth scopes do not grant additional project permissions.
 
 Use separate OAuth app registrations for development and production when their callback URLs differ. With the local backend on port 5051, use http://localhost:5051/api/integrations/jira`/callback` and frontend `http://localhost:4200`. Use `localhost` consistently, rather than mixing it with `127.0.0.1`, for the browser-bound OAuth cookie.

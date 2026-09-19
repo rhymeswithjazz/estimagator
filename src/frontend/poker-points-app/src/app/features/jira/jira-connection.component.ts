@@ -1,18 +1,17 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { JiraService, JiraConnection, jiraError } from '../../core/services/jira.service';
 
 @Component({
   selector: 'app-jira-connection',
+  imports: [RouterLink],
   template: `
     @if (jira.enabled()) {
-      <section
-        class="glass-card p-6 my-6 text-gray-900"
-        aria-label="Jira connection"
-      >
+      <section class="glass-card p-6 my-6 text-gray-900" aria-label="Jira connection">
         <h2 class="font-display text-xl font-bold text-gray-900">Jira Cloud</h2>
         <p class="text-sm text-gray-600 my-2">
           Connect your account to import stories and publish agreed estimates.
+          <a routerLink="/privacy" class="underline">Privacy policy</a>
         </p>
         @if (connection()?.connected) {
           <p class="text-sm">
