@@ -1,7 +1,10 @@
+import { AuthService } from '../../core/services/auth.service';
+import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import { Component, computed, inject, output } from '@angular/core';
 import { GameStateService } from '../../core/services/game-state.service';
 
 @Component({
+  imports: [StoryEstimateComponent],
   selector: 'app-story-history-panel',
   standalone: true,
   template: `
@@ -76,10 +79,17 @@ import { GameStateService } from '../../core/services/game-state.service';
                           <span
                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-poker-green-100 text-poker-green-800 shrink-0"
                           >
-                            {{ story.finalScore }}
+                            {{ story.agreedEstimate ?? story.finalScore }}
                           </span>
                         }
                       </div>
+                      <app-story-estimate
+                        [story]="story"
+                        [code]="gameState.sessionCode()!"
+                        [deck]="gameState.deckType()"
+                        [canManage]="isOrganizer() && authService.isAuthenticated()"
+                        (updated)="gameState.applyStoryEstimate($event)"
+                      />
                       @if (story.url) {
                         <a
                           [href]="story.url"
@@ -147,7 +157,9 @@ import { GameStateService } from '../../core/services/game-state.service';
   `,
 })
 export class StoryHistoryPanelComponent {
-  private readonly gameState = inject(GameStateService);
+  readonly authService = inject(AuthService);
+
+  readonly gameState = inject(GameStateService);
 
   readonly close = output<void>();
 
@@ -161,7 +173,7 @@ export class StoryHistoryPanelComponent {
   readonly totalPoints = computed(() => {
     const completed = this.completedStories();
     if (completed.length === 0) return null;
-    const sum = completed.reduce((acc, s) => acc + (s.finalScore ?? 0), 0);
+    const sum = completed.reduce((acc, s) => acc + (s.agreedEstimate ?? s.finalScore ?? 0), 0);
     return sum;
   });
 

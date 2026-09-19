@@ -5,11 +5,13 @@ on:
     branches: [main, develop]
     paths:
       - 'src/frontend/**'
+      - 'tests/e2e/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'src/frontend/**'
+      - 'tests/e2e/**'
       - '.github/workflows/frontend-ci.yml'
 
 jobs:
@@ -32,7 +34,7 @@ jobs:
 
       - name: Run tests
         working-directory: src/frontend/poker-points-app
-        run: npm test
+        run: npm test -- --run
         env:
           NODE_ENV: test
 
@@ -41,6 +43,16 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+
+      - name: Install browser test dependencies
+        working-directory: tests/e2e
+        run: npm ci && npx playwright install --with-deps chromium
+
+      - name: Jira browser flow (stubbed API)
+        working-directory: tests/e2e
+        run: npx playwright test specs/jira-flow.spec.ts --project=chromium
+        env:
+          PLAYWRIGHT_START_SERVER: 'true'
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v6

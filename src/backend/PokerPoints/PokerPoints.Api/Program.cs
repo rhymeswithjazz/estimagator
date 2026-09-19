@@ -1,3 +1,4 @@
+using PokerPoints.Api.Jira;
 using System.Text;
 using System.Security.Claims;
 using System.Threading.RateLimiting;
@@ -14,6 +15,7 @@ using PokerPoints.Data;
 DotNetEnv.Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddJira();
 
 // Database
 builder.Services.AddDbContext<PokerPointsDbContext>(options =>
@@ -123,6 +125,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+app.UseJiraErrors();
 
 // Apply pending migrations and seed admin user on startup
 using (var scope = app.Services.CreateScope())
@@ -161,3 +164,6 @@ app.MapHub<PokerHub>("/hubs/poker");
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 await app.RunAsync();
+
+// Entry point exposed for integration tests; production startup is unchanged.
+public partial class Program { }

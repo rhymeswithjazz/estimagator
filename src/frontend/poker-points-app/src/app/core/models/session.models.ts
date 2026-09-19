@@ -1,3 +1,4 @@
+import type { JiraLink } from '../services/jira.service';
 export interface CreateSessionRequest {
   deckType?: string;
   name?: string;
@@ -42,6 +43,9 @@ export interface Story {
   url: string | null;
   status: 'pending' | 'active' | 'completed';
   finalScore: number | null;
+  agreedEstimate?: number | null;
+  estimateRevision?: number;
+  jira?: JiraLink | null;
 }
 
 export interface Vote {
@@ -210,16 +214,7 @@ export function getEmojiThrowOptionMetadata(emoji: string): EmojiThrowOptionMeta
   return EMOJI_THROW_OPTION_METADATA[emoji as EmojiThrowOption];
 }
 
-export const EMOJI_REACTION_OPTIONS = [
-  '❤️',
-  '👍',
-  '💯',
-  '🎉',
-  '👏',
-  '🔥',
-  '👀',
-  '☕',
-] as const;
+export const EMOJI_REACTION_OPTIONS = ['❤️', '👍', '💯', '🎉', '👏', '🔥', '👀', '☕'] as const;
 export type EmojiReactionOption = (typeof EMOJI_REACTION_OPTIONS)[number];
 
 export interface EmojiReactionOptionMetadata {
@@ -292,6 +287,7 @@ export interface SessionHistoryResponse {
   createdAt: string;
   participants: Participant[];
   stories: StoryHistory[];
+  canManageEstimates?: boolean;
 }
 
 export interface StoryHistory {
@@ -300,5 +296,8 @@ export interface StoryHistory {
   url: string | null;
   status: 'pending' | 'active' | 'completed';
   finalScore: number | null;
+  agreedEstimate?: number | null;
+  estimateRevision?: number;
+  jira?: JiraLink | null;
   votes: Vote[];
 }

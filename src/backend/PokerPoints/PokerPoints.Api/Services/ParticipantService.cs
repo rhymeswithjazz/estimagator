@@ -142,6 +142,7 @@ public class ParticipantService : IParticipantService
 
         host.IsOrganizer = true;
         session.GuestHostClaimedAt = DateTime.UtcNow;
+        session.OrganizerId = userId;
 
         await _db.SaveChangesAsync();
 

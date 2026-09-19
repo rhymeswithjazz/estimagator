@@ -12,16 +12,17 @@ public interface ISessionService
     Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode);
     Task<GameStateResponse?> GetGameStateAsync(string accessCode);
     Task<Story?> GetOrCreateActiveStoryAsync(Guid sessionId);
-    Task<Story?> UpdateStoryTitleAsync(Guid storyId, string title);
-    Task<Story?> CompleteStoryAsync(Guid storyId, decimal? finalScore);
+    Task<bool> StoryBelongsToSessionAsync(Guid sessionId, Guid storyId);
+    Task<Story?> UpdateStoryTitleAsync(Guid sessionId, Guid storyId, string title);
+    Task<Story?> CompleteStoryAsync(Guid sessionId, Guid storyId, decimal? finalScore);
     Task<List<UserSessionResponse>> GetUserSessionsAsync(Guid userId);
     Task<List<Story>> AddStoriesAsync(Guid sessionId, List<CreateStoryRequest> stories);
     Task<List<StoryDto>> GetPendingStoriesAsync(Guid sessionId);
     Task<Story?> ActivateNextStoryAsync(Guid sessionId);
-    Task<Story?> ActivateStoryAsync(Guid storyId);
-    Task<Story?> RestartStoryAsync(Guid storyId);
-    Task<Story?> UpdateStoryAsync(Guid storyId, string title, string? url);
-    Task DeleteStoryAsync(Guid storyId);
+    Task<Story?> ActivateStoryAsync(Guid sessionId, Guid storyId);
+    Task<Story?> RestartStoryAsync(Guid sessionId, Guid storyId);
+    Task<Story?> UpdateStoryAsync(Guid sessionId, Guid storyId, string title, string? url);
+    Task DeleteStoryAsync(Guid sessionId, Guid storyId);
     Task<bool> DeactivateSessionAsync(string accessCode, Guid organizerId);
     Task<bool> DeactivateSessionByHostAsync(Guid sessionId);
     Task<SessionHistoryResponse?> GetSessionHistoryAsync(string accessCode, Guid userId);
@@ -203,9 +204,12 @@ public class SessionService : ISessionService
         return story;
     }
 
-    public async Task<Story?> UpdateStoryTitleAsync(Guid storyId, string title)
+    public Task<bool> StoryBelongsToSessionAsync(Guid sessionId, Guid storyId) =>
+        _db.Stories.AnyAsync(s => s.Id == storyId && s.SessionId == sessionId);
+
+    public async Task<Story?> UpdateStoryTitleAsync(Guid sessionId, Guid storyId, string title)
     {
-        var story = await _db.Stories.FindAsync(storyId);
+        var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story == null) return null;
 
         story.Title = title;
@@ -214,9 +218,9 @@ public class SessionService : ISessionService
         return story;
     }
 
-    public async Task<Story?> CompleteStoryAsync(Guid storyId, decimal? finalScore)
+    public async Task<Story?> CompleteStoryAsync(Guid sessionId, Guid storyId, decimal? finalScore)
     {
-        var story = await _db.Stories.FindAsync(storyId);
+        var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story == null) return null;
 
         story.Status = "completed";
@@ -273,9 +277,9 @@ public class SessionService : ISessionService
         return nextStory;
     }
 
-    public async Task<Story?> ActivateStoryAsync(Guid storyId)
+    public async Task<Story?> ActivateStoryAsync(Guid sessionId, Guid storyId)
     {
-        var story = await _db.Stories.FindAsync(storyId);
+        var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story == null) return null;
 
         story.Status = "active";
@@ -284,11 +288,11 @@ public class SessionService : ISessionService
         return story;
     }
 
-    public async Task<Story?> RestartStoryAsync(Guid storyId)
+    public async Task<Story?> RestartStoryAsync(Guid sessionId, Guid storyId)
     {
         var story = await _db.Stories
             .Include(s => s.Votes)
-            .FirstOrDefaultAsync(s => s.Id == storyId);
+            .FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
 
         if (story == null) return null;
 
@@ -298,15 +302,19 @@ public class SessionService : ISessionService
         // Reset story status
         story.Status = "active";
         story.FinalScore = null;
+        story.AgreedEstimate = null;
+        story.EstimateConfirmedBy = null;
+        story.EstimateConfirmedAt = null;
+        story.EstimateRevision++;
 
         await _db.SaveChangesAsync();
 
         return story;
     }
 
-    public async Task<Story?> UpdateStoryAsync(Guid storyId, string title, string? url)
+    public async Task<Story?> UpdateStoryAsync(Guid sessionId, Guid storyId, string title, string? url)
     {
-        var story = await _db.Stories.FindAsync(storyId);
+        var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story == null) return null;
 
         story.Title = title;
@@ -316,9 +324,9 @@ public class SessionService : ISessionService
         return story;
     }
 
-    public async Task DeleteStoryAsync(Guid storyId)
+    public async Task DeleteStoryAsync(Guid sessionId, Guid storyId)
     {
-        var story = await _db.Stories.FindAsync(storyId);
+        var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story != null)
         {
             _db.Stories.Remove(story);
@@ -331,7 +339,7 @@ public class SessionService : ISessionService
         var session = await _db.Sessions
             .Include(s => s.Stories.Where(st => st.Status == "active"))
                 .ThenInclude(st => st.Votes)
-            .FirstOrDefaultAsync(s => s.AccessCode == accessCode.ToUpperInvariant() && s.OrganizerId == organizerId);
+            .FirstOrDefaultAsync(s => s.AccessCode == accessCode.ToUpperInvariant() && s.OrganizerId == organizerId && s.IsActive);
 
         if (session == null) return false;
 
@@ -379,7 +387,8 @@ public class SessionService : ISessionService
                 {
                     var participant = session.Participants.FirstOrDefault(p => p.Id == v.ParticipantId);
                     return new VoteDto(v.ParticipantId, participant?.DisplayName ?? "Unknown", v.CardValue);
-                }).ToList()
+                }).ToList(),
+                story.AgreedEstimate, story.EstimateRevision, PokerPoints.Api.Jira.JiraLinkDto.From(story)
             )).ToList();
 
         return new SessionHistoryResponse(
@@ -390,7 +399,8 @@ public class SessionService : ISessionService
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),
-            stories
+            stories,
+            SessionAuthorization.CanManage(session, userId)
         );
     }
 
@@ -435,15 +445,10 @@ public class SessionService : ISessionService
             activeStory.Status = "completed";
         }
 
+        session.EndingHostUserId = session.OrganizerId;
         session.IsActive = false;
         await _db.SaveChangesAsync();
     }
 
-    private static StoryDto ToStoryDto(Story s) => new(
-        s.Id,
-        s.Title,
-        s.Url,
-        s.Status,
-        s.FinalScore
-    );
+    private static StoryDto ToStoryDto(Story s) => StoryDto.From(s);
 }

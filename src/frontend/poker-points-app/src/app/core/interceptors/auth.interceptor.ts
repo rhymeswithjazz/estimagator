@@ -26,7 +26,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.includes('/auth/refresh')) {
+      if (
+        error.status === 401 &&
+        error.error?.code !== 'reconnect_required' &&
+        !req.url.includes('/auth/refresh')
+      ) {
         // Try to refresh the token
         return from(authService.refreshToken()).pipe(
           switchMap((success) => {

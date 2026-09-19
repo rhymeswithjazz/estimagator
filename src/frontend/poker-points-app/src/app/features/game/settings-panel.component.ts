@@ -1,3 +1,6 @@
+import { JiraImportComponent } from '../jira/jira-import.component';
+import { AuthService } from '../../core/services/auth.service';
+import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import { Component, computed, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,7 +9,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 @Component({
   selector: 'app-settings-panel',
   standalone: true,
-  imports: [FormsModule],
+  imports: [JiraImportComponent, StoryEstimateComponent, FormsModule],
   template: `
     <div class="fixed inset-0 z-50 flex justify-end" (click)="close.emit()">
       <!-- Backdrop -->
@@ -68,6 +71,10 @@ import { GameStateService } from '../../core/services/game-state.service';
                   }
                 </div>
               </div>
+
+              @if (authService.isAuthenticated()) {
+                <app-jira-import [code]="sessionCode()!" />
+              }
 
               <!-- Add Stories Section -->
               @if (isAddingStories()) {
@@ -195,10 +202,17 @@ import { GameStateService } from '../../core/services/game-state.service';
                                 <span
                                   class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-poker-green-100 text-poker-green-800"
                                 >
-                                  {{ story.finalScore }}
+                                  {{ story.agreedEstimate ?? story.finalScore }}
                                 </span>
                               }
                             </div>
+                            <app-story-estimate
+                              [story]="story"
+                              [code]="sessionCode()!"
+                              [deck]="gameState.deckType()"
+                              [canManage]="isOrganizer() && authService.isAuthenticated()"
+                              (updated)="gameState.applyStoryEstimate($event)"
+                            />
                             @if (story.url) {
                               <a
                                 [href]="story.url"
@@ -455,7 +469,9 @@ import { GameStateService } from '../../core/services/game-state.service';
   `,
 })
 export class SettingsPanelComponent {
-  private readonly gameState = inject(GameStateService);
+  readonly authService = inject(AuthService);
+
+  readonly gameState = inject(GameStateService);
   private readonly router = inject(Router);
 
   readonly close = output<void>();

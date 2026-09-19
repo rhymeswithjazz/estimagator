@@ -1,3 +1,6 @@
+import { StoryEstimateComponent } from '../jira/story-estimate.component';
+import { Story } from '../../core/models/session.models';
+import { JiraConnectionComponent } from '../jira/jira-connection.component';
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../core/services/session.service';
@@ -7,7 +10,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-session-history',
   standalone: true,
-  imports: [RouterLink, ThemeSelectorComponent],
+  imports: [StoryEstimateComponent, JiraConnectionComponent, RouterLink, ThemeSelectorComponent],
   templateUrl: './session-history.component.html',
 })
 export class SessionHistoryComponent implements OnInit {
@@ -27,7 +30,7 @@ export class SessionHistoryComponent implements OnInit {
 
   readonly totalPoints = computed(() => {
     return this.completedStories().reduce((sum, story) => {
-      return sum + (story.finalScore ?? 0);
+      return sum + (story.agreedEstimate ?? story.finalScore ?? 0);
     }, 0);
   });
 
@@ -53,6 +56,17 @@ export class SessionHistoryComponent implements OnInit {
     }
 
     this.isLoading.set(false);
+  }
+
+  updateEstimate(story: Story) {
+    this.session.update((session) =>
+      session
+        ? {
+            ...session,
+            stories: session.stories.map((s) => (s.id === story.id ? { ...s, ...story } : s)),
+          }
+        : session,
+    );
   }
 
   formatDate(dateStr: string): string {

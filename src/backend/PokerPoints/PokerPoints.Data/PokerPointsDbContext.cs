@@ -16,6 +16,13 @@ public class PokerPointsDbContext : DbContext
     public DbSet<Story> Stories => Set<Story>();
     public DbSet<Vote> Votes => Set<Vote>();
 
+    public DbSet<JiraAuthorization> JiraAuthorizations => Set<JiraAuthorization>();
+    public DbSet<JiraSite> JiraSites => Set<JiraSite>();
+    public DbSet<JiraOAuthState> JiraOAuthStates => Set<JiraOAuthState>();
+    public DbSet<JiraFieldMapping> JiraFieldMappings => Set<JiraFieldMapping>();
+    public DbSet<JiraStoryLink> JiraStoryLinks => Set<JiraStoryLink>();
+    public DbSet<JiraPublishAttempt> JiraPublishAttempts => Set<JiraPublishAttempt>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -25,6 +32,21 @@ public class PokerPointsDbContext : DbContext
         ConfigureParticipant(modelBuilder);
         ConfigureStory(modelBuilder);
         ConfigureVote(modelBuilder);
+        modelBuilder.Entity<Story>().Property(s => s.AgreedEstimate).HasPrecision(4, 1);
+        modelBuilder.Entity<Story>().Property(s => s.EstimateRevision).IsConcurrencyToken();
+        modelBuilder.Entity<Story>().Navigation(s => s.JiraLink).AutoInclude();
+        modelBuilder.Entity<JiraAuthorization>().HasKey(a => a.UserId);
+        modelBuilder.Entity<JiraAuthorization>().HasOne<User>().WithMany().HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<JiraAuthorization>().HasMany(a => a.Sites).WithOne().HasForeignKey(s => s.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<JiraSite>().HasKey(s => new { s.UserId, s.SiteId });
+        modelBuilder.Entity<JiraOAuthState>().HasKey(s => s.Id);
+        modelBuilder.Entity<JiraFieldMapping>().HasKey(m => new { m.UserId, m.SiteId, m.ProjectId, m.IssueTypeId });
+        modelBuilder.Entity<JiraFieldMapping>().HasOne<User>().WithMany().HasForeignKey(m => m.UserId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<JiraStoryLink>().HasKey(l => l.StoryId);
+        modelBuilder.Entity<JiraStoryLink>().HasIndex(l => new { l.SessionId, l.SiteId, l.IssueId }).IsUnique();
+        modelBuilder.Entity<JiraStoryLink>().HasOne<Story>().WithOne(s => s.JiraLink).HasForeignKey<JiraStoryLink>(l => l.StoryId).OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<JiraPublishAttempt>().HasKey(a => a.Id);
+        modelBuilder.Entity<JiraPublishAttempt>().HasIndex(a => new { a.StoryId, a.StartedAt });
     }
 
     private static void ConfigureUser(ModelBuilder modelBuilder)

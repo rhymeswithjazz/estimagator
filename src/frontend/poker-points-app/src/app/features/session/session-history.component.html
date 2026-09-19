@@ -135,6 +135,10 @@
         </div>
       </div>
 
+      @if (s.canManageEstimates) {
+        <app-jira-connection />
+      }
+
       <!-- Participants -->
       <div class="glass-card p-6 mb-6">
         <h2 class="text-lg font-display font-bold text-gray-900 mb-4">Participants</h2>
@@ -225,9 +229,19 @@
                     <div
                       class="px-3 py-1.5 bg-poker-green-100 text-poker-green-700 font-bold rounded-lg"
                     >
-                      {{ story.finalScore ?? '?' }}
+                      {{ story.agreedEstimate ?? story.finalScore ?? '?' }}
                     </div>
                   </div>
+                </div>
+
+                <div class="px-4">
+                  <app-story-estimate
+                    [story]="story"
+                    [code]="s.accessCode"
+                    [deck]="s.deckType"
+                    [canManage]="s.canManageEstimates ?? false"
+                    (updated)="updateEstimate($event)"
+                  />
                 </div>
 
                 <!-- Votes -->

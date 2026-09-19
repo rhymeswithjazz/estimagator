@@ -176,6 +176,10 @@ export class GameStateService {
       this._timerJustExpired.set(false);
     });
 
+    this.signalR.storyEstimateUpdated$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((story) => this.applyStoryEstimate(story));
+
     this.signalR.storyUpdated$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this._currentStory.set(event.story);
 
@@ -283,6 +287,11 @@ export class GameStateService {
     } else {
       this.clearTimer();
     }
+  }
+
+  applyStoryEstimate(story: Story): void {
+    if (this._currentStory()?.id === story.id) this._currentStory.set(story);
+    this._storyQueue.update((queue) => queue.map((item) => (item.id === story.id ? story : item)));
   }
 
   async joinSession(

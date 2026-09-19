@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using PokerPoints.Api.Jira;
+using PokerPoints.Data.Entities;
 
 namespace PokerPoints.Api.Models;
 
@@ -43,8 +45,15 @@ public record StoryDto(
     string Title,
     string? Url,
     string Status,
-    decimal? FinalScore
-);
+    decimal? FinalScore,
+    decimal? AgreedEstimate = null,
+    int EstimateRevision = 0,
+    JiraLinkDto? Jira = null
+)
+{
+    public static StoryDto From(Story s) => new(s.Id, s.Title, s.Url, s.Status, s.FinalScore,
+        s.AgreedEstimate, s.EstimateRevision, JiraLinkDto.From(s));
+}
 
 public record CreateStoryRequest(string Title, string? Url = null);
 
@@ -56,7 +65,8 @@ public record SessionHistoryResponse(
     bool IsActive,
     DateTime CreatedAt,
     List<ParticipantDto> Participants,
-    List<StoryHistoryDto> Stories
+    List<StoryHistoryDto> Stories,
+    bool CanManageEstimates = false
 );
 
 public record StoryHistoryDto(
@@ -65,7 +75,10 @@ public record StoryHistoryDto(
     string? Url,
     string Status,
     decimal? FinalScore,
-    List<VoteDto> Votes
+    List<VoteDto> Votes,
+    decimal? AgreedEstimate = null,
+    int EstimateRevision = 0,
+    JiraLinkDto? Jira = null
 );
 
 public record UserSessionResponse(

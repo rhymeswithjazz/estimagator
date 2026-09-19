@@ -41,6 +41,7 @@ export class SignalRService {
   readonly voteCast$ = new Subject<VoteCastEvent>();
   readonly votesRevealed$ = new Subject<VotesRevealedEvent>();
   readonly votesReset$ = new Subject<VotesResetEvent>();
+  readonly storyEstimateUpdated$ = new Subject<Story>();
   readonly storyUpdated$ = new Subject<StoryUpdatedEvent>();
   readonly sessionState$ = new Subject<GameState>();
   readonly error$ = new Subject<string>();
@@ -126,6 +127,10 @@ export class SignalRService {
     this.connection.on('VotesReset', (event: VotesResetEvent) => {
       this.votesReset$.next(event);
     });
+
+    this.connection.on('StoryEstimateUpdated', (story: Story) =>
+      this.storyEstimateUpdated$.next(story),
+    );
 
     this.connection.on('StoryUpdated', (event: StoryUpdatedEvent) => {
       this.storyUpdated$.next(event);

@@ -653,6 +653,20 @@ public class PokerHubTests
         VerifyNoReactionBroadcast(fixture.GroupClient);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SelectingForeignStory_DoesNotCompleteCurrentStory(bool restart)
+    {
+        var fixture = CreateFixture();
+        fixture.ParticipantService.Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Host", "ABC123", SenderConnectionId, isOrganizer: true));
+        fixture.SessionService.Setup(s => s.StoryBelongsToSessionAsync(SessionId, StoryId)).ReturnsAsync(false);
+        await Assert.ThrowsAsync<HubException>(() => restart ? fixture.Hub.RestartStory(StoryId) : fixture.Hub.StartStory(StoryId));
+        fixture.SessionService.Verify(s => s.CompleteStoryAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<decimal?>()), Times.Never);
+        fixture.VotingService.Verify(s => s.RevealVotesAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
     private static HubFixture CreateFixture(ClaimsPrincipal? user = null)
     {
         var sessionService = new Mock<ISessionService>();

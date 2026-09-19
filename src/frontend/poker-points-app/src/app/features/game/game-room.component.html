@@ -607,6 +607,19 @@
 
   <!-- Row 3: Bottom Area - Story Title, Controls & Card Deck -->
   <div class="bg-white border-t border-gray-200 px-4 py-2 space-y-1.5">
+    @if (currentStory(); as story) {
+      @if (story.status === 'completed') {
+        <div class="max-w-2xl mx-auto max-h-[35vh] overflow-auto">
+          <app-story-estimate
+            [story]="story"
+            [code]="sessionCode()!"
+            [deck]="gameState.deckType()"
+            [canManage]="isOrganizer() && authService.isAuthenticated()"
+            (updated)="gameState.applyStoryEstimate($event)"
+          />
+        </div>
+      }
+    }
     <!-- Story Title -->
     <div class="text-center">
       @if (isEditingStory()) {

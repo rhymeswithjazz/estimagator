@@ -188,7 +188,7 @@ public class SessionServiceTests : IDisposable
         await _db.SaveChangesAsync();
 
         // Act
-        var result = await _service.UpdateStoryTitleAsync(story.Id, "New Title");
+        var result = await _service.UpdateStoryTitleAsync(story.SessionId, story.Id, "New Title");
 
         // Assert
         result.Should().NotBeNull();
@@ -212,7 +212,7 @@ public class SessionServiceTests : IDisposable
         await _db.SaveChangesAsync();
 
         // Act
-        var result = await _service.CompleteStoryAsync(story.Id, 5.0m);
+        var result = await _service.CompleteStoryAsync(story.SessionId, story.Id, 5.0m);
 
         // Assert
         result.Should().NotBeNull();
@@ -313,7 +313,7 @@ public class SessionServiceTests : IDisposable
         await _db.SaveChangesAsync();
 
         // Act
-        var result = await _service.RestartStoryAsync(story.Id);
+        var result = await _service.RestartStoryAsync(story.SessionId, story.Id);
 
         // Assert
         result.Should().NotBeNull();
@@ -500,10 +500,42 @@ public class SessionServiceTests : IDisposable
         var storyId = story.Id;
 
         // Act
-        await _service.DeleteStoryAsync(storyId);
+        await _service.DeleteStoryAsync(story.SessionId, storyId);
 
         // Assert
         var deletedStory = await _db.Stories.FindAsync(storyId);
         deletedStory.Should().BeNull();
     }
+    [Fact]
+    public async Task MutationsWithForeignSession_DoNotChangeStoryOrVotes()
+    {
+        var story = new Story { SessionId = Guid.NewGuid(), Title = "Original", Status = "completed", AgreedEstimate = 5, EstimateRevision = 1 };
+        _db.Stories.Add(story);
+        await _db.SaveChangesAsync();
+        var foreignSession = Guid.NewGuid();
+        (await _service.UpdateStoryAsync(foreignSession, story.Id, "Changed", null)).Should().BeNull();
+        (await _service.UpdateStoryTitleAsync(foreignSession, story.Id, "Changed")).Should().BeNull();
+        (await _service.ActivateStoryAsync(foreignSession, story.Id)).Should().BeNull();
+        (await _service.RestartStoryAsync(foreignSession, story.Id)).Should().BeNull();
+        (await _service.CompleteStoryAsync(foreignSession, story.Id, 8)).Should().BeNull();
+        await _service.DeleteStoryAsync(foreignSession, story.Id);
+        story.Title.Should().Be("Original");
+        story.Status.Should().Be("completed");
+        story.AgreedEstimate.Should().Be(5);
+        (await _db.Stories.FindAsync(story.Id)).Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task RestartClearsAgreementButPreservesPublishHistory()
+    {
+        var story = new Story { Id = Guid.NewGuid(), SessionId = Guid.NewGuid(), Title = "Story", Status = "completed", AgreedEstimate = 5, EstimateRevision = 1 };
+        story.JiraLink = new() { StoryId = story.Id, SessionId = story.SessionId, SiteId = "site", IssueId = "100", PublishedValue = 5, PublishedRevision = 1, PublishStatus = "published" };
+        _db.Stories.Add(story);
+        await _db.SaveChangesAsync();
+        await _service.RestartStoryAsync(story.SessionId, story.Id);
+        story.AgreedEstimate.Should().BeNull();
+        story.EstimateRevision.Should().Be(2);
+        story.JiraLink.PublishedValue.Should().Be(5);
+    }
+
 }

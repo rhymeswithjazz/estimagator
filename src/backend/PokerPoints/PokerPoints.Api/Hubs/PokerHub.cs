@@ -115,7 +115,7 @@ public class PokerHub : Hub
                 if (story != null)
                 {
                     await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                        new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+                        StoryDto.From(story)
                     ));
                 }
 
@@ -189,7 +189,7 @@ public class PokerHub : Hub
             if (story != null)
             {
                 await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                    new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+                    StoryDto.From(story)
                 ));
             }
         }
@@ -331,7 +331,7 @@ public class PokerHub : Hub
             return;
         }
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the host can end the session");
             return;
@@ -361,7 +361,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can reveal votes");
             return;
@@ -380,7 +380,7 @@ public class PokerHub : Hub
         var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
 
         // Auto-complete the story on reveal
-        var completedStory = await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+        var completedStory = await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
 
         _logger.LogInformation("Votes revealed and story completed {StoryId}: Average={Average}, Consensus={IsConsensus}",
             gameState.CurrentStory.Id, result.Average, result.IsConsensus);
@@ -392,7 +392,7 @@ public class PokerHub : Hub
         if (completedStory != null)
         {
             await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                new StoryDto(completedStory.Id, completedStory.Title, completedStory.Url, completedStory.Status, completedStory.FinalScore)
+                StoryDto.From(completedStory)
             ));
         }
     }
@@ -402,7 +402,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can reset votes");
             return;
@@ -419,7 +419,7 @@ public class PokerHub : Hub
         _timerService.StopTimer(session.AccessCode);
 
         // Restart story: clears votes AND sets status back to "active"
-        var story = await _sessionService.RestartStoryAsync(gameState.CurrentStory.Id);
+        var story = await _sessionService.RestartStoryAsync(participant.Session.Id, gameState.CurrentStory.Id);
 
         _logger.LogInformation("Story restarted (votes reset, status active) for story {StoryId}", gameState.CurrentStory.Id);
 
@@ -429,7 +429,7 @@ public class PokerHub : Hub
         if (story != null)
         {
             await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+                StoryDto.From(story)
             ));
         }
     }
@@ -439,7 +439,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can update the story");
             return;
@@ -453,13 +453,13 @@ public class PokerHub : Hub
             return;
         }
 
-        var story = await _sessionService.UpdateStoryTitleAsync(gameState.CurrentStory.Id, title);
+        var story = await _sessionService.UpdateStoryTitleAsync(participant.Session.Id, gameState.CurrentStory.Id, title);
         if (story == null) return;
 
         _logger.LogInformation("Story updated: {StoryId} -> {Title}", story.Id, title);
 
         await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+            StoryDto.From(story)
         ));
     }
 
@@ -468,7 +468,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can start the next story");
             return;
@@ -483,7 +483,7 @@ public class PokerHub : Hub
         if (gameState?.CurrentStory != null)
         {
             var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
-            await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+            await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
         }
 
         // Try to activate next story from queue first, otherwise create new
@@ -498,7 +498,7 @@ public class PokerHub : Hub
         // Override title if provided
         if (newStory != null && !string.IsNullOrEmpty(title))
         {
-            newStory = await _sessionService.UpdateStoryTitleAsync(newStory.Id, title);
+            newStory = await _sessionService.UpdateStoryTitleAsync(participant.Session.Id, newStory.Id, title);
         }
 
         if (newStory != null)
@@ -507,7 +507,7 @@ public class PokerHub : Hub
 
             await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(newStory.Id));
             await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                new StoryDto(newStory.Id, newStory.Title, newStory.Url, newStory.Status, newStory.FinalScore)
+                StoryDto.From(newStory)
             ));
 
             // Notify clients that the queue has changed
@@ -525,7 +525,7 @@ public class PokerHub : Hub
             return new List<StoryDto>();
         }
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can add stories");
             return new List<StoryDto>();
@@ -536,7 +536,7 @@ public class PokerHub : Hub
 
         _logger.LogInformation("Added {Count} stories to session {SessionId}", newStories.Count, session.Id);
 
-        var storyDtos = newStories.Select(s => new StoryDto(s.Id, s.Title, s.Url, s.Status, s.FinalScore)).ToList();
+        var storyDtos = newStories.Select(s => StoryDto.From(s)).ToList();
 
         // Broadcast updated story queue to all participants
         await Clients.Group(session.AccessCode).SendAsync("StoriesAdded", storyDtos);
@@ -557,20 +557,20 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can update stories");
             return;
         }
 
-        var story = await _sessionService.UpdateStoryAsync(storyId, title, url);
+        var story = await _sessionService.UpdateStoryAsync(participant.Session.Id, storyId, title, url);
         if (story == null) return;
 
         var session = participant.Session;
         _logger.LogInformation("Story {StoryId} updated: Title={Title}, Url={Url}", storyId, title, url);
 
         await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+            StoryDto.From(story)
         ));
     }
 
@@ -579,13 +579,13 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can delete stories");
             return;
         }
 
-        await _sessionService.DeleteStoryAsync(storyId);
+        await _sessionService.DeleteStoryAsync(participant.Session.Id, storyId);
 
         var session = participant.Session;
         _logger.LogInformation("Story {StoryId} deleted from session {SessionCode}", storyId, session.AccessCode);
@@ -598,13 +598,16 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can start stories");
             return;
         }
 
         var session = participant.Session;
+        if (!session.IsActive || !await _sessionService.StoryBelongsToSessionAsync(session.Id, storyId))
+            throw new HubException("Story not found in this active session.");
+
         _timerService.StopTimer(session.AccessCode);
 
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
@@ -613,18 +616,18 @@ public class PokerHub : Hub
         if (gameState?.CurrentStory != null)
         {
             var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
-            await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+            await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
         }
 
         // Activate the selected story
-        var story = await _sessionService.ActivateStoryAsync(storyId);
+        var story = await _sessionService.ActivateStoryAsync(participant.Session.Id, storyId);
         if (story == null) return;
 
         _logger.LogInformation("Story {StoryId} started from queue", storyId);
 
         await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(story.Id));
         await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+            StoryDto.From(story)
         ));
 
         // Notify clients that the queue has changed
@@ -637,13 +640,16 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can restart stories");
             return;
         }
 
         var session = participant.Session;
+        if (!session.IsActive || !await _sessionService.StoryBelongsToSessionAsync(session.Id, storyId))
+            throw new HubException("Story not found in this active session.");
+
         _timerService.StopTimer(session.AccessCode);
 
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
@@ -652,18 +658,18 @@ public class PokerHub : Hub
         if (gameState?.CurrentStory != null && gameState.CurrentStory.Id != storyId)
         {
             var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
-            await _sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+            await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
         }
 
         // Restart the story (clears votes and sets to active)
-        var story = await _sessionService.RestartStoryAsync(storyId);
+        var story = await _sessionService.RestartStoryAsync(participant.Session.Id, storyId);
         if (story == null) return;
 
         _logger.LogInformation("Story {StoryId} restarted", storyId);
 
         await Clients.Group(session.AccessCode).SendAsync("VotesReset", new VotesResetEvent(story.Id));
         await Clients.Group(session.AccessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-            new StoryDto(story.Id, story.Title, story.Url, story.Status, story.FinalScore)
+            StoryDto.From(story)
         ));
 
         // Notify clients that the queue has changed
@@ -676,7 +682,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can start the timer");
             return;
@@ -699,7 +705,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can extend the timer");
             return;
@@ -725,7 +731,7 @@ public class PokerHub : Hub
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
         if (participant == null) return;
 
-        if (!participant.IsOrganizer)
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
         {
             await Clients.Caller.SendAsync("Error", "Only the organizer can stop the timer");
             return;

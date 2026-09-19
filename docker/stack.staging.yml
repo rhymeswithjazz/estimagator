@@ -46,6 +46,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Staging
       - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=pokerpoints_staging;Username=pokerpoints;Password=${POSTGRES_PASSWORD}
+      - Jira__Enabled=${JIRA_ENABLED:-false}
+      - Jira__ClientId=${JIRA_CLIENT_ID:-}
+      - Jira__ClientSecret=${JIRA_CLIENT_SECRET:-}
+      - Jira__CallbackUrl=${JIRA_CALLBACK_URL:-}
+      - Jira__FrontendUrl=${JIRA_FRONTEND_URL:-}
+      - Jira__KeyPath=/var/lib/estimagator/jira-keys
+      - Jira__CertificatePath=/run/secrets/jira/protection.pfx
+      - Jira__CertificatePassword=${JIRA_CERTIFICATE_PASSWORD:-}
       - Authentication__Jwt__Secret=${JWT_SECRET}
       - Authentication__Jwt__Issuer=${JWT_ISSUER:-Estimagator-Staging}
       - Authentication__Jwt__Audience=${JWT_AUDIENCE:-Estimagator-Staging}
@@ -59,6 +67,9 @@ services:
       - Email__BaseUrl=${EMAIL_BASE_URL}
       - ADMIN_EMAIL=${ADMIN_EMAIL:-}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+    volumes:
+      - ${JIRA_KEYS_PATH:-/volume1/docker/estimagator-staging/jira-keys}:/var/lib/estimagator/jira-keys
+      - ${JIRA_CERTIFICATES_PATH:-/volume1/docker/estimagator-staging/jira-certificates}:/run/secrets/jira:ro
     depends_on:
       postgres:
         condition: service_healthy

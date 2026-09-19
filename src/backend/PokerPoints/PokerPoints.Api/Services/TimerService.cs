@@ -132,14 +132,14 @@ public class TimerService : ITimerService, IDisposable
         if (gameState.RevealedVotes != null) return;
 
         var result = await votingService.RevealVotesAsync(gameState.CurrentStory.Id);
-        var completedStory = await sessionService.CompleteStoryAsync(gameState.CurrentStory.Id, result.Average);
+        var completedStory = await sessionService.CompleteStoryAsync(gameState.Session.Id, gameState.CurrentStory.Id, result.Average);
 
         await _hubContext.Clients.Group(accessCode).SendAsync("VotesRevealed", result);
 
         if (completedStory != null)
         {
             await _hubContext.Clients.Group(accessCode).SendAsync("StoryUpdated", new StoryUpdatedEvent(
-                new StoryDto(completedStory.Id, completedStory.Title, completedStory.Url, completedStory.Status, completedStory.FinalScore)
+                StoryDto.From(completedStory)
             ));
         }
     }

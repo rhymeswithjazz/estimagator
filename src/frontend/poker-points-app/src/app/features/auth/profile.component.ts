@@ -1,3 +1,4 @@
+import { JiraConnectionComponent } from '../jira/jira-connection.component';
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [FormsModule, RouterLink, ThemeSelectorComponent],
+  imports: [JiraConnectionComponent, FormsModule, RouterLink, ThemeSelectorComponent],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {

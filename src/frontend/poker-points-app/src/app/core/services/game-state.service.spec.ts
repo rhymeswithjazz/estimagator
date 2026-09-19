@@ -27,6 +27,7 @@ class MockSignalRService {
   readonly voteCast$ = new Subject<VoteCastEvent>();
   readonly votesRevealed$ = new Subject<VotesRevealedEvent>();
   readonly votesReset$ = new Subject<VotesResetEvent>();
+  readonly storyEstimateUpdated$ = new Subject<Story>();
   readonly storyUpdated$ = new Subject<StoryUpdatedEvent>();
   readonly sessionState$ = new Subject<GameState>();
   readonly error$ = new Subject<string>();
@@ -91,6 +92,28 @@ describe('GameStateService', () => {
     expect(
       service.participants().find((participant) => participant.id === 'target-id')?.isOrganizer,
     ).toBe(true);
+  });
+
+  it('updates a historical estimate without replacing the current story', () => {
+    const current: Story = {
+      id: 'current',
+      title: 'Current',
+      url: null,
+      status: 'active',
+      finalScore: null,
+    };
+    const historical: Story = {
+      id: 'history',
+      title: 'History',
+      url: null,
+      status: 'completed',
+      finalScore: 5.5,
+    };
+    signalR.storyUpdated$.next({ story: current });
+    signalR.storyQueueUpdated$.next([historical]);
+    signalR.storyEstimateUpdated$.next({ ...historical, agreedEstimate: 5, estimateRevision: 1 });
+    expect(service.currentStory()?.id).toBe('current');
+    expect(service.storyQueue()[0].agreedEstimate).toBe(5);
   });
 
   it('sends allowed emoji reactions for the current participant', async () => {

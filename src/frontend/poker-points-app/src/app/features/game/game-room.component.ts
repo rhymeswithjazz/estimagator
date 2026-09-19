@@ -1,3 +1,4 @@
+import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import {
   Component,
   DestroyRef,
@@ -61,6 +62,7 @@ import confetti from 'canvas-confetti';
   selector: 'app-game-room',
   standalone: true,
   imports: [
+    StoryEstimateComponent,
     DecimalPipe,
     FormsModule,
     NgClass,
@@ -348,10 +350,7 @@ import confetti from 'canvas-confetti';
         }
         100% {
           opacity: 0;
-          transform: translate(
-              calc(-50% + var(--r-dx, 0px)),
-              calc(-50% - var(--r-float, 96px))
-            )
+          transform: translate(calc(-50% + var(--r-dx, 0px)), calc(-50% - var(--r-float, 96px)))
             scale(0.94);
         }
       }
@@ -540,11 +539,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       this.queueEmojiAnimation(event);
     });
 
-    this.signalR.emojiReactionSent$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((event) => {
-        this.queueEmojiReactionAnimation(event);
-      });
+    this.signalR.emojiReactionSent$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      this.queueEmojiReactionAnimation(event);
+    });
 
     this.signalR.sessionEnded$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.router.navigate(['/']);

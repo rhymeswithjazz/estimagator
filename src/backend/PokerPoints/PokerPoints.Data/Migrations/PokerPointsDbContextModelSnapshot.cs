@@ -22,6 +22,222 @@ namespace PokerPoints.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraAuthorization", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AccessToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("ReconnectRequired")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RetryAfter")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Scopes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("JiraAuthorizations");
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraFieldMapping", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SiteId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProjectId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IssueTypeId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FieldId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "SiteId", "ProjectId", "IssueTypeId");
+
+                    b.ToTable("JiraFieldMappings");
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraOAuthState", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BrowserHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReturnPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JiraOAuthStates");
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraPublishAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ErrorCode")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EstimateRevision")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("FieldId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("FinishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("IssueId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SiteId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("StoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoryId", "StartedAt");
+
+                    b.ToTable("JiraPublishAttempts");
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraSite", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SiteId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "SiteId");
+
+                    b.ToTable("JiraSites");
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraStoryLink", b =>
+                {
+                    b.Property<Guid>("StoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal?>("Baseline")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("ConflictValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("FieldId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("IssueId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IssueKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IssueTypeId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProjectId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublishStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PublishedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("PublishedRevision")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("PublishedValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("RetryAfter")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SiteId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("StoryId");
+
+                    b.HasIndex("SessionId", "SiteId", "IssueId")
+                        .IsUnique();
+
+                    b.ToTable("JiraStoryLinks");
+                });
+
             modelBuilder.Entity("PokerPoints.Data.Entities.Participant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -92,6 +308,9 @@ namespace PokerPoints.Data.Migrations
                         .HasColumnType("character varying(50)")
                         .HasDefaultValue("fibonacci");
 
+                    b.Property<Guid?>("EndingHostUserId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("GuestHostClaimedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -130,10 +349,24 @@ namespace PokerPoints.Data.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<decimal?>("AgreedEstimate")
+                        .HasPrecision(4, 1)
+                        .HasColumnType("numeric(4,1)");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime?>("EstimateConfirmedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EstimateConfirmedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("EstimateRevision")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer");
 
                     b.Property<decimal?>("FinalScore")
                         .HasPrecision(4, 1)
@@ -276,6 +509,42 @@ namespace PokerPoints.Data.Migrations
                     b.ToTable("Votes");
                 });
 
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraAuthorization", b =>
+                {
+                    b.HasOne("PokerPoints.Data.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraFieldMapping", b =>
+                {
+                    b.HasOne("PokerPoints.Data.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraSite", b =>
+                {
+                    b.HasOne("PokerPoints.Data.Entities.JiraAuthorization", null)
+                        .WithMany("Sites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraStoryLink", b =>
+                {
+                    b.HasOne("PokerPoints.Data.Entities.Story", null)
+                        .WithOne("JiraLink")
+                        .HasForeignKey("PokerPoints.Data.Entities.JiraStoryLink", "StoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PokerPoints.Data.Entities.Participant", b =>
                 {
                     b.HasOne("PokerPoints.Data.Entities.Session", "Session")
@@ -334,6 +603,11 @@ namespace PokerPoints.Data.Migrations
                     b.Navigation("Story");
                 });
 
+            modelBuilder.Entity("PokerPoints.Data.Entities.JiraAuthorization", b =>
+                {
+                    b.Navigation("Sites");
+                });
+
             modelBuilder.Entity("PokerPoints.Data.Entities.Participant", b =>
                 {
                     b.Navigation("Votes");
@@ -348,6 +622,8 @@ namespace PokerPoints.Data.Migrations
 
             modelBuilder.Entity("PokerPoints.Data.Entities.Story", b =>
                 {
+                    b.Navigation("JiraLink");
+
                     b.Navigation("Votes");
                 });
 
