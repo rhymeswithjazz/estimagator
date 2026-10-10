@@ -15,17 +15,23 @@ import {
   imports: [FormsModule],
   template: `
     @if (jira.enabled()) {
-      <button class="btn-secondary w-full text-sm my-2" data-testid="jira-import-open" (click)="open()">
+      <button
+        class="btn-secondary w-full text-sm my-2"
+        data-testid="jira-import-open"
+        (click)="open()"
+      >
         Import from Jira
       </button>
       @if (opened()) {
         <section
-          class="rounded-xl border border-gray-200 p-4 my-3 bg-gray-50 text-gray-900 space-y-4"
+          class="rounded-xl border border-gray-200 p-4 my-3 bg-gray-50 text-gray-900 stack-y-4"
           aria-label="Import from Jira"
         >
           <div class="flex justify-between">
             <h3 class="font-display font-semibold text-gray-900">Import from Jira</h3>
-            <button class="btn-ghost text-sm" aria-label="Close Jira import" (click)="close()">Close</button>
+            <button class="btn-ghost text-sm" aria-label="Close Jira import" (click)="close()">
+              Close
+            </button>
           </div>
           @if (!connection()?.connected || connection()?.reconnectRequired) {
             <button class="btn-primary" (click)="connect()">Connect Jira</button>
@@ -44,85 +50,130 @@ import {
                 }
               </select>
             </label>
-            <form (ngSubmit)="search()" class="space-y-3">
+            <form (ngSubmit)="search()" class="stack-y-3">
               @if (!advanced()) {
                 <label class="block text-sm font-medium text-gray-700" for="jira-issue-key">
                   Story number
                 </label>
-                <input id="jira-issue-key" name="issueKey" class="input-field text-sm"
-                  data-testid="jira-issue-key" [(ngModel)]="issueKey"
-                  (ngModelChange)="queueSearch()" [disabled]="busy()"
-                  role="combobox" aria-autocomplete="list" aria-controls="jira-suggestions"
+                <input
+                  id="jira-issue-key"
+                  name="issueKey"
+                  class="input-field text-sm"
+                  data-testid="jira-issue-key"
+                  [(ngModel)]="issueKey"
+                  (ngModelChange)="queueSearch()"
+                  [disabled]="busy()"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-controls="jira-suggestions"
                   [attr.aria-expanded]="suggestions().length > 0"
-                  [attr.aria-activedescendant]="activeSuggestion() >= 0 ? 'jira-option-' + activeSuggestion() : null"
+                  [attr.aria-activedescendant]="
+                    activeSuggestion() >= 0 ? 'jira-option-' + activeSuggestion() : null
+                  "
                   (keydown)="onSuggestionKey($event)"
-                  placeholder="Story number or title" maxlength="100" autocomplete="off" />
-                <p class="text-xs text-gray-500">Type part of a story number or title to narrow the list.</p>
+                  placeholder="Story number or title"
+                  maxlength="100"
+                  autocomplete="off"
+                />
+                <p class="text-xs text-gray-500">
+                  Type part of a story number or title to narrow the list.
+                </p>
                 @if (searching()) {
                   <p role="status" class="flex items-center gap-2 text-xs text-gray-500">
-                    <span aria-hidden="true" class="inline-block h-4 w-4 rounded-full border-2 border-gray-200 border-t-poker-green-600 animate-spin motion-reduce:animate-none"></span>
+                    <span
+                      aria-hidden="true"
+                      class="inline-block h-4 w-4 rounded-full border-2 border-gray-200 border-t-poker-green-600 animate-spin motion-reduce:animate-none"
+                    ></span>
                     Searching Jira…
                   </p>
                 }
                 @if (suggestions().length) {
-                  <div id="jira-suggestions" role="listbox" aria-label="Matching Jira stories"
-                    class="border border-gray-200 bg-white rounded-xl overflow-auto max-h-64">
+                  <div
+                    id="jira-suggestions"
+                    role="listbox"
+                    aria-label="Matching Jira stories"
+                    class="border border-gray-200 bg-white rounded-xl overflow-auto max-h-64"
+                  >
                     @for (issue of suggestions(); track issue.id; let index = $index) {
-                      <button type="button" role="option" [id]="'jira-option-' + index"
+                      <button
+                        type="button"
+                        role="option"
+                        [id]="'jira-option-' + index"
                         [attr.aria-selected]="activeSuggestion() === index"
                         [class.bg-poker-green-50]="activeSuggestion() === index"
-                        class="block w-full px-3 py-3 text-left text-sm hover:bg-poker-green-50 disabled:opacity-50" [disabled]="busy()"
-                        (click)="chooseSuggestion(issue)">
+                        class="block w-full px-3 py-3 text-left text-sm hover:bg-poker-green-50 disabled:opacity-50"
+                        [disabled]="busy()"
+                        (click)="chooseSuggestion(issue)"
+                      >
                         <span class="font-semibold text-poker-green-700">{{ issue.key }}</span>
-                        <span class="block truncate text-gray-500 text-xs mt-1" [title]="issue.summary">{{ issue.summary }}</span>
+                        <span
+                          class="block truncate text-gray-500 text-xs mt-1"
+                          [title]="issue.summary"
+                          >{{ issue.summary }}</span
+                        >
                       </button>
                     }
                   </div>
                 }
               }
-            @if (advanced()) {
-            <label class="block text-sm font-medium text-gray-700"
-              >Project
-              <select
-                [disabled]="busy()"
-                class="input-field text-sm mt-1"
-                name="projectId"
-                [(ngModel)]="projectId"
-                (ngModelChange)="resetSearch()"
-              >
-                <option value="">Select a project</option>
-                @for (project of projects(); track project.id) {
-                  <option [value]="project.id">{{ project.key }} — {{ project.name }}</option>
-                }
-              </select>
-            </label>
-            @if (moreProjects()) {
-              <button type="button" class="btn-ghost text-xs" [disabled]="busy()" (click)="loadProjects()">
-                More projects
-              </button>
-            }
-            <label class="block text-sm"
-              >Advanced JQL (optional; overrides project selection)
-              <textarea
-                [disabled]="busy()"
-                class="input-field text-sm mt-1"
-                data-testid="jira-jql"
-                name="jql"
-                [(ngModel)]="jql"
-                (ngModelChange)="resetSearch()"
-                placeholder="project = TEAM AND issuetype = Story"
-              ></textarea>
-            </label>
-            }
               @if (advanced()) {
-              <button type="submit" class="btn-primary w-full text-sm" data-testid="jira-search"
-                [disabled]="busy() || !siteId || (advanced() ? (!projectId && !jql.trim()) : !issueKey.trim())">
-                {{ busy() ? 'Searching…' : 'Find story' }}
-              </button>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Project
+                  <select
+                    [disabled]="busy()"
+                    class="input-field text-sm mt-1"
+                    name="projectId"
+                    [(ngModel)]="projectId"
+                    (ngModelChange)="resetSearch()"
+                  >
+                    <option value="">Select a project</option>
+                    @for (project of projects(); track project.id) {
+                      <option [value]="project.id">{{ project.key }} — {{ project.name }}</option>
+                    }
+                  </select>
+                </label>
+                @if (moreProjects()) {
+                  <button
+                    type="button"
+                    class="btn-ghost text-xs"
+                    [disabled]="busy()"
+                    (click)="loadProjects()"
+                  >
+                    More projects
+                  </button>
+                }
+                <label class="block text-sm"
+                  >Advanced JQL (optional; overrides project selection)
+                  <textarea
+                    [disabled]="busy()"
+                    class="input-field text-sm mt-1"
+                    data-testid="jira-jql"
+                    name="jql"
+                    [(ngModel)]="jql"
+                    (ngModelChange)="resetSearch()"
+                    placeholder="project = TEAM AND issuetype = Story"
+                  ></textarea>
+                </label>
+              }
+              @if (advanced()) {
+                <button
+                  type="submit"
+                  class="btn-primary w-full text-sm"
+                  data-testid="jira-search"
+                  [disabled]="
+                    busy() || !siteId || (advanced() ? !projectId && !jql.trim() : !issueKey.trim())
+                  "
+                >
+                  {{ busy() ? 'Searching…' : 'Find story' }}
+                </button>
               }
             </form>
-            <button class="btn-ghost text-xs" [disabled]="busy()" (click)="toggleAdvanced()"
-              [attr.aria-expanded]="advanced()">
+            <button
+              class="btn-ghost text-xs"
+              [disabled]="busy()"
+              (click)="toggleAdvanced()"
+              [attr.aria-expanded]="advanced()"
+            >
               {{ advanced() ? 'Search by story number' : 'Advanced search' }}
             </button>
             @for (issue of displayedIssues(); track issue.id) {
@@ -235,8 +286,9 @@ export class JiraImportComponent {
   queueSearch() {
     this.cancelSearch();
     const query = this.issueKey.trim().toLowerCase();
-    this.suggestions.update((items) => items.filter((issue) =>
-      `${issue.key} ${issue.summary}`.toLowerCase().includes(query)));
+    this.suggestions.update((items) =>
+      items.filter((issue) => `${issue.key} ${issue.summary}`.toLowerCase().includes(query)),
+    );
     this.message.set('');
     this.nextPage.set(null);
     if (!this.siteId) return;
@@ -249,7 +301,10 @@ export class JiraImportComponent {
     await this.run(async () => {
       const result = await this.jira.search(this.siteId, '', `key = ${JSON.stringify(issue.key)}`);
       const detail = result.issues.find((item) => item.id === issue.id);
-      if (!detail) { this.message.set('This story is no longer available.'); return; }
+      if (!detail) {
+        this.message.set('This story is no longer available.');
+        return;
+      }
       this.selected.set(detail.id, detail);
       this.suggestions.update((items) => items.filter((item) => item.id !== detail.id));
     });
@@ -262,7 +317,10 @@ export class JiraImportComponent {
     } else if (['ArrowDown', 'ArrowUp'].includes(event.key) && this.suggestions().length) {
       event.preventDefault();
       const direction = event.key === 'ArrowDown' ? 1 : -1;
-      this.activeSuggestion.set((this.activeSuggestion() + direction + this.suggestions().length) % this.suggestions().length);
+      this.activeSuggestion.set(
+        (this.activeSuggestion() + direction + this.suggestions().length) %
+          this.suggestions().length,
+      );
     } else if (event.key === 'Enter' && !this.advanced()) {
       event.preventDefault();
       const issue = this.suggestions()[Math.max(0, this.activeSuggestion())];
@@ -326,7 +384,8 @@ export class JiraImportComponent {
         const result = await this.jira.suggestions(this.siteId, this.issueKey.trim());
         if (version !== this.searchVersion) return;
         this.suggestions.set(result.filter((issue) => !this.selected.has(issue.id)));
-        if (!this.suggestions().length) this.message.set('No matching stories. Try another number or title.');
+        if (!this.suggestions().length)
+          this.message.set('No matching stories. Try another number or title.');
       } catch (error) {
         if (version === this.searchVersion) this.message.set(jiraError(error));
       } finally {

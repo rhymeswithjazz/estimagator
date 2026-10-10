@@ -65,7 +65,7 @@ import { GameStateService } from '../../core/services/game-state.service';
               No completed stories yet
             </div>
           } @else {
-            <div class="space-y-2">
+            <div class="stack-y-2">
               @for (story of completedStories(); track story.id; let i = $index) {
                 <div
                   class="group border border-poker-green-200 bg-poker-green-50 rounded-lg p-3 transition-colors hover:border-poker-green-300"
@@ -108,7 +108,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                       >
                         <button
                           (click)="restartStory(story.id)"
-                          class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                          class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-sm transition-colors"
                           title="Re-vote on this story"
                         >
                           <svg
@@ -127,7 +127,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                         </button>
                         <button
                           (click)="deleteStory(story.id)"
-                          class="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                          class="p-1.5 text-red-500 hover:bg-red-50 rounded-sm transition-colors"
                           title="Remove story"
                         >
                           <svg

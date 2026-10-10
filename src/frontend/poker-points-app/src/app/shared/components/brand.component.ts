@@ -4,28 +4,64 @@ import { Component, input } from '@angular/core';
   selector: 'app-brand',
   standalone: true,
   template: `
-    <span class="brand" [class.brand-stacked]="size() !== 'sm'"
-      [class.brand-hero]="size() === 'lg'" role="img" aria-label="Estimagator">
+    <span
+      class="brand"
+      [class.brand-stacked]="size() !== 'sm'"
+      [class.brand-hero]="size() === 'lg'"
+      role="img"
+      aria-label="Estimagator"
+    >
       <img src="brand/logo.svg?v=scout-1" alt="" width="272" height="256" />
       <span class="brand-wordmark" aria-hidden="true">Estima<span>gator</span></span>
     </span>
   `,
   styles: `
-    :host { display: inline-flex; }
-    .brand { display: inline-flex; align-items: center; gap: 0.375rem; }
-    img { width: 2.25rem; height: auto; flex-shrink: 0; }
-    .brand-wordmark {
-      font-family: Poppins, system-ui, sans-serif; font-size: 1.25rem;
-      font-weight: 700; letter-spacing: -0.035em; line-height: 1.2; color: #233d22;
+    :host {
+      display: inline-flex;
     }
-    .brand-wordmark > span { color: #47772c; }
-    .brand-stacked { flex-direction: column; gap: 0.5rem; }
-    .brand-stacked img { width: 5rem; }
-    .brand-stacked .brand-wordmark { font-size: 1.75rem; }
-    .brand-hero img { width: 7rem; }
-    .brand-hero .brand-wordmark { font-size: clamp(2.25rem, 9vw, 3rem); }
-    :host-context(.dark) .brand-wordmark { color: #edf4e6; }
-    :host-context(.dark) .brand-wordmark > span { color: #a5cc7d; }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    img {
+      width: 2.25rem;
+      height: auto;
+      flex-shrink: 0;
+    }
+    .brand-wordmark {
+      font-family: Poppins, system-ui, sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.2;
+      color: #233d22;
+    }
+    .brand-wordmark > span {
+      color: #47772c;
+    }
+    .brand-stacked {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .brand-stacked img {
+      width: 5rem;
+    }
+    .brand-stacked .brand-wordmark {
+      font-size: 1.75rem;
+    }
+    .brand-hero img {
+      width: 7rem;
+    }
+    .brand-hero .brand-wordmark {
+      font-size: clamp(2.25rem, 9vw, 3rem);
+    }
+    :host-context(.dark) .brand-wordmark {
+      color: #edf4e6;
+    }
+    :host-context(.dark) .brand-wordmark > span {
+      color: #a5cc7d;
+    }
   `,
 })
 export class BrandComponent {

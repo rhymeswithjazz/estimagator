@@ -19,10 +19,12 @@ describe('Jira story number search', () => {
     jira.search.mockResolvedValue({ issues: [], nextPageToken: null });
     jira.suggestions.mockResolvedValue([]);
     jira.projects.mockResolvedValue({ values: [], isLast: true });
-    TestBed.configureTestingModule({ providers: [
-      { provide: JiraService, useValue: jira },
-      { provide: Router, useValue: { url: '/game/ABC123' } },
-    ] });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: JiraService, useValue: jira },
+        { provide: Router, useValue: { url: '/game/ABC123' } },
+      ],
+    });
   });
   function create() {
     return TestBed.runInInjectionContext(() => new JiraImportComponent());
@@ -70,20 +72,26 @@ describe('Jira story number search', () => {
       await vi.advanceTimersByTimeAsync(100);
       component.issueKey = 'TEAM-1';
       component.queueSearch();
-      expect(component.suggestions().map(i => i.key)).toEqual(['TEAM-12']);
+      expect(component.suggestions().map((i) => i.key)).toEqual(['TEAM-12']);
       await vi.advanceTimersByTimeAsync(149);
       expect(jira.suggestions).not.toHaveBeenCalled();
       await vi.advanceTimersByTimeAsync(1);
       expect(jira.suggestions).toHaveBeenCalledExactlyOnceWith('site', 'TEAM-1');
       expect(component.searching()).toBe(false);
-    } finally { vi.useRealTimers(); }
+    } finally {
+      vi.useRealTimers();
+    }
   });
   it('ignores a stale response after the field changes', async () => {
     const component = create();
     component.siteId = 'site';
     component.issueKey = 'TEAM-1';
     let resolve!: (value: unknown) => void;
-    jira.suggestions.mockReturnValueOnce(new Promise((done) => { resolve = done; }));
+    jira.suggestions.mockReturnValueOnce(
+      new Promise((done) => {
+        resolve = done;
+      }),
+    );
     const request = component.search();
     component.issueKey = '';
     component.queueSearch();
@@ -113,5 +121,4 @@ describe('Jira story number search', () => {
       vi.useRealTimers();
     }
   });
-
 });

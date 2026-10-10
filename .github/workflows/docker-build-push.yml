@@ -1,15 +1,13 @@
 name: Docker Build & Push
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Docker image tag (leave empty for latest)'
-        required: false
-        default: 'latest'
+  workflow_call:
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
+
+permissions:
+  contents: read
 
 env:
   DOCKER_USERNAME: rhymeswithjazz
@@ -19,6 +17,10 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency:
+      group: estimagator-image-publication
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v6
@@ -27,7 +29,7 @@ jobs:
         id: calver
         run: |
           CALVER=$(date +'%Y.%m.%d')
-          echo "tag=${CALVER}" >> $GITHUB_OUTPUT
+          echo "tag=${CALVER}" >> "$GITHUB_OUTPUT"
           echo "📅 CalVer tag: ${CALVER}"
 
       - name: Set up QEMU
@@ -55,6 +57,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=${{ steps.calver.outputs.tag }}
             type=sha,prefix={{branch}}-
+            type=sha,prefix=sha-,format=long
 
       - name: Extract metadata for Frontend
         id: meta-frontend
@@ -69,8 +72,10 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=${{ steps.calver.outputs.tag }}
             type=sha,prefix={{branch}}-
+            type=sha,prefix=sha-,format=long
 
       - name: Build and push API image
+        id: api
         uses: docker/build-push-action@v6
         with:
           context: src/backend/PokerPoints
@@ -83,6 +88,7 @@ jobs:
           cache-to: type=registry,ref=${{ env.API_IMAGE }}:buildcache,mode=max
 
       - name: Build and push Frontend image
+        id: frontend
         uses: docker/build-push-action@v6
         with:
           context: src/frontend/poker-points-app
@@ -94,7 +100,17 @@ jobs:
           cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache
           cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
 
-      - name: Image digest
+      - name: Manual deployment summary
+        env:
+          API_DIGEST: ${{ steps.api.outputs.digest }}
+          FRONTEND_DIGEST: ${{ steps.frontend.outputs.digest }}
         run: |
-          echo "API Image: ${{ steps.meta-api.outputs.tags }}"
-          echo "Frontend Image: ${{ steps.meta-frontend.outputs.tags }}"
+          {
+            echo '### Images ready for manual Portainer deployment'
+            echo "Commit: ${GITHUB_SHA}"
+            echo "API: ${API_IMAGE}@${API_DIGEST}"
+            echo "Frontend: ${FRONTEND_IMAGE}@${FRONTEND_DIGEST}"
+            echo "Both images also have the tag sha-${GITHUB_SHA}."
+            echo 'Update both services together in Portainer using these digests or the matching commit tag.'
+            echo 'GitHub has published images; it has not deployed or health-checked the application.'
+          } >> "$GITHUB_STEP_SUMMARY"

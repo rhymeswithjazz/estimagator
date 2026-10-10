@@ -47,14 +47,14 @@
         <p class="text-lg text-gray-500 font-medium mt-3">Bite-sized estimation for agile teams</p>
       </div>
 
-      <div class="space-y-5">
+      <div class="stack-y-5">
         <!-- Create Game Section -->
         <div class="glass-card p-6">
           @if (createError()) {
             <div
               class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2"
             >
-              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
                   d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -84,7 +84,7 @@
               </span>
             </button>
           } @else {
-            <div class="space-y-4">
+            <div class="stack-y-4">
               <div class="flex items-center justify-between">
                 <h3 class="text-gray-900 font-semibold text-lg">Create New Game</h3>
                 <button
@@ -134,7 +134,7 @@
                 />
               </div>
 
-              <div class="space-y-2">
+              <div class="stack-y-2">
                 <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
                   >Your Role</label
                 >
@@ -164,7 +164,7 @@
                 </div>
               </div>
 
-              <div class="space-y-2">
+              <div class="stack-y-2">
                 <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
                   >Deck Type</label
                 >
@@ -205,7 +205,7 @@
               </div>
 
               <!-- Timer Duration -->
-              <div class="space-y-2">
+              <div class="stack-y-2">
                 <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
                   >Timer Duration</label
                 >
@@ -239,7 +239,7 @@
                       (ngModelChange)="customTimerMinutes.set($event)"
                       (input)="applyCustomTimer()"
                       placeholder="#"
-                      class="w-8 py-2.5 text-sm font-semibold text-center bg-transparent focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      class="w-8 py-2.5 text-sm font-semibold text-center bg-transparent focus:outline-hidden [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       [class]="isCustomTimer() ? 'text-poker-green-700' : 'text-gray-600'"
                     />
                     <span
@@ -272,17 +272,17 @@
         <!-- Divider -->
         <div class="flex items-center gap-4 py-1">
           <div
-            class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"
+            class="flex-1 h-px bg-linear-to-r/srgb from-transparent via-gray-300 to-transparent"
           ></div>
           <span class="text-gray-400 text-sm font-medium uppercase tracking-wider">or join</span>
           <div
-            class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"
+            class="flex-1 h-px bg-linear-to-r/srgb from-transparent via-gray-300 to-transparent"
           ></div>
         </div>
 
         <!-- Join Game Section -->
         <div class="glass-card p-6">
-          <form (submit)="joinSession(); $event.preventDefault()" class="space-y-4">
+          <form (submit)="joinSession(); $event.preventDefault()" class="stack-y-4">
             <div>
               <label class="block text-gray-600 text-sm font-medium mb-2 text-left"
                 >Game Code</label
@@ -297,7 +297,7 @@
               />
               @if (joinError()) {
                 <p class="mt-2 text-red-500 text-sm flex items-center gap-1.5">
-                  <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fill-rule="evenodd"
                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"

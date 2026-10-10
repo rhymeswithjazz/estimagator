@@ -6,7 +6,7 @@ End-to-end tests for the Estimagator poker planning application using Playwright
 
 ```bash
 cd tests/e2e
-npm install
+npm ci
 npx playwright install --with-deps
 ```
 
@@ -19,8 +19,8 @@ Before running E2E tests, you need both backend and frontend running:
 **Backend:**
 ```bash
 cd src/backend/PokerPoints
-docker compose -f ../../docker/docker-compose.yml up -d  # Start PostgreSQL
-dotnet run --project PokerPoints.Api
+docker compose -f ../../../docker/docker-compose.yml up -d  # Start PostgreSQL
+dotnet run --project PokerPoints.Api --launch-profile http
 ```
 
 **Frontend:**
@@ -48,6 +48,12 @@ npm run test:debug -- voting-flow.spec.ts
 npm run report
 ```
 
+CI runs these tests as part of the main pipeline with a fresh database and backend, using all three configured browsers. `PLAYWRIGHT_START_SERVER=true` lets Playwright own the Angular development server in CI, so the browser connects to the local API on port 5051. The production frontend build is validated separately.
+
+The guest creation endpoint permits 10 sessions per IP per 10 minutes. Repeated local runs against the same backend can reach that limit; use a fresh disposable test backend for each full verification run rather than weakening the application's rate limiter.
+
+The appearance tests check the Scout logo, compiled styles, and horizontal layout at desktop/mobile widths in both themes. Chromium screenshots are retained in the browser-test artifact for visual review.
+
 ## Test Structure
 
 ```
@@ -70,8 +76,9 @@ tests/e2e/
 3. Both players cast votes (5 and 8)
 4. Organizer reveals votes
 5. Verify average is calculated
-6. Organizer resets votes
-7. Verify votes are cleared
+6. Organizer reloads and retains the revealed round and host controls
+7. Organizer resets votes
+8. Verify both participants can vote again
 
 **Observer Flow:**
 1. Organizer creates a session
@@ -81,7 +88,7 @@ tests/e2e/
 
 ## Writing New Tests
 
-Tests use Playwright's Page Object pattern and data-testid selectors where available. Example:
+Tests use shared helpers and stable data-testid or accessible role selectors. Each participant uses a separate browser context so reconnect credentials are isolated. Example:
 
 ```typescript
 import { test, expect } from '@playwright/test';
@@ -103,12 +110,12 @@ test('My test scenario', async ({ page }) => {
 
 ## CI/CD
 
-E2E tests run automatically on PRs to main via `.github/workflows/e2e-tests.yml`:
-- Starts PostgreSQL service
-- Builds and runs backend
-- Builds and serves frontend
-- Runs Playwright tests in Chromium
-- Uploads test reports and screenshots on failure
+The main pipeline calls `.github/workflows/e2e-tests.yml` on pushes and pull requests:
+
+- Starts an isolated PostgreSQL service and the .NET 10 backend
+- Serves Angular on port 4200 against the API on port 5051
+- Runs Playwright tests in Chromium, Firefox, and WebKit
+- Uploads test reports, screenshots, and backend logs even when a test fails
 
 ## Troubleshooting
 
@@ -116,7 +123,7 @@ E2E tests run automatically on PRs to main via `.github/workflows/e2e-tests.yml`
 
 Backend or frontend may not be running. Check:
 ```bash
-curl http://localhost:5000/health  # Backend health
+curl http://localhost:5051/health  # Backend health
 curl http://localhost:4200         # Frontend
 ```
 
@@ -132,7 +139,7 @@ dotnet ef database update
 
 Install Playwright browsers:
 ```bash
-npx playwright install --with-deps chromium
+npx playwright install --with-deps chromium firefox webkit
 ```
 
 ## Best Practices

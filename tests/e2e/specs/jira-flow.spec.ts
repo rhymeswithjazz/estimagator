@@ -144,7 +144,10 @@ test('host confirms, resolves a Jira conflict, reconnects and retries from histo
   await page.reload();
   await expect(page.getByTestId('agreed-estimate')).toHaveText('5');
   await expect(page.getByTestId('jira-publish-status')).toContainText('Published');
-  await page.screenshot({ path: test.info().outputPath('jira-history.png'), fullPage: true });
+  await page.screenshot({
+    path: test.info().outputPath('jira-history.png'),
+    fullPage: true,
+  });
 });
 
 test('participants view estimates without edit or publishing controls', async ({ page }) => {
@@ -196,7 +199,7 @@ test('host searches Jira and imports selected issues into the live queue', async
         if (msg.type !== 1) continue;
         const result =
           msg.target === 'JoinSession'
-            ? participant
+            ? { participant, reconnectToken: null }
             : msg.target === 'GetStoryQueue'
               ? []
               : msg.target === 'GetSessionState'
@@ -241,17 +244,28 @@ test('host searches Jira and imports selected issues into the live queue', async
       return respond({
         connected: true,
         reconnectRequired: false,
-        sites: [{ id: 'site', name: 'Example Jira', url: 'https://example.atlassian.net' }],
+        sites: [
+          {
+            id: 'site',
+            name: 'Example Jira',
+            url: 'https://example.atlassian.net',
+          },
+        ],
       });
     if (path.endsWith('/suggestions')) {
       const query = new URL(route.request().url()).searchParams.get('query')!.toLowerCase();
-      return respond([
-        { id: '100', key: 'TEAM-1', summary: queued.title },
-        { id: '200', key: 'TEAM-2', summary: 'Another story to choose' },
-      ].filter(issue => `${issue.key} ${issue.summary}`.toLowerCase().includes(query)));
+      return respond(
+        [
+          { id: '100', key: 'TEAM-1', summary: queued.title },
+          { id: '200', key: 'TEAM-2', summary: 'Another story to choose' },
+        ].filter((issue) => `${issue.key} ${issue.summary}`.toLowerCase().includes(query)),
+      );
     }
     if (path.endsWith('/projects'))
-      return respond({ values: [{ id: '10', key: 'TEAM', name: 'Team' }], isLast: true });
+      return respond({
+        values: [{ id: '10', key: 'TEAM', name: 'Team' }],
+        isLast: true,
+      });
     if (path.endsWith('/search'))
       return respond({
         issues: [
@@ -285,16 +299,30 @@ test('host searches Jira and imports selected issues into the live queue', async
   await expect(page.getByRole('option', { name: /TEAM-2 Another/ })).toBeVisible();
   await page.getByTestId('jira-issue-key').fill('team-1');
   await expect(page.getByRole('option', { name: /TEAM-2 Another/ })).toHaveCount(0);
-  const suggestion = page.getByRole('option', { name: /TEAM-1 Imported Jira story/ });
+  const suggestion = page.getByRole('option', {
+    name: /TEAM-1 Imported Jira story/,
+  });
   await expect(suggestion).toBeVisible();
   await expect(suggestion.locator('[title]')).toHaveAttribute('title', 'Imported Jira story');
-  await page.screenshot({ path: test.info().outputPath('jira-autocomplete.png'), fullPage: true, animations: 'disabled' });
+  await page.screenshot({
+    path: test.info().outputPath('jira-autocomplete.png'),
+    fullPage: true,
+    animations: 'disabled',
+  });
   await page.getByTestId('jira-issue-key').press('ArrowDown');
   await page.getByTestId('jira-issue-key').press('Enter');
   await expect(page.getByTestId('jira-select-TEAM-1')).toBeVisible();
-  await page.screenshot({ path: test.info().outputPath('jira-search-light.png'), fullPage: true, animations: 'disabled' });
+  await page.screenshot({
+    path: test.info().outputPath('jira-search-light.png'),
+    fullPage: true,
+    animations: 'disabled',
+  });
   await page.evaluate(() => document.documentElement.classList.add('dark'));
-  await page.screenshot({ path: test.info().outputPath('jira-search-dark.png'), fullPage: true, animations: 'disabled' });
+  await page.screenshot({
+    path: test.info().outputPath('jira-search-dark.png'),
+    fullPage: true,
+    animations: 'disabled',
+  });
   await page.getByTestId('jira-select-TEAM-1').check();
   await page.getByTestId('jira-import-selected').click();
   await expect(page.getByText('1 imported, 0 skipped.')).toBeVisible();
@@ -302,5 +330,8 @@ test('host searches Jira and imports selected issues into the live queue', async
   await expect(
     page.locator('app-settings-panel').getByText('Imported Jira story', { exact: true }),
   ).toBeVisible();
-  await page.screenshot({ path: test.info().outputPath('jira-import.png'), fullPage: true });
+  await page.screenshot({
+    path: test.info().outputPath('jira-import.png'),
+    fullPage: true,
+  });
 });

@@ -15,7 +15,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
         class="flex items-center gap-2 p-1 rounded-lg hover:bg-gray-100 transition-colors"
       >
         <div
-          class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm"
+          class="w-8 h-8 rounded-full bg-linear-to-br/srgb from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm"
         >
           {{ userInitials() }}
         </div>
@@ -149,7 +149,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
               class="mx-4 my-2 p-2 bg-poker-green-50 text-poker-green-700 text-xs rounded-lg flex items-start gap-2"
             >
               <svg
-                class="w-4 h-4 flex-shrink-0 mt-0.5"
+                class="w-4 h-4 shrink-0 mt-0.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

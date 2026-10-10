@@ -1,60 +1,43 @@
 name: Frontend CI
 
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - 'src/frontend/**'
-      - 'tests/e2e/**'
-      - '.github/workflows/frontend-ci.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'src/frontend/**'
-      - 'tests/e2e/**'
-      - '.github/workflows/frontend-ci.yml'
+  workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: src/frontend/poker-points-app
     steps:
       - uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: src/frontend/poker-points-app/package-lock.json
-
       - name: Install dependencies
-        working-directory: src/frontend/poker-points-app
         run: npm ci
-
-      - name: Run tests
-        working-directory: src/frontend/poker-points-app
-        run: npm test -- --run
-        env:
-          NODE_ENV: test
-
+      - name: Check formatting
+        run: npm run format:check
+      - name: Run tests with coverage
+        run: npm run test:coverage
       - name: Build
-        working-directory: src/frontend/poker-points-app
         run: npm run build
-        env:
-          NODE_ENV: production
-
-      - name: Install browser test dependencies
-        working-directory: tests/e2e
-        run: npm ci && npx playwright install --with-deps chromium
-
-      - name: Jira browser flow (stubbed API)
-        working-directory: tests/e2e
-        run: npx playwright test specs/jira-flow.spec.ts --project=chromium
-        env:
-          PLAYWRIGHT_START_SERVER: 'true'
-
-      - name: Upload build artifacts
+      - name: Scan dependencies
+        run: npm audit --audit-level=high
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: frontend-coverage
+          path: src/frontend/poker-points-app/coverage/
+          retention-days: 7
+      - name: Upload build
         uses: actions/upload-artifact@v6
         with:
           name: frontend-build

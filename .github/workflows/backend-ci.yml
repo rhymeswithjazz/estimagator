@@ -1,75 +1,59 @@
 name: Backend CI
 
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - 'src/backend/**'
-      - '.github/workflows/backend-ci.yml'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'src/backend/**'
-      - '.github/workflows/backend-ci.yml'
+  workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: pokerpoints
-          POSTGRES_PASSWORD: pokerpoints
-          POSTGRES_DB: pokerpoints_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: src/backend/PokerPoints
     steps:
       - uses: actions/checkout@v6
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('src/backend/**/*.csproj') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
-
       - name: Restore dependencies
-        working-directory: src/backend/PokerPoints
         run: dotnet restore
-
-      - name: Format check
-        working-directory: src/backend/PokerPoints
-        run: dotnet format --verify-no-changes --verbosity diagnostic
-        continue-on-error: true
-
+      - name: Check formatting
+        run: dotnet format --no-restore --verify-no-changes
       - name: Build
-        working-directory: src/backend/PokerPoints
         run: dotnet build --no-restore --configuration Release
-
-      - name: Run tests
-        working-directory: src/backend/PokerPoints
-        run: dotnet test --no-build --configuration Release --logger "trx" --collect:"XPlat Code Coverage"
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=pokerpoints_test;Username=pokerpoints;Password=pokerpoints"
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
+      # Integration tests create isolated PostgreSQL databases through Testcontainers.
+      - name: Run tests with coverage
+        run: dotnet test --no-build --configuration Release --logger trx --collect:"XPlat Code Coverage"
+      - name: Scan dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          dotnet list package --vulnerable --include-transitive --format json > vulnerability-report.json
+          python3 - <<'PYTHON'
+          import json, sys
+          report = json.load(open('vulnerability-report.json'))
+          findings = [
+              (project['path'], package['id'], issue['severity'], issue['advisoryurl'])
+              for project in report.get('projects', [])
+              for framework in project.get('frameworks', [])
+              for group in ('topLevelPackages', 'transitivePackages')
+              for package in framework.get(group, [])
+              for issue in package.get('vulnerabilities', [])
+              if issue['severity'].lower() in ('high', 'critical')
+          ]
+          for finding in findings:
+              print(' | '.join(finding))
+          sys.exit(bool(findings))
+          PYTHON
+      - name: Upload test and security reports
         if: always()
+        uses: actions/upload-artifact@v6
         with:
-          files: '**/coverage.cobertura.xml'
-          flags: backend
-        continue-on-error: true
+          name: backend-reports
+          path: |
+            src/backend/PokerPoints/**/TestResults/
+            src/backend/PokerPoints/vulnerability-report.json
+          retention-days: 7

@@ -15,7 +15,9 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
       <app-theme-selector class="absolute right-4 top-4 z-20" />
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-6">
-          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"><app-brand size="md" /></a>
+          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"
+            ><app-brand size="md"
+          /></a>
           <p class="text-gray-500 text-sm">Bite-sized estimation for agile teams</p>
         </div>
 
@@ -52,7 +54,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
             <h2 class="text-xl font-semibold text-center mb-2">Set New Password</h2>
             <p class="text-gray-600 text-center text-sm mb-6">Enter your new password below.</p>
 
-            <form (ngSubmit)="onSubmit()" class="space-y-4">
+            <form (ngSubmit)="onSubmit()" class="stack-y-4">
               <div>
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
                   New Password
@@ -64,7 +66,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
                   name="password"
                   required
                   minlength="6"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
                   placeholder="At least 6 characters"
                 />
               </div>
@@ -79,7 +81,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
                   [(ngModel)]="confirmPassword"
                   name="confirmPassword"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
                   placeholder="Confirm your password"
                 />
               </div>

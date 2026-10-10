@@ -14,7 +14,9 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
       <app-theme-selector class="absolute right-4 top-4 z-20" />
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-6">
-          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"><app-brand size="md" /></a>
+          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"
+            ><app-brand size="md"
+          /></a>
           <p class="text-gray-500 text-sm">Bite-sized estimation for agile teams</p>
         </div>
 
@@ -112,7 +114,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
             </div>
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Verification Failed</h2>
             <p class="text-gray-600 mb-6">{{ error() }}</p>
-            <div class="space-y-3">
+            <div class="stack-y-3">
               <a
                 routerLink="/login"
                 class="block bg-poker-green-600 text-white px-6 py-2 rounded-md hover:bg-poker-green-700 transition-colors"
@@ -133,7 +135,9 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
         }
 
         @if (resendSuccess()) {
-          <div class="mt-4 p-3 bg-poker-green-50 text-poker-green-700 rounded-md text-sm text-center">
+          <div
+            class="mt-4 p-3 bg-poker-green-50 text-poker-green-700 rounded-md text-sm text-center"
+          >
             Verification email sent! Please check your inbox.
           </div>
         }

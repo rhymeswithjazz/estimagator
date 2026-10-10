@@ -52,11 +52,28 @@ public class JiraStoryService(PokerPointsDbContext db, SessionAuthorization auth
                 if (await db.JiraStoryLinks.AnyAsync(l => l.SessionId == session.Id && l.SiteId == site.SiteId && l.IssueId == issue.Id))
                 { skipped.Add(new { issueId = issue.Id, reason = "Already imported." }); continue; }
                 await authorization.RequireHostAsync(code, user, true);
-                var story = new Story { Id = Guid.NewGuid(), SessionId = session.Id, Title = issue.Summary, SortOrder = ++order,
-                    Url = $"{site.Url.TrimEnd('/')}/browse/{Uri.EscapeDataString(issue.Key)}", Status = "pending" };
-                story.JiraLink = new() { StoryId = story.Id, SessionId = session.Id, SiteId = site.SiteId, IssueId = issue.Id,
-                    IssueKey = issue.Key, ProjectId = issue.ProjectId, IssueTypeId = issue.IssueTypeId, FieldId = issue.FieldId,
-                    Baseline = issue.Estimate, Message = issue.UnavailableReason };
+                var story = new Story
+                {
+                    Id = Guid.NewGuid(),
+                    SessionId = session.Id,
+                    Title = issue.Summary,
+                    SortOrder = ++order,
+                    Url = $"{site.Url.TrimEnd('/')}/browse/{Uri.EscapeDataString(issue.Key)}",
+                    Status = "pending"
+                };
+                story.JiraLink = new()
+                {
+                    StoryId = story.Id,
+                    SessionId = session.Id,
+                    SiteId = site.SiteId,
+                    IssueId = issue.Id,
+                    IssueKey = issue.Key,
+                    ProjectId = issue.ProjectId,
+                    IssueTypeId = issue.IssueTypeId,
+                    FieldId = issue.FieldId,
+                    Baseline = issue.Estimate,
+                    Message = issue.UnavailableReason
+                };
                 db.Stories.Add(story);
                 await issues.SaveMappingAsync(user, site.SiteId, issue);
                 await db.SaveChangesAsync();
@@ -94,8 +111,16 @@ public class JiraStoryService(PokerPointsDbContext db, SessionAuthorization auth
         // A prior in-flight attempt is now orphaned: holding the issue lock proves no other writer is running.
         var interrupted = await db.JiraPublishAttempts.Where(a => a.StoryId == story.Id && a.Status == "publishing").ToListAsync();
         foreach (var old in interrupted) { old.Status = "uncertain"; old.ErrorCode = "interrupted"; old.FinishedAt = DateTime.UtcNow; }
-        var attempt = new JiraPublishAttempt { StoryId = story.Id, ActorId = user, SiteId = link.SiteId, IssueId = link.IssueId,
-            FieldId = link.FieldId, EstimateRevision = story.EstimateRevision, Value = story.AgreedEstimate.Value };
+        var attempt = new JiraPublishAttempt
+        {
+            StoryId = story.Id,
+            ActorId = user,
+            SiteId = link.SiteId,
+            IssueId = link.IssueId,
+            FieldId = link.FieldId,
+            EstimateRevision = story.EstimateRevision,
+            Value = story.AgreedEstimate.Value
+        };
         db.JiraPublishAttempts.Add(attempt);
         link.PublishStatus = "publishing";
         link.Message = null;

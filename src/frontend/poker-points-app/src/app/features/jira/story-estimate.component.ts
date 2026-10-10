@@ -10,7 +10,10 @@ import { JiraService, JiraField, jiraError } from '../../core/services/jira.serv
   imports: [FormsModule, DatePipe],
   template: `
     @if (story().status === 'completed') {
-      <section class="border-t border-gray-200 mt-3 pt-3 text-sm text-gray-700" data-testid="story-estimate">
+      <section
+        class="border-t border-gray-200 mt-3 pt-3 text-sm text-gray-700"
+        data-testid="story-estimate"
+      >
         <p>
           Average: <strong>{{ story().finalScore ?? '—' }}</strong> · Agreed estimate:
           <strong data-testid="agreed-estimate">{{
@@ -42,7 +45,12 @@ import { JiraService, JiraField, jiraError } from '../../core/services/jira.serv
           @if (deck() !== 'tshirt') {
             <div class="flex flex-wrap gap-1 my-2" aria-label="Suggested estimates">
               @for (point of points(); track point) {
-                <button class="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-poker-green-50 hover:border-poker-green-300 transition-colors" [disabled]="busy()" [attr.aria-pressed]="value === point" (click)="value = point">
+                <button
+                  class="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-poker-green-50 hover:border-poker-green-300 transition-colors"
+                  [disabled]="busy()"
+                  [attr.aria-pressed]="value === point"
+                  (click)="value = point"
+                >
                   {{ point }}
                 </button>
               }

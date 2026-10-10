@@ -76,7 +76,10 @@ export class GameStateService {
   readonly isOrganizer = computed(() => this._currentParticipant()?.isOrganizer ?? false);
   readonly isObserver = computed(() => this._currentParticipant()?.isObserver ?? false);
   readonly canVote = computed(
-    () => !this.isObserver() && this._currentStory()?.status === 'active' && this._revealedVotes() === null,
+    () =>
+      !this.isObserver() &&
+      this._currentStory()?.status === 'active' &&
+      this._revealedVotes() === null,
   );
   readonly hasVoted = computed(() => this._myVote() !== null);
   readonly votesRevealed = computed(() => this._revealedVotes() !== null);
@@ -268,7 +271,7 @@ export class GameStateService {
     this._currentStory.set(state.currentStory);
     this._voteStatuses.set(state.voteStatuses);
     this._revealedVotes.set(state.revealedVotes);
-    this._votingResults.set(state.revealedVotes !== null ? state.votingResults ?? null : null);
+    this._votingResults.set(state.revealedVotes !== null ? (state.votingResults ?? null) : null);
     this._deckType.set(state.session.deckType as DeckType);
     this._sessionName.set(state.session.name);
 

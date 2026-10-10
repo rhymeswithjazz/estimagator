@@ -9,10 +9,10 @@ import { AdminSession, PagedResult } from '../../core/models/admin.models';
   standalone: true,
   imports: [FormsModule, RouterLink],
   template: `
-    <div class="space-y-6">
+    <div class="stack-y-6">
       <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-900">Sessions</h1>
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center stack-x-4">
           <select
             [ngModel]="statusFilter()"
             (ngModelChange)="onStatusChange($event)"
@@ -39,7 +39,7 @@ import { AdminSession, PagedResult } from '../../core/models/admin.models';
           ></div>
         </div>
       } @else {
-        <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
@@ -152,7 +152,7 @@ import { AdminSession, PagedResult } from '../../core/models/admin.models';
                 Showing {{ (r.page - 1) * r.pageSize + 1 }} to
                 {{ min(r.page * r.pageSize, r.totalCount) }} of {{ r.totalCount }} sessions
               </p>
-              <div class="flex space-x-2">
+              <div class="flex stack-x-2">
                 <button
                   (click)="loadPage(r.page - 1)"
                   [disabled]="r.page <= 1"

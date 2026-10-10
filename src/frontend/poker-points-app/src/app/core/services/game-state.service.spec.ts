@@ -135,7 +135,12 @@ describe('GameStateService', () => {
     expect(service.currentParticipant()).not.toHaveProperty('reconnectToken');
     await service.attemptReconnect('ABC123');
     expect(signalR.joinSession).toHaveBeenLastCalledWith(
-      'ABC123', 'Host', false, 'host-id', undefined, 'guest-proof',
+      'ABC123',
+      'Host',
+      false,
+      'host-id',
+      undefined,
+      'guest-proof',
     );
   });
 
@@ -144,13 +149,23 @@ describe('GameStateService', () => {
     await service.switchRole(true);
     expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBe('guest-proof');
     signalR.joinSession.mockResolvedValue({
-      participant: { ...hostParticipant, isObserver: true }, reconnectToken: 'guest-proof',
+      participant: { ...hostParticipant, isObserver: true },
+      reconnectToken: 'guest-proof',
     });
     signalR.reconnected$.next();
-    await vi.waitFor(() => expect(signalR.joinSession).toHaveBeenLastCalledWith(
-      'ABC123', 'Host', true, 'host-id', undefined, 'guest-proof',
-    ));
-    await vi.waitFor(() => expect(service.getStoredIdentityForSession('ABC123')?.isObserver).toBe(true));
+    await vi.waitFor(() =>
+      expect(signalR.joinSession).toHaveBeenLastCalledWith(
+        'ABC123',
+        'Host',
+        true,
+        'host-id',
+        undefined,
+        'guest-proof',
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(service.getStoredIdentityForSession('ABC123')?.isObserver).toBe(true),
+    );
     expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBe('guest-proof');
   });
 
@@ -167,7 +182,12 @@ describe('GameStateService', () => {
     service.forgetParticipantIdentity('ABC123');
     await service.joinSession('ABC123', 'New guest', false);
     expect(signalR.joinSession).toHaveBeenLastCalledWith(
-      'ABC123', 'New guest', false, undefined, 'creator-reservation', undefined,
+      'ABC123',
+      'New guest',
+      false,
+      undefined,
+      'creator-reservation',
+      undefined,
     );
   });
 
@@ -181,7 +201,12 @@ describe('GameStateService', () => {
   it('does not reuse a room proof for another room', async () => {
     await service.joinSession('OTHER1', 'Host', false);
     expect(signalR.joinSession).toHaveBeenLastCalledWith(
-      'OTHER1', 'Host', false, undefined, undefined, undefined,
+      'OTHER1',
+      'Host',
+      false,
+      undefined,
+      undefined,
+      undefined,
     );
   });
 
@@ -252,7 +277,8 @@ describe('GameStateService', () => {
   it('clears the previous round timer and results when voting resets', () => {
     signalR.sessionState$.next(revealedState());
     signalR.timerStarted$.next({
-      endTimeUtc: new Date(Date.now() + 60000).toISOString(), durationSeconds: 60,
+      endTimeUtc: new Date(Date.now() + 60000).toISOString(),
+      durationSeconds: 60,
     });
     expect(service.timerRunning()).toBe(true);
     signalR.votesReset$.next({ storyId: 'revealed-story' });
@@ -266,7 +292,11 @@ describe('GameStateService', () => {
     return {
       ...createGameState([hostParticipant, targetParticipant]),
       currentStory: {
-        id: 'revealed-story', title: 'Story', url: null, status: 'completed', finalScore: 6.5,
+        id: 'revealed-story',
+        title: 'Story',
+        url: null,
+        status: 'completed',
+        finalScore: 6.5,
       },
       revealedVotes: [
         { participantId: hostParticipant.id, displayName: 'Host', cardValue: '5' },
@@ -277,7 +307,10 @@ describe('GameStateService', () => {
   }
 
   async function joinAsHost(): Promise<void> {
-    signalR.joinSession.mockResolvedValue({ participant: hostParticipant, reconnectToken: 'guest-proof' });
+    signalR.joinSession.mockResolvedValue({
+      participant: hostParticipant,
+      reconnectToken: 'guest-proof',
+    });
     signalR.getSessionState.mockResolvedValue(
       createGameState([hostParticipant, targetParticipant]),
     );

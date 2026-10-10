@@ -7,23 +7,23 @@ import { AdminService } from '../../core/services/admin.service';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <div class="space-y-6">
+    <div class="stack-y-6">
       <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
           <div class="text-sm font-medium text-gray-500">Total Users</div>
           <div class="mt-2 text-3xl font-bold text-gray-900">{{ userCount() }}</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
           <div class="text-sm font-medium text-gray-500">Total Sessions</div>
           <div class="mt-2 text-3xl font-bold text-gray-900">{{ sessionCount() }}</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
           <div class="text-sm font-medium text-gray-500">Active Sessions</div>
           <div class="mt-2 text-3xl font-bold text-poker-green-600">{{ activeSessionCount() }}</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow-sm p-6">
           <div class="text-sm font-medium text-gray-500">Ended Sessions</div>
           <div class="mt-2 text-3xl font-bold text-gray-400">
             {{ sessionCount() - activeSessionCount() }}
@@ -34,7 +34,7 @@ import { AdminService } from '../../core/services/admin.service';
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <a
           routerLink="/admin/users"
-          class="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+          class="block p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
         >
           <h2 class="text-lg font-semibold text-gray-900">User Management</h2>
           <p class="mt-2 text-gray-600">View, edit, and manage registered users</p>
@@ -43,7 +43,7 @@ import { AdminService } from '../../core/services/admin.service';
 
         <a
           routerLink="/admin/sessions"
-          class="block p-6 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+          class="block p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
         >
           <h2 class="text-lg font-semibold text-gray-900">Session Management</h2>
           <p class="mt-2 text-gray-600">View and manage estimation sessions</p>

@@ -10,8 +10,8 @@ import { AdminUserDetail } from '../../core/models/admin.models';
   standalone: true,
   imports: [FormsModule, RouterLink],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center space-x-4">
+    <div class="stack-y-6">
+      <div class="flex items-center stack-x-4">
         <a routerLink="/admin/users" class="text-poker-green-600 hover:text-poker-green-900">
           &larr; Back to Users
         </a>
@@ -24,7 +24,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
           ></div>
         </div>
       } @else if (user()) {
-        <div class="bg-white shadow rounded-lg p-6">
+        <div class="bg-white shadow-sm rounded-lg p-6">
           <h1 class="text-2xl font-bold text-gray-900 mb-6">{{ user()!.email }}</h1>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -34,7 +34,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
                 type="text"
                 [ngModel]="displayName()"
                 (ngModelChange)="displayName.set($event)"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-poker-green-500 focus:border-poker-green-500"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs focus:ring-poker-green-500 focus:border-poker-green-500"
               />
             </div>
 
@@ -43,7 +43,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
               <select
                 [ngModel]="role()"
                 (ngModelChange)="role.set($event)"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-poker-green-500 focus:border-poker-green-500"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs focus:ring-poker-green-500 focus:border-poker-green-500"
               >
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
@@ -55,7 +55,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
               <select
                 [ngModel]="emailVerified().toString()"
                 (ngModelChange)="emailVerified.set($event === 'true')"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-poker-green-500 focus:border-poker-green-500"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-xs focus:ring-poker-green-500 focus:border-poker-green-500"
               >
                 <option value="true">Yes</option>
                 <option value="false">No</option>
@@ -112,32 +112,32 @@ import { AdminUserDetail } from '../../core/models/admin.models';
         </div>
 
         <!-- User Sessions -->
-        <div class="bg-white shadow rounded-lg p-6">
+        <div class="bg-white shadow-sm rounded-lg p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
             Sessions ({{ user()!.sessions.length }})
           </h2>
           @if (user()!.sessions.length === 0) {
             <p class="text-gray-500">No sessions found</p>
           } @else {
-            <div class="space-y-2">
+            <div class="stack-y-2">
               @for (session of user()!.sessions; track session.id) {
                 <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center space-x-3">
+                  <div class="flex items-center stack-x-3">
                     <span class="font-mono font-medium">{{ session.accessCode }}</span>
                     @if (session.name) {
                       <span class="text-gray-500">{{ session.name }}</span>
                     }
                     @if (session.isOrganizer) {
                       <span
-                        class="px-2 py-0.5 text-xs bg-poker-green-100 text-poker-green-800 rounded font-medium"
+                        class="px-2 py-0.5 text-xs bg-poker-green-100 text-poker-green-800 rounded-sm font-medium"
                       >
                         Organizer
                       </span>
                     }
                   </div>
-                  <div class="flex items-center space-x-4">
+                  <div class="flex items-center stack-x-4">
                     <span
-                      class="px-2 py-0.5 text-xs rounded font-medium"
+                      class="px-2 py-0.5 text-xs rounded-sm font-medium"
                       [class.bg-green-100]="session.isActive"
                       [class.text-green-800]="session.isActive"
                       [class.bg-gray-100]="!session.isActive"

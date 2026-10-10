@@ -61,7 +61,10 @@ public class JiraWorkflowTests
     }
 
     [Theory]
-    [InlineData(null)] [InlineData(-1.0)] [InlineData(1000.0)] [InlineData(1.25)]
+    [InlineData(null)]
+    [InlineData(-1.0)]
+    [InlineData(1000.0)]
+    [InlineData(1.25)]
     public async Task RejectsInvalidEstimates(double? number)
     {
         using var f = new Fixture();
@@ -379,8 +382,14 @@ public class JiraWorkflowTests
             Story.JiraLink = new() { StoryId = Story.Id, SessionId = Session.Id, SiteId = "site", IssueId = "100", IssueKey = "TEAM-1", FieldId = "customfield_42", Baseline = 3 };
             Db.Users.Add(new() { Id = User, Email = "host@example.com" });
             Db.Sessions.Add(Session); Db.Stories.Add(Story);
-            Db.JiraAuthorizations.Add(new() { UserId = User, AccessToken = Protector.Protect("access"), RefreshToken = Protector.Protect("refresh"), ExpiresAt = DateTime.UtcNow.AddHours(1),
-                Sites = [new() { UserId = User, SiteId = "site", Name = "Test", Url = "https://example.atlassian.net" }] });
+            Db.JiraAuthorizations.Add(new()
+            {
+                UserId = User,
+                AccessToken = Protector.Protect("access"),
+                RefreshToken = Protector.Protect("refresh"),
+                ExpiresAt = DateTime.UtcNow.AddHours(1),
+                Sites = [new() { UserId = User, SiteId = "site", Name = "Test", Url = "https://example.atlassian.net" }]
+            });
             Db.SaveChanges();
         }
         public JiraController Controller()

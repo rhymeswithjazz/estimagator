@@ -1,117 +1,79 @@
 name: E2E Tests
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'src/**'
-      - 'tests/e2e/**'
-      - '.github/workflows/e2e-tests.yml'
+  workflow_call:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   e2e-tests:
-    name: End-to-End Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     services:
       postgres:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: pokerpoints
           POSTGRES_PASSWORD: pokerpoints
-          POSTGRES_DB: pokerpoints
+          POSTGRES_DB: pokerpoints_e2e
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
+          --health-cmd "pg_isready -U pokerpoints -d pokerpoints_e2e"
+          --health-interval 5s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
         ports:
           - 5432:5432
-
     steps:
       - uses: actions/checkout@v6
-
-      # Backend setup
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore backend dependencies
-        working-directory: src/backend/PokerPoints
-        run: dotnet restore
-
-      - name: Build backend
-        working-directory: src/backend/PokerPoints
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Run database migrations
-        working-directory: src/backend/PokerPoints/PokerPoints.Api
-        run: dotnet ef database update
-        env:
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=pokerpoints;Username=pokerpoints;Password=pokerpoints"
-
-      - name: Start backend server
-        working-directory: src/backend/PokerPoints/PokerPoints.Api
-        run: dotnet run --no-build --configuration Release &
-        env:
-          ASPNETCORE_URLS: "http://localhost:5000"
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=pokerpoints;Username=pokerpoints;Password=pokerpoints"
-          JWT_SECRET_KEY: "test-secret-key-for-e2e-tests-only-minimum-32-characters-required"
-
-      - name: Wait for backend to be ready
-        run: |
-          timeout 30 bash -c 'until curl -f http://localhost:5000/health; do sleep 1; done'
-
-      # Frontend setup
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v6
         with:
           node-version: '22.x'
-          cache: 'npm'
-          cache-dependency-path: src/frontend/poker-points-app/package-lock.json
-
-      - name: Install frontend dependencies
+          cache: npm
+          cache-dependency-path: |
+            src/frontend/poker-points-app/package-lock.json
+            tests/e2e/package-lock.json
+      - name: Build backend
+        working-directory: src/backend/PokerPoints
+        run: dotnet build --configuration Release
+      # Application startup applies migrations; no uninstalled global dotnet-ef tool is needed.
+      - name: Start backend
+        working-directory: src/backend/PokerPoints
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ASPNETCORE_URLS: http://localhost:5051
+          ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=pokerpoints_e2e;Username=pokerpoints;Password=pokerpoints
+        run: |
+          dotnet run --project PokerPoints.Api --no-build --no-launch-profile --configuration Release > "$RUNNER_TEMP/e2e-backend.log" 2>&1 &
+          timeout 60 bash -c 'until curl --fail --silent http://localhost:5051/health; do sleep 1; done'
+      - name: Install frontend
         working-directory: src/frontend/poker-points-app
         run: npm ci
-
-      - name: Build frontend
-        working-directory: src/frontend/poker-points-app
-        run: npm run build
-
-      - name: Start frontend server
-        working-directory: src/frontend/poker-points-app
-        run: npx http-server dist/poker-points-app/browser -p 4200 &
-
-      - name: Wait for frontend to be ready
-        run: |
-          timeout 30 bash -c 'until curl -f http://localhost:4200; do sleep 1; done'
-
-      # E2E tests
-      - name: Install Playwright
+      - name: Install browser tests
         working-directory: tests/e2e
-        run: npm ci && npx playwright install --with-deps chromium
-
-      - name: Run E2E tests
+        run: npm ci
+      - name: Check browser test dependencies
         working-directory: tests/e2e
-        run: npm test
+        run: npm audit --audit-level=high
+      - name: Install browsers
+        working-directory: tests/e2e
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Run browser tests
+        working-directory: tests/e2e
         env:
-          BASE_URL: "http://localhost:4200"
-
-      - name: Upload test results
+          PLAYWRIGHT_START_SERVER: 'true'
+        run: npm test
+      - name: Upload browser diagnostics
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-report
-          path: tests/e2e/playwright-report/
-          retention-days: 7
-
-      - name: Upload test screenshots
-        if: failure()
-        uses: actions/upload-artifact@v6
-        with:
-          name: playwright-screenshots
-          path: tests/e2e/test-results/
+          name: browser-test-results
+          path: |
+            tests/e2e/playwright-report/
+            tests/e2e/test-results/
+            ${{ runner.temp }}/e2e-backend.log
           retention-days: 7
