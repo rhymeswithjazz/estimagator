@@ -25,33 +25,35 @@ import { Component, input } from '@angular/core';
       gap: 0.375rem;
     }
     img {
-      width: 2.25rem;
+      width: 2.75rem;
       height: auto;
       flex-shrink: 0;
     }
     .brand-wordmark {
       font-family: Poppins, system-ui, sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      letter-spacing: -0.035em;
+      letter-spacing: -0.05em;
       line-height: 1.2;
       color: #233d22;
     }
     .brand-wordmark > span {
       color: #47772c;
+      font-style: italic;
+      letter-spacing: 0.05em;
     }
     .brand-stacked {
       flex-direction: column;
       gap: 0.5rem;
     }
     .brand-stacked img {
-      width: 5rem;
+      width: 7.5rem;
     }
     .brand-stacked .brand-wordmark {
-      font-size: 1.75rem;
+      font-size: 2rem;
     }
     .brand-hero img {
-      width: 7rem;
+      width: 11rem;
     }
     .brand-hero .brand-wordmark {
       font-size: clamp(2.25rem, 9vw, 3rem);
