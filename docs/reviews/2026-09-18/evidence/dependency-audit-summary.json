@@ -1,0 +1,1040 @@
+{
+  "all_dependencies": {
+    "totals": {
+      "info": 0,
+      "low": 3,
+      "moderate": 13,
+      "high": 26,
+      "critical": 3,
+      "total": 45
+    },
+    "packages": {
+      "@angular-devkit/architect": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "0.1000.0-next.0 - 0.1000.0-rc.1 || 0.1200.0-next.0 - 0.1902.22 || 0.2000.0-next.0 - 0.2003.21 || 0.2100.0-next.0 - 0.2102.4 || 0.2200.0-next.0 - 0.2200.0-rc.3",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular-devkit/core": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "12.0.0-next.0 - 19.2.22 || 20.0.0-next.0 - 20.3.21 || 21.0.0-next.0 - 21.2.4 || 22.0.0-next.0 - 22.0.0-rc.3",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular-devkit/schematics": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "17.2.0-next.0 - 19.2.22 || 20.0.0-next.0 - 20.3.21 || 21.0.0-next.0 - 21.2.4 || 22.0.0-next.0 - 22.0.0-rc.3",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/build": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "<=20.3.29 || 21.0.0-next.0 - 21.2.16 || 22.0.0-next.0 - 22.0.6 || 22.1.0-next.0 - 22.1.0-rc.0",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/cli": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "10.0.0-next.0 - 10.0.0-rc.1 || 12.0.0-next.0 - 20.3.28 || 21.0.0-next.0 - 21.2.15 || 22.0.0-next.0 - 22.0.1 || 22.1.0-next.0 - 22.1.0-rc.0",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/common": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "@angular/common: Denial of Service (DoS) via OOM in Date Formatting (formatDate)",
+            "url": "https://github.com/advisories/GHSA-48r7-hpm6-gfxm"
+          },
+          {
+            "title": "@angular/common: Weak 32-Bit Cache Key Hashing in `HttpTransferCache` Leading to Cross-Request Data Leakage and State Poisoning",
+            "url": "https://github.com/advisories/GHSA-39pv-4j6c-2g6v"
+          },
+          {
+            "title": "@angular/common: Denial of Service (DoS) via OOM in Number Formatting (digitsInfo)",
+            "url": "https://github.com/advisories/GHSA-p3vc-36g9-x9gr"
+          },
+          {
+            "title": "@angular/common: Information Leak via Default Caching of Credentialed Requests in HttpTransferCache",
+            "url": "https://github.com/advisories/GHSA-q6f4-qqrg-jv6x"
+          },
+          {
+            "title": "Angular: Cache-Key Ambiguity in HttpTransferCache Leading to Cross-Request Response Reuse and State Poisoning",
+            "url": "https://github.com/advisories/GHSA-jhpw-976m-542j"
+          },
+          {
+            "title": "Angular: Information Leak via `HttpTransferCache` Bypass When Using `withRequestsMadeViaParent`",
+            "url": "https://github.com/advisories/GHSA-p297-fm68-3q8c"
+          }
+        ]
+      },
+      "@angular/compiler": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Angular vulnerable to XSS in i18n attribute bindings",
+            "url": "https://github.com/advisories/GHSA-g93w-mfhg-p222"
+          },
+          {
+            "title": "@angular/compiler: Two-Way Property Binding Sanitization Bypass (XSS)",
+            "url": "https://github.com/advisories/GHSA-58w9-8g37-x9v5"
+          },
+          {
+            "title": "Angular: Template and Attribute Namespace Sanitization Bypass (XSS)",
+            "url": "https://github.com/advisories/GHSA-f3m7-gqxr-g87x"
+          },
+          {
+            "title": "Angular i18n: Cross-Site Scripting (XSS) via event-handler attributes",
+            "url": "https://github.com/advisories/GHSA-jj27-h5hq-8x99"
+          },
+          {
+            "title": "Angular: Sanitization bypass via directive host bindings on concrete host elements in @angular/core and @angular/compiler",
+            "url": "https://github.com/advisories/GHSA-hh8m-fm6v-7cvg"
+          }
+        ]
+      },
+      "@angular/compiler-cli": {
+        "severity": "moderate",
+        "isDirect": true,
+        "range": "15.1.0-next.0 - 20.3.25 || 21.0.0-next.0 - 21.2.19 || 22.0.0-next.0 - 22.0.2",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/core": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Angular i18n vulnerable to Cross-Site Scripting",
+            "url": "https://github.com/advisories/GHSA-prjf-86w9-mfqv"
+          },
+          {
+            "title": "Angular vulnerable to XSS in i18n attribute bindings",
+            "url": "https://github.com/advisories/GHSA-g93w-mfhg-p222"
+          },
+          {
+            "title": "Angular: Template and Attribute Namespace Sanitization Bypass (XSS)",
+            "url": "https://github.com/advisories/GHSA-f3m7-gqxr-g87x"
+          },
+          {
+            "title": "@angular/core: Angular Template and Dynamic Component Namespace Bypass leading to Cross-Site Scripting (XSS)",
+            "url": "https://github.com/advisories/GHSA-692r-grfm-v8x7"
+          },
+          {
+            "title": "Angular Client Hydration DOM Clobbering & Response-Cache Poisoning",
+            "url": "https://github.com/advisories/GHSA-rgjc-h3x7-9mwg"
+          },
+          {
+            "title": "Angular i18n: Cross-Site Scripting (XSS) via event-handler attributes",
+            "url": "https://github.com/advisories/GHSA-jj27-h5hq-8x99"
+          },
+          {
+            "title": "Angular: Sanitization bypass via directive host bindings on concrete host elements in @angular/core and @angular/compiler",
+            "url": "https://github.com/advisories/GHSA-hh8m-fm6v-7cvg"
+          }
+        ]
+      },
+      "@angular/forms": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "4.4.0-RC.0 - 4.4.0 || 21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/platform-browser": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/router": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "10.0.0-next.0 - 10.0.0-rc.1 || 21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@babel/core": {
+        "severity": "low",
+        "isDirect": false,
+        "range": "<=7.29.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "@babel/core: Arbitrary File Read via sourceMappingURL Comment",
+            "url": "https://github.com/advisories/GHSA-4x5r-pxfx-6jf8"
+          }
+        ]
+      },
+      "@hono/node-server": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "<=1.19.14",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "@hono/node-server: Middleware bypass via repeated slashes in serveStatic",
+            "url": "https://github.com/advisories/GHSA-92pp-h63x-v22m"
+          },
+          {
+            "title": "Node.js Adapter for Hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)",
+            "url": "https://github.com/advisories/GHSA-frvp-7c67-39w9"
+          }
+        ]
+      },
+      "@schematics/angular": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "17.2.0-next.0 - 19.2.22 || 20.0.0-next.0 - 20.3.21 || 21.0.0-next.0 - 21.2.4 || 22.0.0-next.0 - 22.0.0-rc.3",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@sigstore/core": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "<=3.2.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "@sigstore/core has DSSE payloadType type-binding failure",
+            "url": "https://github.com/advisories/GHSA-jfc7-64v2-mr8c"
+          }
+        ]
+      },
+      "@sigstore/verify": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "3.1.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "sigstore-js has Insufficient Verification of Data Authenticity",
+            "url": "https://github.com/advisories/GHSA-xgjw-pm74-86q4"
+          }
+        ]
+      },
+      "@vitest/mocker": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "2.1.0 - 4.1.10",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+            "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9"
+          }
+        ]
+      },
+      "@vitest/ui": {
+        "severity": "critical",
+        "isDirect": true,
+        "range": "4.0.0-beta.1 - 4.1.0-beta.6",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "ajv": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "7.0.0-alpha.0 - 8.17.1",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "ajv has ReDoS when using `$data` option",
+            "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6"
+          }
+        ]
+      },
+      "baseline-browser-mapping": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": ">=2.0.0 <2.11.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "baseline-browser-mapping process termination on invalid input causes denial of service",
+            "url": "https://github.com/advisories/GHSA-w5vr-8v7q-w6rv"
+          }
+        ]
+      },
+      "body-parser": {
+        "severity": "low",
+        "isDirect": false,
+        "range": "2.0.0 - 2.2.2",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+            "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6"
+          }
+        ]
+      },
+      "brace-expansion": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "3.0.0 - 5.0.8",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+            "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v"
+          },
+          {
+            "title": "brace-expansion: Large numeric range defeats documented `max` DoS protection",
+            "url": "https://github.com/advisories/GHSA-jxxr-4gwj-5jf2"
+          },
+          {
+            "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+            "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp"
+          },
+          {
+            "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+            "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg"
+          },
+          {
+            "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+            "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895"
+          }
+        ]
+      },
+      "browserslist": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=4.28.6",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+            "url": "https://github.com/advisories/GHSA-c83g-rgw3-j3cx"
+          },
+          {
+            "title": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+            "url": "https://github.com/advisories/GHSA-73wf-gq98-2v4g"
+          }
+        ]
+      },
+      "express-rate-limit": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "8.0.1 - 8.5.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "express-rate-limit: IPv4-mapped IPv6 addresses bypass per-client rate limiting on servers with dual-stack network",
+            "url": "https://github.com/advisories/GHSA-46wh-pxpv-q5gq"
+          }
+        ]
+      },
+      "fast-uri": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "3.0.0 - 3.1.5",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "fast-uri vulnerable to host confusion via literal backslash authority delimiter",
+            "url": "https://github.com/advisories/GHSA-v2hh-gcrm-f6hx"
+          },
+          {
+            "title": "fast-uri vulnerable to host confusion via backslash authority introducer",
+            "url": "https://github.com/advisories/GHSA-7p8r-x3mc-p8w7"
+          },
+          {
+            "title": "fast-uri vulnerable to path traversal via percent-encoded dot segments",
+            "url": "https://github.com/advisories/GHSA-q3j6-qgpj-74h6"
+          },
+          {
+            "title": "fast-uri vulnerable to host confusion via percent-encoded authority delimiters",
+            "url": "https://github.com/advisories/GHSA-v39h-62p7-jpjc"
+          },
+          {
+            "title": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+            "url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc"
+          },
+          {
+            "title": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
+            "url": "https://github.com/advisories/GHSA-jqff-g426-hqxp"
+          },
+          {
+            "title": "fast-uri vulnerable to host confusion via failed IDN canonicalization",
+            "url": "https://github.com/advisories/GHSA-4c8g-83qw-93j6"
+          }
+        ]
+      },
+      "fflate": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "0.8.0 - 0.8.2",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives",
+            "url": "https://github.com/advisories/GHSA-px8p-9vwx-vf98"
+          }
+        ]
+      },
+      "flatted": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=3.4.1",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "flatted vulnerable to unbounded recursion DoS in parse() revive phase",
+            "url": "https://github.com/advisories/GHSA-25h7-pfq9-p65f"
+          },
+          {
+            "title": "Prototype Pollution via parse() in NodeJS flatted",
+            "url": "https://github.com/advisories/GHSA-rf6f-7fwh-wjgh"
+          }
+        ]
+      },
+      "hono": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=4.13.4",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Hono vulnerable to Prototype Pollution possible through __proto__ key allowed in parseBody({ dot: true })",
+            "url": "https://github.com/advisories/GHSA-v8w9-8mx6-g223"
+          },
+          {
+            "title": "Hono missing validation of cookie name on write path in setCookie()",
+            "url": "https://github.com/advisories/GHSA-26pp-8wgv-hjvm"
+          },
+          {
+            "title": "Hono: Non-breaking space prefix bypass in cookie name handling in getCookie()",
+            "url": "https://github.com/advisories/GHSA-r5rp-j6wh-rvv4"
+          },
+          {
+            "title": "Hono: Path traversal in toSSG() allows writing files outside the output directory",
+            "url": "https://github.com/advisories/GHSA-xf4j-xp2r-rqqx"
+          },
+          {
+            "title": "Hono: Middleware bypass via repeated slashes in serveStatic",
+            "url": "https://github.com/advisories/GHSA-wmmm-f939-6g9c"
+          },
+          {
+            "title": "Hono has incorrect IP matching in ipRestriction() for IPv4-mapped IPv6 addresses",
+            "url": "https://github.com/advisories/GHSA-xpcf-pg52-r92g"
+          },
+          {
+            "title": "Hono has CSS Declaration Injection via Style Object Values in JSX SSR",
+            "url": "https://github.com/advisories/GHSA-qp7p-654g-cw7p"
+          },
+          {
+            "title": "Hono has improper validation of NumericDate claims (exp, nbf, iat) in JWT verify()",
+            "url": "https://github.com/advisories/GHSA-hm8q-7f3q-5f36"
+          },
+          {
+            "title": "Hono's Cache Middleware ignores Vary: Authorization / Vary: Cookie leading to cross-user cache leakage",
+            "url": "https://github.com/advisories/GHSA-p77w-8qqv-26rm"
+          },
+          {
+            "title": "Hono: bodyLimit() can be bypassed for chunked / unknown-length requests",
+            "url": "https://github.com/advisories/GHSA-9vqf-7f2p-gf9v"
+          },
+          {
+            "title": "hono/jsx has Unvalidated JSX Tag Names that May Allow HTML Injection",
+            "url": "https://github.com/advisories/GHSA-69xw-7hcm-h432"
+          },
+          {
+            "title": "Hono: IP Restriction bypasses static deny rules for non-canonical IPv6 ",
+            "url": "https://github.com/advisories/GHSA-xrhx-7g5j-rcj5"
+          },
+          {
+            "title": "Hono: Cookie helper does not sanitize sameSite and priority, allowing Set-Cookie injection",
+            "url": "https://github.com/advisories/GHSA-3hrh-pfw6-9m5x"
+          },
+          {
+            "title": "Hono: JWT middleware accepts any Authorization scheme, not only Bearer",
+            "url": "https://github.com/advisories/GHSA-f577-qrjj-4474"
+          },
+          {
+            "title": "Hono: app.mount() strips mount prefix using undecoded path, causing incorrect routing for percent-encoded paths",
+            "url": "https://github.com/advisories/GHSA-2gcr-mfcq-wcc3"
+          },
+          {
+            "title": "hono Improperly Handles JSX Attribute Names Allows HTML Injection in hono/jsx SSR",
+            "url": "https://github.com/advisories/GHSA-458j-xx4x-4375"
+          },
+          {
+            "title": "hono: Body Limit Middleware can be bypassed on AWS Lambda by understating `Content-Length`",
+            "url": "https://github.com/advisories/GHSA-rv63-4mwf-qqc2"
+          },
+          {
+            "title": "hono: Lambda@Edge adapter keeps only the last value of a repeated request header, dropping the rest",
+            "url": "https://github.com/advisories/GHSA-wgpf-jwqj-8h8p"
+          },
+          {
+            "title": "hono: CORS Middleware reflects any Origin with credentials when `origin` defaults to the wildcard",
+            "url": "https://github.com/advisories/GHSA-88fw-hqm2-52qc"
+          },
+          {
+            "title": "hono: Path traversal in `serve-static` on Windows via encoded backslash (`%5C`)",
+            "url": "https://github.com/advisories/GHSA-wwfh-h76j-fc44"
+          },
+          {
+            "title": "hono: AWS Lambda adapter merges multiple `Set-Cookie` headers into one value, dropping cookies on ALB single-header and Lattice",
+            "url": "https://github.com/advisories/GHSA-j6c9-x7qj-28xf"
+          },
+          {
+            "title": "Hono: API Gateway v1 adapter can drop a distinct repeated request header value during de-duplication",
+            "url": "https://github.com/advisories/GHSA-xgm2-5f3f-mvvc"
+          },
+          {
+            "title": "hono/jsx does not isolate context per request, leading to cross-request data disclosure",
+            "url": "https://github.com/advisories/GHSA-hvrm-45r6-mjfj"
+          },
+          {
+            "title": "Hono: Server-Side XSS via JSX Escaping Bypass in cx() Utility",
+            "url": "https://github.com/advisories/GHSA-w62v-xxxg-mg59"
+          },
+          {
+            "title": "Hono: ReDoS in CORS middleware via Access-Control-Request-Headers",
+            "url": "https://github.com/advisories/GHSA-8j4g-w8fx-2239"
+          },
+          {
+            "title": "Hono: `memo()` retains SSR output across requests, leading to cross-user data disclosure",
+            "url": "https://github.com/advisories/GHSA-f23p-vx2j-j53r"
+          },
+          {
+            "title": "Hono: Proxy Helper does not remove response headers listed in the `Connection` header",
+            "url": "https://github.com/advisories/GHSA-79qm-7rj5-m7r9"
+          },
+          {
+            "title": "Hono: Algorithmic Complexity DoS in Language Middleware",
+            "url": "https://github.com/advisories/GHSA-54fx-42gc-7vw4"
+          },
+          {
+            "title": "Hono: Incomplete fix for CVE-2026-39408: `toSSG()` still writes files outside the output directory",
+            "url": "https://github.com/advisories/GHSA-gqvv-2mrq-wpjv"
+          },
+          {
+            "title": "Hono: Unbounded dot-notation nesting in `parseBody()` can cause memory exhaustion",
+            "url": "https://github.com/advisories/GHSA-g6gw-c38x-mqfc"
+          },
+          {
+            "title": "Hono: Query parser reads parameters after the URL fragment, causing cache-key and proxy interpretation differentials",
+            "url": "https://github.com/advisories/GHSA-crvj-82cr-hjcx"
+          }
+        ]
+      },
+      "immutable": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "5.0.0-beta.1 - 5.1.7",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Immutable: Hash-collision algorithmic complexity denial of service in Immutable.Map/Set",
+            "url": "https://github.com/advisories/GHSA-xvcm-6775-5m9r"
+          },
+          {
+            "title": "Immutable.js `List` 32-bit trie overflow \u2192 unrecoverable DoS",
+            "url": "https://github.com/advisories/GHSA-v56q-mh7h-f735"
+          }
+        ]
+      },
+      "ip-address": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=10.3.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "ip-address has XSS in Address6 HTML-emitting methods",
+            "url": "https://github.com/advisories/GHSA-v2v4-37r5-5v8g"
+          },
+          {
+            "title": "ip-address: Address4 decodes leading-zero octets as decimal while resolvers decode them as octal, allowing SSRF and trust-boundary bypass",
+            "url": "https://github.com/advisories/GHSA-mwp4-54f8-5fhr"
+          }
+        ]
+      },
+      "nanoid": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=3.3.17",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "nanoid: non-secure generators can loop indefinitely with negative size",
+            "url": "https://github.com/advisories/GHSA-28wg-ghj8-5hjv"
+          },
+          {
+            "title": "nanoid: custom generators can loop indefinitely when size is zero",
+            "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8"
+          },
+          {
+            "title": "nanoid: Integer Overflow or Wraparound",
+            "url": "https://github.com/advisories/GHSA-xwg4-73v4-xw9w"
+          }
+        ]
+      },
+      "pacote": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "11.2.7 - 21.5.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "pacote is vulnerable to Denial of Service (DoS) via the addGitSha function",
+            "url": "https://github.com/advisories/GHSA-w4pp-8pjf-rmxw"
+          }
+        ]
+      },
+      "path-to-regexp": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "8.0.0 - 8.3.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "path-to-regexp vulnerable to Denial of Service via sequential optional groups",
+            "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f"
+          },
+          {
+            "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards",
+            "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7"
+          }
+        ]
+      },
+      "picomatch": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=2.3.1 || 4.0.0 - 4.0.3",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+            "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p"
+          },
+          {
+            "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+            "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p"
+          },
+          {
+            "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+            "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj"
+          },
+          {
+            "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+            "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj"
+          }
+        ]
+      },
+      "piscina": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "5.0.0-alpha.0 - 5.1.4",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "piscina: Prototype Pollution Gadget \u2192 RCE via inherited options.filename",
+            "url": "https://github.com/advisories/GHSA-x9g3-xrwr-cwfg"
+          }
+        ]
+      },
+      "postcss": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "<=8.5.22",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+            "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93"
+          },
+          {
+            "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+            "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q"
+          },
+          {
+            "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+            "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp"
+          },
+          {
+            "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+            "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849"
+          }
+        ]
+      },
+      "postcss-selector-parser": {
+        "severity": "low",
+        "isDirect": false,
+        "range": "6.1.0 - 6.1.2",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "postcss-selector-parser allows denial of service through uncontrolled AST recursion",
+            "url": "https://github.com/advisories/GHSA-w9m9-85wc-3x92"
+          }
+        ]
+      },
+      "qs": {
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "2.2.5 - 6.15.3",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+            "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26"
+          },
+          {
+            "title": "qs array-limit bypass via bracket-key comma parsing",
+            "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx"
+          },
+          {
+            "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+            "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g"
+          }
+        ]
+      },
+      "sigstore": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "<=4.1.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "sigstore's `certificateOIDs` verification constraints are silently dropped and never enforced",
+            "url": "https://github.com/advisories/GHSA-52v5-jr5w-gjxr"
+          }
+        ]
+      },
+      "tar": {
+        "severity": "critical",
+        "isDirect": false,
+        "range": "<=7.5.20",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "node-tar Symlink Path Traversal via Drive-Relative Linkpath",
+            "url": "https://github.com/advisories/GHSA-9ppj-qmqm-q256"
+          },
+          {
+            "title": "node-tar applies PAX size override to intermediary GNU long-name/long-link headers, causing tar parser interpretation differential (file smuggling)",
+            "url": "https://github.com/advisories/GHSA-vmf3-w455-68vh"
+          },
+          {
+            "title": "node-tar: Process crash via PAX numeric path type confusion",
+            "url": "https://github.com/advisories/GHSA-w8wr-v893-vjvp"
+          },
+          {
+            "title": "node-tar: Decompression/parse DoS via unlimited input",
+            "url": "https://github.com/advisories/GHSA-23hp-3jrh-7fpw"
+          },
+          {
+            "title": "node-tar: Negative tar entry size causes infinite loop in archive replace",
+            "url": "https://github.com/advisories/GHSA-8x88-c5mf-7j5w"
+          },
+          {
+            "title": "node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records",
+            "url": "https://github.com/advisories/GHSA-gvwx-54wh-qm9j"
+          },
+          {
+            "title": "node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection",
+            "url": "https://github.com/advisories/GHSA-r292-9mhp-454m"
+          }
+        ]
+      },
+      "undici": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "7.0.0 - 7.28.0",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion",
+            "url": "https://github.com/advisories/GHSA-g9mf-h72j-4rw9"
+          },
+          {
+            "title": "Undici: Malicious WebSocket 64-bit length overflows parser and crashes the client",
+            "url": "https://github.com/advisories/GHSA-f269-vfmq-vjvj"
+          },
+          {
+            "title": "Undici has an HTTP Request/Response Smuggling issue",
+            "url": "https://github.com/advisories/GHSA-2mjp-6q6p-2qxm"
+          },
+          {
+            "title": "Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression",
+            "url": "https://github.com/advisories/GHSA-vrm6-8vpv-qv8q"
+          },
+          {
+            "title": "Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation",
+            "url": "https://github.com/advisories/GHSA-v9p9-hfj2-hcw8"
+          },
+          {
+            "title": "Undici has CRLF Injection in undici via `upgrade` option",
+            "url": "https://github.com/advisories/GHSA-4992-7rv2-5pvq"
+          },
+          {
+            "title": "Undici has Unbounded Memory Consumption in its DeduplicationHandler via Response Buffering that leads to DoS",
+            "url": "https://github.com/advisories/GHSA-phc3-fgpg-7m6h"
+          },
+          {
+            "title": "undici vulnerable to HTTP header injection via Set-Cookie percent-decoding",
+            "url": "https://github.com/advisories/GHSA-p88m-4jfj-68fv"
+          },
+          {
+            "title": "undici WebSocket client vulnerable to denial of service via fragment count bypass",
+            "url": "https://github.com/advisories/GHSA-vxpw-j846-p89q"
+          },
+          {
+            "title": "undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching",
+            "url": "https://github.com/advisories/GHSA-g8m3-5g58-fq7m"
+          },
+          {
+            "title": "undici vulnerable to cross-user information disclosure via shared cache whitespace bypass",
+            "url": "https://github.com/advisories/GHSA-pr7r-676h-xcf6"
+          },
+          {
+            "title": "undici vulnerable to downstream response desynchronization via retry interceptor",
+            "url": "https://github.com/advisories/GHSA-8xcm-r25x-g524"
+          },
+          {
+            "title": "undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives",
+            "url": "https://github.com/advisories/GHSA-4cwx-7wf7-3272"
+          },
+          {
+            "title": "undici vulnerable to CRLF Injection via blob-like body 'type' property",
+            "url": "https://github.com/advisories/GHSA-m8rv-5g2x-5cg5"
+          },
+          {
+            "title": "undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives",
+            "url": "https://github.com/advisories/GHSA-jr45-8vmc-qm54"
+          },
+          {
+            "title": "undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields",
+            "url": "https://github.com/advisories/GHSA-v3r7-h72x-cjcm"
+          },
+          {
+            "title": "undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse",
+            "url": "https://github.com/advisories/GHSA-35p6-xmwp-9g52"
+          }
+        ]
+      },
+      "vite": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "7.0.0 - 7.3.3",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+            "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9"
+          },
+          {
+            "title": "Vite: `server.fs.deny` bypassed with queries",
+            "url": "https://github.com/advisories/GHSA-v2wj-q39q-566r"
+          },
+          {
+            "title": "Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket",
+            "url": "https://github.com/advisories/GHSA-p9ff-h696-f583"
+          },
+          {
+            "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+            "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3"
+          },
+          {
+            "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+            "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff"
+          }
+        ]
+      },
+      "vitest": {
+        "severity": "critical",
+        "isDirect": true,
+        "range": "2.1.0-beta.1 - 4.1.10",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "When Vitest UI server is listening, arbitrary file can be read and executed",
+            "url": "https://github.com/advisories/GHSA-5xrq-8626-4rwp"
+          },
+          {
+            "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+            "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9"
+          }
+        ]
+      },
+      "ws": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "7.0.0 - 7.5.10 || 8.0.0 - 8.20.1",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "ws: Uninitialized memory disclosure",
+            "url": "https://github.com/advisories/GHSA-58qx-3vcg-4xpx"
+          },
+          {
+            "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+            "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p"
+          },
+          {
+            "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+            "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p"
+          }
+        ]
+      }
+    }
+  },
+  "production_dependencies": {
+    "totals": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    },
+    "packages": {
+      "@angular/common": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "@angular/common: Denial of Service (DoS) via OOM in Date Formatting (formatDate)",
+            "url": "https://github.com/advisories/GHSA-48r7-hpm6-gfxm"
+          },
+          {
+            "title": "@angular/common: Weak 32-Bit Cache Key Hashing in `HttpTransferCache` Leading to Cross-Request Data Leakage and State Poisoning",
+            "url": "https://github.com/advisories/GHSA-39pv-4j6c-2g6v"
+          },
+          {
+            "title": "@angular/common: Denial of Service (DoS) via OOM in Number Formatting (digitsInfo)",
+            "url": "https://github.com/advisories/GHSA-p3vc-36g9-x9gr"
+          },
+          {
+            "title": "@angular/common: Information Leak via Default Caching of Credentialed Requests in HttpTransferCache",
+            "url": "https://github.com/advisories/GHSA-q6f4-qqrg-jv6x"
+          },
+          {
+            "title": "Angular: Cache-Key Ambiguity in HttpTransferCache Leading to Cross-Request Response Reuse and State Poisoning",
+            "url": "https://github.com/advisories/GHSA-jhpw-976m-542j"
+          },
+          {
+            "title": "Angular: Information Leak via `HttpTransferCache` Bypass When Using `withRequestsMadeViaParent`",
+            "url": "https://github.com/advisories/GHSA-p297-fm68-3q8c"
+          }
+        ]
+      },
+      "@angular/compiler": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Angular vulnerable to XSS in i18n attribute bindings",
+            "url": "https://github.com/advisories/GHSA-g93w-mfhg-p222"
+          },
+          {
+            "title": "@angular/compiler: Two-Way Property Binding Sanitization Bypass (XSS)",
+            "url": "https://github.com/advisories/GHSA-58w9-8g37-x9v5"
+          },
+          {
+            "title": "Angular: Template and Attribute Namespace Sanitization Bypass (XSS)",
+            "url": "https://github.com/advisories/GHSA-f3m7-gqxr-g87x"
+          },
+          {
+            "title": "Angular i18n: Cross-Site Scripting (XSS) via event-handler attributes",
+            "url": "https://github.com/advisories/GHSA-jj27-h5hq-8x99"
+          },
+          {
+            "title": "Angular: Sanitization bypass via directive host bindings on concrete host elements in @angular/core and @angular/compiler",
+            "url": "https://github.com/advisories/GHSA-hh8m-fm6v-7cvg"
+          }
+        ]
+      },
+      "@angular/core": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "Angular i18n vulnerable to Cross-Site Scripting",
+            "url": "https://github.com/advisories/GHSA-prjf-86w9-mfqv"
+          },
+          {
+            "title": "Angular vulnerable to XSS in i18n attribute bindings",
+            "url": "https://github.com/advisories/GHSA-g93w-mfhg-p222"
+          },
+          {
+            "title": "Angular: Template and Attribute Namespace Sanitization Bypass (XSS)",
+            "url": "https://github.com/advisories/GHSA-f3m7-gqxr-g87x"
+          },
+          {
+            "title": "@angular/core: Angular Template and Dynamic Component Namespace Bypass leading to Cross-Site Scripting (XSS)",
+            "url": "https://github.com/advisories/GHSA-692r-grfm-v8x7"
+          },
+          {
+            "title": "Angular Client Hydration DOM Clobbering & Response-Cache Poisoning",
+            "url": "https://github.com/advisories/GHSA-rgjc-h3x7-9mwg"
+          },
+          {
+            "title": "Angular i18n: Cross-Site Scripting (XSS) via event-handler attributes",
+            "url": "https://github.com/advisories/GHSA-jj27-h5hq-8x99"
+          },
+          {
+            "title": "Angular: Sanitization bypass via directive host bindings on concrete host elements in @angular/core and @angular/compiler",
+            "url": "https://github.com/advisories/GHSA-hh8m-fm6v-7cvg"
+          }
+        ]
+      },
+      "@angular/forms": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "4.4.0-RC.0 - 4.4.0 || 21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/platform-browser": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "@angular/router": {
+        "severity": "high",
+        "isDirect": true,
+        "range": "10.0.0-next.0 - 10.0.0-rc.1 || 21.0.0-next.0 - 21.2.19",
+        "fixAvailable": true,
+        "advisories": []
+      },
+      "ws": {
+        "severity": "high",
+        "isDirect": false,
+        "range": "7.0.0 - 7.5.10",
+        "fixAvailable": true,
+        "advisories": [
+          {
+            "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+            "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p"
+          }
+        ]
+      }
+    }
+  }
+}

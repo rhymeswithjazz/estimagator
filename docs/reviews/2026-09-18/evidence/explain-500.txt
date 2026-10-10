@@ -1,0 +1,38 @@
+                                                                               QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=17419.79..17534.18 rows=45759 width=640) (actual time=281.618..363.146 rows=200000 loops=1)
+   Sort Key: s."Id", p."Id", s0."Id"
+   Sort Method: external merge  Disk: 51824kB
+   Buffers: shared hit=153, temp read=6478 written=6492
+   ->  Hash Left Join  (cost=16.31..896.14 rows=45759 width=640) (actual time=0.314..17.691 rows=200000 loops=1)
+         Hash Cond: (s."Id" = p."SessionId")
+         Buffers: shared hit=150
+         ->  Nested Loop Left Join  (cost=13.94..345.67 rows=3045 width=563) (actual time=0.294..2.778 rows=10000 loops=1)
+               Buffers: shared hit=149
+               ->  Limit  (cost=0.14..8.16 rows=1 width=407) (actual time=0.007..0.008 rows=1 loops=1)
+                     Buffers: shared hit=2
+                     ->  Index Scan using "IX_Sessions_AccessCode" on "Sessions" s  (cost=0.14..8.16 rows=1 width=407) (actual time=0.006..0.006 rows=1 loops=1)
+                           Index Cond: (("AccessCode")::text = 'BENCH500'::text)
+                           Filter: "IsActive"
+                           Buffers: shared hit=2
+               ->  Hash Right Join  (cost=13.79..307.05 rows=3045 width=156) (actual time=0.286..2.145 rows=10000 loops=1)
+                     Hash Cond: (v."StoryId" = s0."Id")
+                     Buffers: shared hit=147
+                     ->  Seq Scan on "Votes" v  (cost=0.00..261.01 rows=12201 width=58) (actual time=0.002..0.590 rows=12201 loops=1)
+                           Buffers: shared hit=139
+                     ->  Hash  (cost=11.88..11.88 rows=153 width=98) (actual time=0.092..0.093 rows=500 loops=1)
+                           Buckets: 1024  Batches: 1  Memory Usage: 55kB
+                           Buffers: shared hit=8
+                           ->  Index Scan using "IX_Stories_SessionId" on "Stories" s0  (cost=0.15..11.88 rows=153 width=98) (actual time=0.007..0.044 rows=500 loops=1)
+                                 Index Cond: ("SessionId" = s."Id")
+                                 Buffers: shared hit=8
+         ->  Hash  (cost=1.61..1.61 rows=61 width=77) (actual time=0.013..0.013 rows=61 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 14kB
+               Buffers: shared hit=1
+               ->  Seq Scan on "Participants" p  (cost=0.00..1.61 rows=61 width=77) (actual time=0.002..0.006 rows=61 loops=1)
+                     Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=371 read=1
+ Planning Time: 1.280 ms
+ Execution Time: 369.513 ms
+(35 rows)

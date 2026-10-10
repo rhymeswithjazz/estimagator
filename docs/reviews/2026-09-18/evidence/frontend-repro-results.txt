@@ -1,0 +1,13 @@
+
+> poker-points-app@0.0.0 test
+> vitest --run src/app/core/services/architecture-review.temporary.spec.ts
+
+
+ RUN  v4.0.17 /Users/ras/Projects/estimigator/src/frontend/poker-points-app
+
+ ✓ src/app/core/services/architecture-review.temporary.spec.ts (7 tests) 13ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  06:06:24
+   Duration  454ms (transform 53ms, setup 121ms, import 59ms, tests 13ms, environment 200ms)

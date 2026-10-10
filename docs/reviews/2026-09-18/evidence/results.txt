@@ -1,0 +1,7 @@
+REPRO history-before-reveal: status=active, visible-value=5
+REPRO unauthenticated-host-reconnect: accepted=True, host=True, connection=anonymous-connection
+REPRO after-reveal-snapshot: currentStory-null=True, revealedVotes-null=True
+REPRO database-invariant: active-stories=2
+BENCH participants=20 stories=10 votes=200 joinedRows=4000 trackedEntities=231 warmMs=[18.8,19.1,19.7,20.1,26.7] medianMs=19.7
+BENCH participants=20 stories=100 votes=2000 joinedRows=40000 trackedEntities=2121 warmMs=[125.4,127.7,137.1,137.6,162.3] medianMs=137.1
+BENCH participants=20 stories=500 votes=10000 joinedRows=200000 trackedEntities=10521 warmMs=[586.5,588.8,595.9,626.1,629.5] medianMs=595.9

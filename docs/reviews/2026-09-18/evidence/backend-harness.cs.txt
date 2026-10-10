@@ -1,0 +1,61 @@
+using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using PokerPoints.Api.Services;
+using PokerPoints.Api.Models;
+using PokerPoints.Data;
+using PokerPoints.Data.Entities;
+
+var options = new DbContextOptionsBuilder<PokerPointsDbContext>().UseNpgsql("Host=127.0.0.1;Port=62553;Database=review;Username=review;Password=review-local-only").Options;
+using (var db = new PokerPointsDbContext(options)) {
+ await db.Database.MigrateAsync();
+ var owner = new User { Email="owner@example.invalid", DisplayName="Owner", EmailVerified=true };
+ var session = new Session { AccessCode="REVIEW", Organizer=owner };
+ var host = new Participant { Session=session, DisplayName="Host", IsOrganizer=true, User=owner, ConnectionId="owner-connection" };
+ var story = new Story { Session=session, Title="Active", Status="active" };
+ db.AddRange(host, story); await db.SaveChangesAsync();
+ var vote = new VotingService(db); var sessions = new SessionService(db,new NoTimer());
+ await vote.CastVoteAsync(story.Id, host.Id, "5");
+ var history = await sessions.GetSessionHistoryAsync("REVIEW",owner.Id);
+ Console.WriteLine($"REPRO history-before-reveal: status={history!.Stories[0].Status}, visible-value={history.Stories[0].Votes[0].CardValue}");
+ var stolen = await new ParticipantService(db).ReconnectAsync(session.Id,host.Id,"anonymous-connection");
+ Console.WriteLine($"REPRO unauthenticated-host-reconnect: accepted={stolen!=null}, host={stolen!.IsOrganizer}, connection={stolen.ConnectionId}");
+ await sessions.CompleteStoryAsync(story.Id,5);
+ var state = await sessions.GetGameStateAsync("REVIEW");
+ Console.WriteLine($"REPRO after-reveal-snapshot: currentStory-null={state!.CurrentStory==null}, revealedVotes-null={state.RevealedVotes==null}");
+ var active1 = await sessions.GetOrCreateActiveStoryAsync(session.Id);
+ var queued = (await sessions.AddStoriesAsync(session.Id,[new CreateStoryRequest("Second")]))[0];
+ await sessions.ActivateStoryAsync(queued.Id);
+ Console.WriteLine($"REPRO database-invariant: active-stories={await db.Stories.CountAsync(s=>s.SessionId==session.Id && s.Status=="active")}");
+}
+foreach(var historyCount in new[]{10,100,500}) {
+ var code=$"BENCH{historyCount}";
+ using(var db = new PokerPointsDbContext(options)) {
+  var s = new Session { AccessCode=code };
+  var participants=Enumerable.Range(0,20).Select(i=>new Participant { Session=s, DisplayName=$"Player{i}", ConnectionId=$"{code}-{i}" }).ToList();
+  db.AddRange(participants);
+  for(int i=0;i<historyCount;i++) {
+   var st=new Story { Session=s, Title=$"Story{i}", Status=i==historyCount-1?"active":"completed", SortOrder=i };
+   db.Add(st);
+   db.AddRange(participants.Select(p=>new Vote { Story=st,Participant=p,CardValue="5" }));
+  }
+  await db.SaveChangesAsync();
+ }
+ var samples=new List<double>(); int tracked=0;
+ for(int i=0;i<7;i++) {
+  using var db =new PokerPointsDbContext(options);
+  var service=new SessionService(db,new NoTimer());
+  var watch=Stopwatch.StartNew();
+  await service.GetGameStateAsync(code); watch.Stop();
+  tracked=db.ChangeTracker.Entries().Count();
+  if(i>=2) samples.Add(watch.Elapsed.TotalMilliseconds);
+ }
+ samples.Sort();
+ using(var db =new PokerPointsDbContext(options)) {
+  var query=db.Sessions.Include(s=>s.Participants).Include(s=>s.Stories).ThenInclude(st=>st.Votes).Where(s=>s.AccessCode==code && s.IsActive).Take(1).ToQueryString();
+  await File.WriteAllTextAsync($"/tmp/estimagator-review-20260918/query-{historyCount}.sql",query);
+ }
+ Console.WriteLine($"BENCH participants=20 stories={historyCount} votes={20*historyCount} joinedRows={400*historyCount} trackedEntities={tracked} warmMs=[{string.Join(",",samples.Select(x=>x.ToString("F1")))}] medianMs={samples[2]:F1}");
+}
+class NoTimer:ITimerService {
+ public void StartTimer(string c,int d){} public void ExtendTimer(string c,int d){} public void StopTimer(string c){} public TimerStateDto? GetTimerState(string c)=>null;
+}
