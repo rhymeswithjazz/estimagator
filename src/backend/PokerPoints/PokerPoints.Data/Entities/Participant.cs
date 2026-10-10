@@ -9,6 +9,7 @@ public class Participant
     public bool IsObserver { get; set; }
     public bool IsOrganizer { get; set; }
     public string? ConnectionId { get; set; }
+    public string? ReconnectTokenHash { get; set; }
     public DateTime JoinedAt { get; set; }
 
     // Optional link to authenticated user (null for guests)

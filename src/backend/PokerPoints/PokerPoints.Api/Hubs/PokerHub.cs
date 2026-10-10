@@ -55,12 +55,13 @@ public class PokerHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task<ParticipantDto?> JoinSession(
+    public async Task<JoinSessionResponse?> JoinSession(
         string sessionCode,
         string displayName,
         bool isObserver,
         Guid? existingParticipantId = null,
-        string? guestHostToken = null)
+        string? guestHostToken = null,
+        string? reconnectToken = null)
     {
         _logger.LogInformation(
             "JoinSession: {SessionCode}, {DisplayName}, Observer={IsObserver}, ExistingId={ExistingId}",
@@ -88,17 +89,20 @@ public class PokerHub : Hub
 
         if (!string.IsNullOrWhiteSpace(guestHostToken) && !session.GuestHostClaimedAt.HasValue)
         {
-            var guestHost = await _participantService.ClaimGuestHostAsync(
+            var claim = await _participantService.ClaimGuestHostAsync(
                 session.Id,
                 displayName,
                 isObserver,
                 Context.ConnectionId,
                 guestHostToken,
                 existingParticipantId,
-                verifiedUserId);
+                verifiedUserId,
+                reconnectToken);
 
-            if (guestHost != null)
+            if (claim != null)
             {
+                var guestHost = claim.Participant;
+                await RemovePreviousConnectionAsync(claim, session.AccessCode);
                 await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
 
                 var guestHostDto = new ParticipantDto(
@@ -111,7 +115,7 @@ public class PokerHub : Hub
 
                 await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("UserJoined", new UserJoinedEvent(guestHostDto));
 
-                var story = await _sessionService.GetOrCreateActiveStoryAsync(session.Id);
+                var story = await _sessionService.GetOrCreateCurrentStoryAsync(session.Id);
                 if (story != null)
                 {
                     await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("StoryUpdated", new StoryUpdatedEvent(
@@ -119,20 +123,23 @@ public class PokerHub : Hub
                     ));
                 }
 
-                return guestHostDto;
+                return new JoinSessionResponse(guestHostDto, claim.ReconnectToken);
             }
         }
 
         // Check if this is a reconnection
         if (existingParticipantId.HasValue)
         {
-            var existingParticipant = await _participantService.ReconnectAsync(
+            var reconnected = await _participantService.ReconnectAsync(
                 session.Id,
                 existingParticipantId.Value,
                 Context.ConnectionId,
-                verifiedUserId);
-            if (existingParticipant != null)
+                verifiedUserId,
+                reconnectToken);
+            if (reconnected != null)
             {
+                var existingParticipant = reconnected.Participant;
+                await RemovePreviousConnectionAsync(reconnected, session.AccessCode);
                 await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
 
                 var reconnectDto = new ParticipantDto(
@@ -152,8 +159,14 @@ public class PokerHub : Hub
                     await Clients.Caller.SendAsync("SessionState", gameState);
                 }
 
-                return reconnectDto;
+                return new JoinSessionResponse(reconnectDto, reconnected.ReconnectToken);
             }
+        }
+
+        // A failed reconnect must not silently become a different participant or host.
+        if (existingParticipantId.HasValue)
+        {
+            throw new HubException("Unable to verify this participant. Sign in with the original account or join as a new user.");
         }
 
         // Determine if this participant is the session organizer
@@ -161,7 +174,7 @@ public class PokerHub : Hub
             ? session.OrganizerId == verifiedUserId  // Match session creator
             : string.IsNullOrEmpty(session.GuestHostTokenHash) && session.Participants.Count == 0;  // Fallback for legacy sessions without a creator
 
-        var participant = await _participantService.JoinSessionAsync(
+        var joined = await _participantService.JoinSessionAsync(
             session.Id,
             displayName,
             isObserver,
@@ -170,6 +183,7 @@ public class PokerHub : Hub
             verifiedUserId
         );
 
+        var participant = joined.Participant;
         await Groups.AddToGroupAsync(Context.ConnectionId, sessionCode.ToUpperInvariant());
 
         var participantDto = new ParticipantDto(
@@ -185,7 +199,7 @@ public class PokerHub : Hub
         // If this user is the organizer, create the first story
         if (isOrganizer)
         {
-            var story = await _sessionService.GetOrCreateActiveStoryAsync(session.Id);
+            var story = await _sessionService.GetOrCreateCurrentStoryAsync(session.Id);
             if (story != null)
             {
                 await Clients.Group(sessionCode.ToUpperInvariant()).SendAsync("StoryUpdated", new StoryUpdatedEvent(
@@ -194,7 +208,15 @@ public class PokerHub : Hub
             }
         }
 
-        return participantDto;
+        return new JoinSessionResponse(participantDto, joined.ReconnectToken);
+    }
+
+    private async Task RemovePreviousConnectionAsync(ParticipantJoinResult result, string sessionCode)
+    {
+        if (result.PreviousConnectionId is { } previous && previous != Context.ConnectionId)
+        {
+            await Groups.RemoveFromGroupAsync(previous, sessionCode);
+        }
     }
 
     public async Task LeaveSession()
@@ -227,7 +249,7 @@ public class PokerHub : Hub
 
         var session = participant.Session;
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
-        if (gameState?.CurrentStory == null)
+        if (gameState?.CurrentStory?.Status != "active")
         {
             await Clients.Caller.SendAsync("Error", "No active story to vote on");
             return;
@@ -255,7 +277,7 @@ public class PokerHub : Hub
         if (participant == null) return null;
 
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
-        if (isObserver && gameState?.CurrentStory != null)
+        if (isObserver && gameState?.CurrentStory?.Status == "active")
         {
             await _votingService.RemoveVoteAsync(gameState.CurrentStory.Id, participant.Id);
             gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
@@ -369,7 +391,7 @@ public class PokerHub : Hub
 
         var session = participant.Session;
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
-        if (gameState?.CurrentStory == null)
+        if (gameState?.CurrentStory?.Status != "active")
         {
             await Clients.Caller.SendAsync("Error", "No active story");
             return;
@@ -480,7 +502,7 @@ public class PokerHub : Hub
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
 
         // Complete current story if exists
-        if (gameState?.CurrentStory != null)
+        if (gameState?.CurrentStory?.Status == "active")
         {
             var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
             await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
@@ -585,9 +607,14 @@ public class PokerHub : Hub
             return;
         }
 
-        await _sessionService.DeleteStoryAsync(participant.Session.Id, storyId);
-
         var session = participant.Session;
+        var state = await _sessionService.GetGameStateAsync(session.AccessCode);
+        await _sessionService.DeleteStoryAsync(session.Id, storyId);
+        if (state?.CurrentStory?.Id == storyId)
+        {
+            _timerService.StopTimer(session.AccessCode);
+            await Clients.Group(session.AccessCode).SendAsync("TimerStopped");
+        }
         _logger.LogInformation("Story {StoryId} deleted from session {SessionCode}", storyId, session.AccessCode);
 
         await Clients.Group(session.AccessCode).SendAsync("StoryDeleted", storyId);
@@ -613,7 +640,7 @@ public class PokerHub : Hub
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
 
         // Complete current story if exists
-        if (gameState?.CurrentStory != null)
+        if (gameState?.CurrentStory?.Status == "active")
         {
             var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
             await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
@@ -655,7 +682,7 @@ public class PokerHub : Hub
         var gameState = await _sessionService.GetGameStateAsync(session.AccessCode);
 
         // Complete current story if exists and it's different from the one we're restarting
-        if (gameState?.CurrentStory != null && gameState.CurrentStory.Id != storyId)
+        if (gameState?.CurrentStory?.Status == "active" && gameState.CurrentStory.Id != storyId)
         {
             var result = await _votingService.RevealVotesAsync(gameState.CurrentStory.Id);
             await _sessionService.CompleteStoryAsync(participant.Session.Id, gameState.CurrentStory.Id, result.Average);
@@ -689,6 +716,12 @@ public class PokerHub : Hub
         }
 
         var session = participant.Session;
+        var state = await _sessionService.GetGameStateAsync(session.AccessCode);
+        if (state?.CurrentStory?.Status != "active")
+        {
+            await Clients.Caller.SendAsync("Error", "No active story to time");
+            return;
+        }
         _timerService.StartTimer(session.AccessCode, session.TimerDurationSeconds);
 
         var timerState = _timerService.GetTimerState(session.AccessCode);

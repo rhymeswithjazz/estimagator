@@ -40,6 +40,8 @@ public record ParticipantDto(
     bool IsConnected
 );
 
+public record JoinSessionResponse(ParticipantDto Participant, string? ReconnectToken);
+
 public record StoryDto(
     Guid Id,
     string Title,

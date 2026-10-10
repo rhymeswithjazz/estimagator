@@ -11,6 +11,7 @@ public interface ISessionService
     Task<Session?> GetSessionByCodeAsync(string accessCode);
     Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode);
     Task<GameStateResponse?> GetGameStateAsync(string accessCode);
+    Task<Story?> GetOrCreateCurrentStoryAsync(Guid sessionId);
     Task<Story?> GetOrCreateActiveStoryAsync(Guid sessionId);
     Task<bool> StoryBelongsToSessionAsync(Guid sessionId, Guid storyId);
     Task<Story?> UpdateStoryTitleAsync(Guid sessionId, Guid storyId, string title);
@@ -79,7 +80,7 @@ public class SessionService : ISessionService
 
         return sessions.Select(session =>
         {
-            var activeStory = session.Stories.FirstOrDefault(s => s.Status == "active");
+            var currentStory = session.Stories.FirstOrDefault(s => s.Id == session.CurrentStoryId);
             return new UserSessionResponse(
                 session.Id,
                 session.AccessCode,
@@ -88,7 +89,7 @@ public class SessionService : ISessionService
                 session.IsActive,
                 session.CreatedAt,
                 session.Participants.Select(ToParticipantDto).ToList(),
-                activeStory != null ? ToStoryDto(activeStory) : null,
+                currentStory != null ? ToStoryDto(currentStory) : null,
                 session.OrganizerId == userId
             );
         }).ToList();
@@ -111,7 +112,7 @@ public class SessionService : ISessionService
 
         if (session == null) return null;
 
-        var activeStory = session.Stories.FirstOrDefault(s => s.Status == "active");
+        var currentStory = session.Stories.FirstOrDefault(s => s.Id == session.CurrentStoryId);
 
         return new SessionInfoResponse(
             session.Id,
@@ -122,7 +123,7 @@ public class SessionService : ISessionService
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),
-            activeStory != null ? ToStoryDto(activeStory) : null
+            currentStory != null ? ToStoryDto(currentStory) : null
         );
     }
 
@@ -136,7 +137,7 @@ public class SessionService : ISessionService
 
         if (session == null) return null;
 
-        var activeStory = session.Stories.FirstOrDefault(s => s.Status == "active");
+        var currentStory = session.Stories.FirstOrDefault(s => s.Id == session.CurrentStoryId);
         var sessionInfo = new SessionInfoResponse(
             session.Id,
             session.AccessCode,
@@ -146,15 +147,15 @@ public class SessionService : ISessionService
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),
-            activeStory != null ? ToStoryDto(activeStory) : null
+            currentStory != null ? ToStoryDto(currentStory) : null
         );
 
         var voteStatuses = new List<VoteStatusDto>();
         List<VoteDto>? revealedVotes = null;
 
-        if (activeStory != null)
+        if (currentStory != null)
         {
-            var votes = activeStory.Votes.ToList();
+            var votes = currentStory.Votes.ToList();
             var votingParticipants = session.Participants.Where(p => !p.IsObserver).ToList();
 
             voteStatuses = votingParticipants.Select(p => new VoteStatusDto(
@@ -162,12 +163,12 @@ public class SessionService : ISessionService
                 votes.Any(v => v.ParticipantId == p.Id)
             )).ToList();
 
-            if (activeStory.Status == "completed")
+            if (currentStory.Status == "completed")
             {
                 revealedVotes = votes.Select(v =>
                 {
-                    var participant = session.Participants.First(p => p.Id == v.ParticipantId);
-                    return new VoteDto(v.ParticipantId, participant.DisplayName, v.CardValue);
+                    var participant = session.Participants.FirstOrDefault(p => p.Id == v.ParticipantId);
+                    return new VoteDto(v.ParticipantId, participant?.DisplayName ?? "Unknown", v.CardValue);
                 }).ToList();
             }
         }
@@ -176,29 +177,50 @@ public class SessionService : ISessionService
 
         return new GameStateResponse(
             sessionInfo,
-            activeStory != null ? ToStoryDto(activeStory) : null,
+            currentStory != null ? ToStoryDto(currentStory) : null,
             session.Participants.Select(ToParticipantDto).ToList(),
             voteStatuses,
             revealedVotes,
-            activeTimer
+            activeTimer,
+            revealedVotes != null ? VotingService.CalculateResults(revealedVotes.Select(v => v.CardValue)) : null
         );
+    }
+
+    public async Task<Story?> GetOrCreateCurrentStoryAsync(Guid sessionId)
+    {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        if (session == null || !session.IsActive) return null;
+
+        var currentStory = await _db.Stories.FirstOrDefaultAsync(s =>
+            s.SessionId == sessionId && s.Id == session.CurrentStoryId);
+        return currentStory ?? await GetOrCreateActiveStoryAsync(sessionId);
     }
 
     public async Task<Story?> GetOrCreateActiveStoryAsync(Guid sessionId)
     {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        if (session == null || !session.IsActive) return null;
+
         var activeStory = await _db.Stories
             .FirstOrDefaultAsync(s => s.SessionId == sessionId && s.Status == "active");
 
-        if (activeStory != null) return activeStory;
+        if (activeStory != null)
+        {
+            session.CurrentStoryId = activeStory.Id;
+            await _db.SaveChangesAsync();
+            return activeStory;
+        }
 
         var story = new Story
         {
+            Id = Guid.NewGuid(),
             SessionId = sessionId,
             Title = "New Story",
             Status = "active"
         };
 
         _db.Stories.Add(story);
+        session.CurrentStoryId = story.Id;
         await _db.SaveChangesAsync();
 
         return story;
@@ -264,6 +286,9 @@ public class SessionService : ISessionService
 
     public async Task<Story?> ActivateNextStoryAsync(Guid sessionId)
     {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        if (session == null || !session.IsActive) return null;
+
         var nextStory = await _db.Stories
             .Where(s => s.SessionId == sessionId && s.Status == "pending")
             .OrderBy(s => s.SortOrder)
@@ -272,6 +297,7 @@ public class SessionService : ISessionService
         if (nextStory == null) return null;
 
         nextStory.Status = "active";
+        session.CurrentStoryId = nextStory.Id;
         await _db.SaveChangesAsync();
 
         return nextStory;
@@ -279,10 +305,14 @@ public class SessionService : ISessionService
 
     public async Task<Story?> ActivateStoryAsync(Guid sessionId, Guid storyId)
     {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        if (session == null || !session.IsActive) return null;
+
         var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story == null) return null;
 
         story.Status = "active";
+        session.CurrentStoryId = story.Id;
         await _db.SaveChangesAsync();
 
         return story;
@@ -290,6 +320,9 @@ public class SessionService : ISessionService
 
     public async Task<Story?> RestartStoryAsync(Guid sessionId, Guid storyId)
     {
+        var session = await _db.Sessions.FindAsync(sessionId);
+        if (session == null || !session.IsActive) return null;
+
         var story = await _db.Stories
             .Include(s => s.Votes)
             .FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
@@ -301,6 +334,7 @@ public class SessionService : ISessionService
 
         // Reset story status
         story.Status = "active";
+        session.CurrentStoryId = story.Id;
         story.FinalScore = null;
         story.AgreedEstimate = null;
         story.EstimateConfirmedBy = null;
@@ -329,6 +363,8 @@ public class SessionService : ISessionService
         var story = await _db.Stories.FirstOrDefaultAsync(s => s.Id == storyId && s.SessionId == sessionId);
         if (story != null)
         {
+            var session = await _db.Sessions.FindAsync(sessionId);
+            if (session?.CurrentStoryId == storyId) session.CurrentStoryId = null;
             _db.Stories.Remove(story);
             await _db.SaveChangesAsync();
         }
@@ -383,11 +419,12 @@ public class SessionService : ISessionService
                 story.Url,
                 story.Status,
                 story.FinalScore,
-                story.Votes.Select(v =>
+                // Reveal completes the story; every other state keeps vote values private.
+                story.Status == "completed" ? story.Votes.Select(v =>
                 {
                     var participant = session.Participants.FirstOrDefault(p => p.Id == v.ParticipantId);
                     return new VoteDto(v.ParticipantId, participant?.DisplayName ?? "Unknown", v.CardValue);
-                }).ToList(),
+                }).ToList() : new List<VoteDto>(),
                 story.AgreedEstimate, story.EstimateRevision, PokerPoints.Api.Jira.JiraLinkDto.From(story)
             )).ToList();
 

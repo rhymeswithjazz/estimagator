@@ -29,6 +29,11 @@ export interface UserSession extends SessionInfo {
   isOrganizer: boolean;
 }
 
+export interface JoinSessionResponse {
+  participant: Participant;
+  reconnectToken: string | null;
+}
+
 export interface Participant {
   id: string;
   displayName: string;
@@ -66,6 +71,7 @@ export interface GameState {
   voteStatuses: VoteStatus[];
   revealedVotes: Vote[] | null;
   activeTimer: TimerState | null;
+  votingResults?: { average: number | null; isConsensus: boolean } | null;
 }
 
 export interface TimerState {

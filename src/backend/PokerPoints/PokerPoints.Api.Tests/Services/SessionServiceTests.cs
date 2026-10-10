@@ -528,7 +528,9 @@ public class SessionServiceTests : IDisposable
     [Fact]
     public async Task RestartClearsAgreementButPreservesPublishHistory()
     {
-        var story = new Story { Id = Guid.NewGuid(), SessionId = Guid.NewGuid(), Title = "Story", Status = "completed", AgreedEstimate = 5, EstimateRevision = 1 };
+        var session = new Session { AccessCode = "ABC123" };
+        _db.Sessions.Add(session);
+        var story = new Story { Id = Guid.NewGuid(), Session = session, Title = "Story", Status = "completed", AgreedEstimate = 5, EstimateRevision = 1 };
         story.JiraLink = new() { StoryId = story.Id, SessionId = story.SessionId, SiteId = "site", IssueId = "100", PublishedValue = 5, PublishedRevision = 1, PublishStatus = "published" };
         _db.Stories.Add(story);
         await _db.SaveChangesAsync();
@@ -536,6 +538,65 @@ public class SessionServiceTests : IDisposable
         story.AgreedEstimate.Should().BeNull();
         story.EstimateRevision.Should().Be(2);
         story.JiraLink.PublishedValue.Should().Be(5);
+    }
+
+    [Theory]
+    [InlineData("active", false)]
+    [InlineData("active", true)]
+    [InlineData("pending", false)]
+    [InlineData("pending", true)]
+    [InlineData("completed", false)]
+    [InlineData("completed", true)]
+    [InlineData("unknown", false)]
+    public async Task GetSessionHistoryAsync_ShouldOnlyDiscloseCompletedVotes(string status, bool isOrganizer)
+    {
+        var userId = Guid.NewGuid();
+        var session = new Session
+        {
+            AccessCode = "ABC123",
+            OrganizerId = isOrganizer ? userId : Guid.NewGuid()
+        };
+        var participant = new Participant
+        {
+            Session = session,
+            UserId = isOrganizer ? null : userId,
+            DisplayName = "Voter"
+        };
+        var story = new Story
+        {
+            Session = session,
+            Title = "Estimate this story",
+            Url = "https://example.com/story",
+            Status = status,
+            FinalScore = status == "completed" ? 5 : null,
+            AgreedEstimate = status == "completed" ? 8 : null,
+            EstimateRevision = 2
+        };
+        _db.Votes.Add(new Vote { Story = story, Participant = participant, CardValue = "5" });
+        await _db.SaveChangesAsync();
+
+        var history = await _service.GetSessionHistoryAsync("abc123", userId);
+
+        history.Should().NotBeNull();
+        var result = history!.Stories.Should().ContainSingle().Subject;
+        result.Id.Should().Be(story.Id);
+        result.Title.Should().Be(story.Title);
+        result.Url.Should().Be(story.Url);
+        result.Status.Should().Be(status);
+        result.FinalScore.Should().Be(story.FinalScore);
+        result.AgreedEstimate.Should().Be(story.AgreedEstimate);
+        result.EstimateRevision.Should().Be(2);
+        if (status == "completed")
+        {
+            result.Votes.Should().Equal(new VoteDto(participant.Id, "Voter", "5"));
+        }
+        else
+        {
+            result.Votes.Should().BeEmpty();
+        }
+
+        // Redaction must not discard the actual vote needed for a later reveal.
+        (await _db.Votes.SingleAsync()).CardValue.Should().Be("5");
     }
 
 }

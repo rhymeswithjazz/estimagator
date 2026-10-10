@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   GameState,
+  JoinSessionResponse,
   Participant,
   UserJoinedEvent,
   UserLeftEvent,
@@ -64,11 +65,9 @@ export class SignalRService {
 
     this._connectionState.set('connecting');
 
-    const token = this.authService.accessToken();
-
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(environment.hubUrl, {
-        accessTokenFactory: token ? () => token : undefined,
+        accessTokenFactory: () => this.authService.getValidAccessToken(),
       })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
@@ -212,17 +211,19 @@ export class SignalRService {
     isObserver: boolean,
     existingParticipantId?: string,
     guestHostToken?: string,
-  ): Promise<Participant | null> {
+    reconnectToken?: string,
+  ): Promise<JoinSessionResponse | null> {
     if (!this.connection) {
       throw new Error('Not connected to SignalR hub');
     }
-    return this.connection.invoke<Participant | null>(
+    return this.connection.invoke<JoinSessionResponse | null>(
       'JoinSession',
       sessionCode,
       displayName,
       isObserver,
       existingParticipantId ?? null,
       guestHostToken ?? null,
+      reconnectToken ?? null,
     );
   }
 

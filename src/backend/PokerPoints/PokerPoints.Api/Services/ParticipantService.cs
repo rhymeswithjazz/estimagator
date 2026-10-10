@@ -6,9 +6,9 @@ namespace PokerPoints.Api.Services;
 
 public interface IParticipantService
 {
-    Task<Participant> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId, Guid? userId = null);
-    Task<Participant?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null);
-    Task<Participant?> ClaimGuestHostAsync(Guid sessionId, string displayName, bool isObserver, string connectionId, string guestHostToken, Guid? existingParticipantId = null, Guid? userId = null);
+    Task<ParticipantJoinResult> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId, Guid? userId = null);
+    Task<ParticipantJoinResult?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null, string? reconnectToken = null);
+    Task<ParticipantJoinResult?> ClaimGuestHostAsync(Guid sessionId, string displayName, bool isObserver, string connectionId, string guestHostToken, Guid? existingParticipantId = null, Guid? userId = null, string? reconnectToken = null);
     Task DisconnectAsync(string connectionId);
     Task<Participant?> GetByConnectionIdAsync(string connectionId);
     Task<Participant?> GetByIdAsync(Guid participantId);
@@ -16,6 +16,9 @@ public interface IParticipantService
     Task<bool> IsOrganizerAsync(string connectionId, Guid sessionId);
     Task<HostTransferResult> TransferHostAsync(Guid currentHostParticipantId, Guid targetParticipantId);
 }
+
+// This result is caller-only: never broadcast its credential.
+public record ParticipantJoinResult(Participant Participant, string? ReconnectToken, string? PreviousConnectionId = null);
 
 public enum HostTransferStatus
 {
@@ -44,7 +47,7 @@ public class ParticipantService : IParticipantService
         _db = db;
     }
 
-    public async Task<Participant> JoinSessionAsync(
+    public async Task<ParticipantJoinResult> JoinSessionAsync(
         Guid sessionId,
         string displayName,
         bool isObserver,
@@ -62,33 +65,38 @@ public class ParticipantService : IParticipantService
             UserId = userId
         };
 
+        var result = IssueReconnectToken(participant);
         _db.Participants.Add(participant);
         await _db.SaveChangesAsync();
 
-        return participant;
+        return result;
     }
 
-    public async Task<Participant?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null)
+    public async Task<ParticipantJoinResult?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null, string? reconnectToken = null)
     {
         var participant = await _db.Participants
             .FirstOrDefaultAsync(p => p.Id == participantId && p.SessionId == sessionId);
-        if (participant == null) return null;
+        if (participant == null || !CanReconnect(participant, userId, reconnectToken)) return null;
 
+        var previousConnectionId = participant.ConnectionId;
         participant.ConnectionId = connectionId;
+        // Preserve guest-to-account linking, but only after the guest proved ownership.
         participant.UserId ??= userId;
+        if (participant.UserId.HasValue) participant.ReconnectTokenHash = null;
         await _db.SaveChangesAsync();
 
-        return participant;
+        return new ParticipantJoinResult(participant, participant.UserId.HasValue ? null : reconnectToken, previousConnectionId);
     }
 
-    public async Task<Participant?> ClaimGuestHostAsync(
+    public async Task<ParticipantJoinResult?> ClaimGuestHostAsync(
         Guid sessionId,
         string displayName,
         bool isObserver,
         string connectionId,
         string guestHostToken,
         Guid? existingParticipantId = null,
-        Guid? userId = null)
+        Guid? userId = null,
+        string? reconnectToken = null)
     {
         if (string.IsNullOrWhiteSpace(guestHostToken))
         {
@@ -111,15 +119,23 @@ public class ParticipantService : IParticipantService
             return null;
         }
 
+        var host = existingParticipantId.HasValue
+            ? session.Participants.FirstOrDefault(p => p.Id == existingParticipantId.Value)
+            : null;
+
+        // A creator reservation authorizes claiming host controls, not another participant's identity.
+        if (existingParticipantId.HasValue && (host == null || !CanReconnect(host, userId, reconnectToken)))
+        {
+            return null;
+        }
+
         foreach (var participant in session.Participants.Where(p => p.IsOrganizer))
         {
             participant.IsOrganizer = false;
         }
 
-        var host = existingParticipantId.HasValue
-            ? session.Participants.FirstOrDefault(p => p.Id == existingParticipantId.Value)
-            : null;
-
+        var previousConnectionId = host?.ConnectionId;
+        ParticipantJoinResult result;
         if (host == null)
         {
             host = new Participant
@@ -130,6 +146,7 @@ public class ParticipantService : IParticipantService
                 ConnectionId = connectionId,
                 UserId = userId
             };
+            result = IssueReconnectToken(host);
             _db.Participants.Add(host);
         }
         else
@@ -138,11 +155,13 @@ public class ParticipantService : IParticipantService
             host.IsObserver = isObserver;
             host.ConnectionId = connectionId;
             host.UserId ??= userId;
+            if (host.UserId.HasValue) host.ReconnectTokenHash = null;
+            result = new ParticipantJoinResult(host, host.UserId.HasValue ? null : reconnectToken, previousConnectionId);
         }
 
         host.IsOrganizer = true;
         session.GuestHostClaimedAt = DateTime.UtcNow;
-        session.OrganizerId = userId;
+        session.OrganizerId = host.UserId;
 
         await _db.SaveChangesAsync();
 
@@ -151,7 +170,25 @@ public class ParticipantService : IParticipantService
             await transaction.CommitAsync();
         }
 
-        return host;
+        return result;
+    }
+
+    private static bool CanReconnect(Participant participant, Guid? userId, string? reconnectToken)
+    {
+        // Account-bound participants cannot fall back to a guest proof or silently change owner.
+        if (participant.UserId.HasValue) return participant.UserId == userId;
+
+        return !string.IsNullOrWhiteSpace(reconnectToken) &&
+            !string.IsNullOrEmpty(participant.ReconnectTokenHash) &&
+            GuestHostToken.Verify(reconnectToken, participant.ReconnectTokenHash);
+    }
+
+    private static ParticipantJoinResult IssueReconnectToken(Participant participant)
+    {
+        // Use the same cryptographic primitives as reservations, but a distinct random credential.
+        var token = participant.UserId.HasValue ? null : GuestHostToken.Generate();
+        participant.ReconnectTokenHash = token == null ? null : GuestHostToken.Hash(token);
+        return new ParticipantJoinResult(participant, token);
     }
 
     public async Task DisconnectAsync(string connectionId)

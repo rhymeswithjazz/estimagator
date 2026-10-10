@@ -146,8 +146,9 @@ export class JoinSessionComponent implements OnInit {
       if (joined) {
         this.router.navigate(['/game', this.sessionCode()]);
       } else {
-        this.error.set('Failed to rejoin. Please try joining as a new user.');
-        this.returningUser.set(null);
+        this.error.set(
+          'Unable to rejoin. Sign in with your original account or choose to join as a new user.',
+        );
       }
     } catch (err) {
       this.error.set('Connection error. Please check your network and try again.');
@@ -157,6 +158,7 @@ export class JoinSessionComponent implements OnInit {
   }
 
   joinAsNewUser(): void {
+    this.gameState.forgetParticipantIdentity(this.sessionCode());
     this.returningUser.set(null);
   }
 

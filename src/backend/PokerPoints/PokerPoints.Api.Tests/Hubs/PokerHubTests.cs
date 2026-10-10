@@ -47,9 +47,9 @@ public class PokerHubTests
             .ReturnsAsync(session);
         fixture.ParticipantService
             .Setup(s => s.JoinSessionAsync(SessionId, "Sender", false, true, SenderConnectionId, null))
-            .ReturnsAsync(participant);
+            .ReturnsAsync(new ParticipantJoinResult(participant, "private-reconnect-token"));
         fixture.SessionService
-            .Setup(s => s.GetOrCreateActiveStoryAsync(SessionId))
+            .Setup(s => s.GetOrCreateCurrentStoryAsync(SessionId))
             .ReturnsAsync((Story?)null);
 
         // Act
@@ -57,7 +57,7 @@ public class PokerHubTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.IsOrganizer);
+        Assert.True(result.Participant.IsOrganizer);
         fixture.ParticipantService.Verify(
             s => s.JoinSessionAsync(SessionId, "Sender", false, true, SenderConnectionId, null),
             Times.Once);
@@ -91,15 +91,15 @@ public class PokerHubTests
             .ReturnsAsync(session);
         fixture.ParticipantService
             .Setup(s => s.JoinSessionAsync(SessionId, "Sender", false, false, SenderConnectionId, null))
-            .ReturnsAsync(participant);
+            .ReturnsAsync(new ParticipantJoinResult(participant, "private-reconnect-token"));
 
         // Act
         var result = await fixture.Hub.JoinSession("ABC123", "Sender", false);
 
         // Assert
         Assert.NotNull(result);
-        Assert.False(result.IsOrganizer);
-        fixture.SessionService.Verify(s => s.GetOrCreateActiveStoryAsync(It.IsAny<Guid>()), Times.Never);
+        Assert.False(result.Participant.IsOrganizer);
+        fixture.SessionService.Verify(s => s.GetOrCreateCurrentStoryAsync(It.IsAny<Guid>()), Times.Never);
     }
 
     [Fact]
@@ -135,10 +135,11 @@ public class PokerHubTests
                 SenderConnectionId,
                 token,
                 null,
+                null,
                 null))
-            .ReturnsAsync(guestHost);
+            .ReturnsAsync(new ParticipantJoinResult(guestHost, "private-reconnect-token"));
         fixture.SessionService
-            .Setup(s => s.GetOrCreateActiveStoryAsync(SessionId))
+            .Setup(s => s.GetOrCreateCurrentStoryAsync(SessionId))
             .ReturnsAsync((Story?)null);
 
         // Act
@@ -146,7 +147,7 @@ public class PokerHubTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.True(result.IsOrganizer);
+        Assert.True(result.Participant.IsOrganizer);
         fixture.ParticipantService.Verify(
             s => s.JoinSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<Guid?>()),
             Times.Never);
@@ -665,6 +666,43 @@ public class PokerHubTests
         await Assert.ThrowsAsync<HubException>(() => restart ? fixture.Hub.RestartStory(StoryId) : fixture.Hub.StartStory(StoryId));
         fixture.SessionService.Verify(s => s.CompleteStoryAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<decimal?>()), Times.Never);
         fixture.VotingService.Verify(s => s.RevealVotesAsync(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task JoinSession_ShouldRejectFailedReconnectWithoutCreatingAnotherParticipant()
+    {
+        var fixture = CreateFixture();
+        fixture.SessionService.Setup(s => s.GetSessionByCodeAsync("ABC123"))
+            .ReturnsAsync(new Session { Id = SessionId, AccessCode = "ABC123" });
+        fixture.ParticipantService.Setup(s => s.ReconnectAsync(SessionId, SenderId, SenderConnectionId, null, null))
+            .ReturnsAsync((ParticipantJoinResult?)null);
+
+        await Assert.ThrowsAsync<HubException>(() => fixture.Hub.JoinSession("ABC123", "Host", false, SenderId));
+
+        fixture.ParticipantService.Verify(s => s.JoinSessionAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<bool>(),
+            It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<Guid?>()), Times.Never);
+        fixture.GroupClient.Verify(c => c.SendCoreAsync(It.IsAny<string>(), It.IsAny<object?[]>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task JoinSession_ShouldReturnProofOnlyToCallerAndBroadcastPublicParticipant()
+    {
+        var fixture = CreateFixture();
+        fixture.SessionService.Setup(s => s.GetSessionByCodeAsync("ABC123"))
+            .ReturnsAsync(new Session { Id = SessionId, AccessCode = "ABC123" });
+        var participant = CreateParticipant(SenderId, "Host", "ABC123", SenderConnectionId, isOrganizer: true);
+        fixture.ParticipantService.Setup(s => s.ReconnectAsync(SessionId, SenderId, SenderConnectionId, null, "private-proof"))
+            .ReturnsAsync(new ParticipantJoinResult(participant, "private-proof", "old-connection"));
+
+        var result = await fixture.Hub.JoinSession("ABC123", "Host", false, SenderId, reconnectToken: "private-proof");
+
+        Assert.Equal("private-proof", result!.ReconnectToken);
+        fixture.GroupClient.Verify(c => c.SendCoreAsync("UserJoined",
+            It.Is<object?[]>(args => args.Length == 1 && args[0] is UserJoinedEvent), It.IsAny<CancellationToken>()), Times.Once);
+        var broadcast = Assert.Single(fixture.GroupClient.Invocations).Arguments[1];
+        Assert.DoesNotContain("private-proof", System.Text.Json.JsonSerializer.Serialize(broadcast));
+        Assert.DoesNotContain("ReconnectToken", System.Text.Json.JsonSerializer.Serialize(broadcast));
+        Mock.Get(fixture.Hub.Groups).Verify(g => g.RemoveFromGroupAsync("old-connection", "ABC123", It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private static HubFixture CreateFixture(ClaimsPrincipal? user = null)

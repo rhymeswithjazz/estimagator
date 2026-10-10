@@ -18,6 +18,7 @@ interface StoredSessionIdentity {
   displayName: string;
   isObserver: boolean;
   guestHostToken?: string;
+  reconnectToken?: string;
 }
 
 const SESSION_STORAGE_KEY_PREFIX = 'poker-points-session-';
@@ -74,7 +75,9 @@ export class GameStateService {
   );
   readonly isOrganizer = computed(() => this._currentParticipant()?.isOrganizer ?? false);
   readonly isObserver = computed(() => this._currentParticipant()?.isObserver ?? false);
-  readonly canVote = computed(() => !this.isObserver() && this._revealedVotes() === null);
+  readonly canVote = computed(
+    () => !this.isObserver() && this._currentStory()?.status === 'active' && this._revealedVotes() === null,
+  );
   readonly hasVoted = computed(() => this._myVote() !== null);
   readonly votesRevealed = computed(() => this._revealedVotes() !== null);
   readonly deckValues = computed(() => DECK_VALUES[this._deckType()]);
@@ -169,6 +172,7 @@ export class GameStateService {
     });
 
     this.signalR.votesReset$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.clearTimer();
       this._revealedVotes.set(null);
       this._votingResults.set(null);
       this._myVote.set(null);
@@ -215,6 +219,14 @@ export class GameStateService {
 
     this.signalR.storyDeleted$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((storyId) => {
       this._storyQueue.update((queue) => queue.filter((s) => s.id !== storyId));
+      if (this._currentStory()?.id === storyId) {
+        this._currentStory.set(null);
+        this._revealedVotes.set(null);
+        this._votingResults.set(null);
+        this._voteStatuses.set([]);
+        this._myVote.set(null);
+        this.clearTimer();
+      }
     });
 
     this.signalR.storyQueueUpdated$
@@ -251,10 +263,12 @@ export class GameStateService {
   }
 
   private applyGameState(state: GameState): void {
+    const previousStoryId = this._currentStory()?.id;
     this._participants.set(state.participants);
     this._currentStory.set(state.currentStory);
     this._voteStatuses.set(state.voteStatuses);
     this._revealedVotes.set(state.revealedVotes);
+    this._votingResults.set(state.revealedVotes !== null ? state.votingResults ?? null : null);
     this._deckType.set(state.session.deckType as DeckType);
     this._sessionName.set(state.session.name);
 
@@ -266,17 +280,20 @@ export class GameStateService {
       }
     }
 
-    if (this._currentParticipant()?.isObserver) {
+    const participantId = this._currentParticipant()?.id;
+    if (
+      this._currentParticipant()?.isObserver ||
+      previousStoryId !== state.currentStory?.id ||
+      !state.voteStatuses.some((v) => v.participantId === participantId && v.hasVoted)
+    ) {
       this._myVote.set(null);
     }
 
-    if (state.revealedVotes) {
+    if (state.revealedVotes && !this._currentParticipant()?.isObserver) {
       const myParticipant = this._currentParticipant();
       if (myParticipant) {
         const myVoteData = state.revealedVotes.find((v) => v.participantId === myParticipant.id);
-        if (myVoteData) {
-          this._myVote.set(myVoteData.cardValue);
-        }
+        this._myVote.set(myVoteData?.cardValue ?? null);
       }
     }
 
@@ -307,17 +324,19 @@ export class GameStateService {
       const existingParticipantId = storedIdentity?.participantId || undefined;
       const effectiveGuestHostToken = guestHostToken ?? storedIdentity?.guestHostToken;
 
-      const participant = await this.signalR.joinSession(
+      const joined = await this.signalR.joinSession(
         sessionCode,
         displayName,
         isObserver,
         existingParticipantId,
         effectiveGuestHostToken,
+        storedIdentity?.reconnectToken,
       );
 
-      if (!participant) {
+      if (!joined) {
         return false;
       }
+      const participant = joined.participant;
 
       this._sessionCode.set(sessionCode.toUpperCase());
       this._currentParticipant.set(participant);
@@ -328,6 +347,7 @@ export class GameStateService {
         displayName: participant.displayName,
         isObserver: participant.isObserver,
         guestHostToken: effectiveGuestHostToken,
+        reconnectToken: joined.reconnectToken ?? undefined,
       });
 
       // Fetch full game state
@@ -570,18 +590,23 @@ export class GameStateService {
     if (!sessionCode || !currentParticipant) return;
 
     try {
-      const reconnectedParticipant = await this.signalR.joinSession(
+      const storedIdentity = this.getStoredIdentityForSession(sessionCode);
+      const joined = await this.signalR.joinSession(
         sessionCode,
         currentParticipant.displayName,
         currentParticipant.isObserver,
         currentParticipant.id,
+        undefined,
+        storedIdentity?.reconnectToken,
       );
 
-      if (!reconnectedParticipant) return;
+      if (!joined) return;
+      const reconnectedParticipant = joined.participant;
 
       this._currentParticipant.set(reconnectedParticipant);
       this.storeIdentity({
         sessionCode,
+        reconnectToken: joined.reconnectToken ?? undefined,
         participantId: reconnectedParticipant.id,
         displayName: reconnectedParticipant.displayName,
         isObserver: reconnectedParticipant.isObserver,
@@ -620,7 +645,8 @@ export class GameStateService {
 
   private storeIdentity(identity: StoredSessionIdentity): void {
     const key = this.getStorageKey(identity.sessionCode);
-    localStorage.setItem(key, JSON.stringify(identity));
+    const existing = this.getStoredIdentityForSession(identity.sessionCode);
+    localStorage.setItem(key, JSON.stringify({ ...existing, ...identity }));
   }
 
   storeGuestHostToken(sessionCode: string, guestHostToken: string): void {
@@ -632,6 +658,12 @@ export class GameStateService {
       isObserver: existing?.isObserver ?? false,
       guestHostToken,
     });
+  }
+
+  forgetParticipantIdentity(sessionCode: string): void {
+    const existing = this.getStoredIdentityForSession(sessionCode);
+    if (!existing) return;
+    this.storeIdentity({ ...existing, participantId: undefined, reconnectToken: undefined });
   }
 
   getStoredIdentityForSession(sessionCode: string): StoredSessionIdentity | null {

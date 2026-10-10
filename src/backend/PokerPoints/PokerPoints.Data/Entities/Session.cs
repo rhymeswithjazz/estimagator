@@ -3,6 +3,7 @@ namespace PokerPoints.Data.Entities;
 public class Session
 {
     public Guid Id { get; set; }
+    public Guid? CurrentStoryId { get; set; }
     public Guid? EndingHostUserId { get; set; }
     public Guid? OrganizerId { get; set; }
     public User? Organizer { get; set; }

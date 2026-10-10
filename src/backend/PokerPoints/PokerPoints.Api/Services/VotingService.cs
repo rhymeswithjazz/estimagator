@@ -75,9 +75,9 @@ public class VotingService : IVotingService
             v.CardValue
         )).ToList();
 
-        var (average, isConsensus) = CalculateResults(votes);
+        var results = CalculateResults(votes.Select(v => v.CardValue));
 
-        return new VotesRevealedEvent(voteDtos, average, isConsensus);
+        return new VotesRevealedEvent(voteDtos, results.Average, results.IsConsensus);
     }
 
     public async Task RemoveVoteAsync(Guid storyId, Guid participantId)
@@ -101,19 +101,19 @@ public class VotingService : IVotingService
         await _db.SaveChangesAsync();
     }
 
-    private static (decimal? Average, bool IsConsensus) CalculateResults(List<Vote> votes)
+    internal static VotingResultsDto CalculateResults(IEnumerable<string?> cardValues)
     {
-        var numericVotes = votes
-            .Where(v => decimal.TryParse(v.CardValue, out _))
-            .Select(v => decimal.Parse(v.CardValue!))
+        var numericVotes = cardValues
+            .Where(v => decimal.TryParse(v, out _))
+            .Select(v => decimal.Parse(v!))
             .ToList();
 
         if (numericVotes.Count == 0)
-            return (null, false);
+            return new VotingResultsDto(null, false);
 
         var average = Math.Round(numericVotes.Average(), 1);
         var isConsensus = numericVotes.Distinct().Count() == 1;
 
-        return (average, isConsensus);
+        return new VotingResultsDto(average, isConsensus);
     }
 }

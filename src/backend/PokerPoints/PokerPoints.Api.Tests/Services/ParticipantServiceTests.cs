@@ -44,7 +44,7 @@ public class ParticipantServiceTests : IDisposable
             connectionId: "conn-1",
             userId);
 
-        participant.UserId.Should().Be(userId);
+        participant.Participant.UserId.Should().Be(userId);
     }
 
     [Fact]
@@ -66,9 +66,9 @@ public class ParticipantServiceTests : IDisposable
             guestHostToken: token);
 
         host.Should().NotBeNull();
-        host!.IsOrganizer.Should().BeTrue();
-        host.DisplayName.Should().Be("Creator");
-        host.ConnectionId.Should().Be("creator-connection");
+        host!.Participant.IsOrganizer.Should().BeTrue();
+        host.Participant.DisplayName.Should().Be("Creator");
+        host.Participant.ConnectionId.Should().Be("creator-connection");
 
         var updatedOther = await _db.Participants.FindAsync(accidentalHost.Id);
         updatedOther!.IsOrganizer.Should().BeFalse();
@@ -198,6 +198,190 @@ public class ParticipantServiceTests : IDisposable
         var result = await _service.TransferHostAsync(host.Id, otherTarget.Id);
 
         result.Status.Should().Be(HostTransferStatus.TargetDifferentSession);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ReconnectAsync_ShouldRejectUnprovenAccountOwnership(bool wrongAccount)
+    {
+        var session = CreateSession();
+        var owner = Guid.NewGuid();
+        var participant = CreateParticipant(session, "Host", "original", isOrganizer: true, userId: owner);
+        participant.ReconnectTokenHash = GuestHostToken.Hash("guest-proof");
+        _db.AddRange(session, participant);
+        await _db.SaveChangesAsync();
+
+        var result = await _service.ReconnectAsync(session.Id, participant.Id, "attacker",
+            wrongAccount ? Guid.NewGuid() : null, "guest-proof");
+
+        result.Should().BeNull();
+        participant.ConnectionId.Should().Be("original");
+        participant.UserId.Should().Be(owner);
+        participant.IsOrganizer.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ReconnectAsync_ShouldRestoreAccountOwnerWithoutGuestProof()
+    {
+        var session = CreateSession();
+        var owner = Guid.NewGuid();
+        _db.Add(session);
+        var joined = await _service.JoinSessionAsync(session.Id, "Host", false, true, "old", owner);
+        joined.ReconnectToken.Should().BeNull();
+        joined.Participant.ReconnectTokenHash.Should().BeNull();
+
+        var result = await _service.ReconnectAsync(session.Id, joined.Participant.Id, "new", owner);
+
+        result!.Participant.Id.Should().Be(joined.Participant.Id);
+        result.Participant.IsOrganizer.Should().BeTrue();
+        result.PreviousConnectionId.Should().Be("old");
+        (await _service.GetByConnectionIdAsync("old")).Should().BeNull();
+        await _service.DisconnectAsync("old");
+        result.Participant.ConnectionId.Should().Be("new");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("incorrect")]
+    public async Task ReconnectAsync_ShouldRejectMissingOrIncorrectGuestProof(string? proof)
+    {
+        var session = CreateSession();
+        _db.Add(session);
+        var joined = await _service.JoinSessionAsync(session.Id, "Host", false, true, "old");
+
+        var result = await _service.ReconnectAsync(session.Id, joined.Participant.Id, "attacker", Guid.NewGuid(), proof);
+
+        result.Should().BeNull();
+        joined.Participant.ConnectionId.Should().Be("old");
+        joined.Participant.UserId.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GuestReconnect_ShouldUseHashAndPreserveIdentityRoleAndVotes()
+    {
+        var session = CreateSession();
+        _db.Add(session);
+        var joined = await _service.JoinSessionAsync(session.Id, "Guest", false, true, "old");
+        joined.ReconnectToken.Should().NotBeNullOrEmpty();
+        joined.Participant.ReconnectTokenHash.Should().NotBe(joined.ReconnectToken);
+        GuestHostToken.Verify(joined.ReconnectToken!, joined.Participant.ReconnectTokenHash!).Should().BeTrue();
+        var vote = new Vote { ParticipantId = joined.Participant.Id, Story = new Story { Session = session, Title = "Story" }, CardValue = "5" };
+        _db.Add(vote);
+        await _db.SaveChangesAsync();
+        await _service.UpdateRoleAsync("old", true);
+        await _service.DisconnectAsync("old");
+
+        var result = await _service.ReconnectAsync(session.Id, joined.Participant.Id, "new", reconnectToken: joined.ReconnectToken);
+
+        result!.Participant.Id.Should().Be(joined.Participant.Id);
+        result.Participant.IsOrganizer.Should().BeTrue();
+        result.Participant.IsObserver.Should().BeTrue();
+        result.Participant.UserId.Should().BeNull();
+        result.ReconnectToken.Should().Be(joined.ReconnectToken);
+        (await _db.Votes.SingleAsync()).ParticipantId.Should().Be(joined.Participant.Id);
+    }
+
+    [Fact]
+    public async Task ProvenGuestReconnect_ShouldLinkAccountAndRequireThatOwnerAfterwards()
+    {
+        var session = CreateSession();
+        _db.Add(session);
+        var joined = await _service.JoinSessionAsync(session.Id, "Guest", false, true, "old");
+        var owner = Guid.NewGuid();
+
+        var linked = await _service.ReconnectAsync(session.Id, joined.Participant.Id, "linked", owner, joined.ReconnectToken);
+
+        linked!.Participant.UserId.Should().Be(owner);
+        linked.Participant.ReconnectTokenHash.Should().BeNull();
+        linked.ReconnectToken.Should().BeNull();
+        (await _service.ReconnectAsync(session.Id, joined.Participant.Id, "anonymous", reconnectToken: joined.ReconnectToken)).Should().BeNull();
+        (await _service.ReconnectAsync(session.Id, joined.Participant.Id, "wrong-account", Guid.NewGuid(), joined.ReconnectToken)).Should().BeNull();
+        (await _service.ReconnectAsync(session.Id, joined.Participant.Id, "owner", owner)).Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ReconnectAsync_ShouldRejectLegacyGuestWithoutStoredHash()
+    {
+        var session = CreateSession();
+        var participant = CreateParticipant(session, "Legacy host", "old", isOrganizer: true);
+        _db.AddRange(session, participant);
+        await _db.SaveChangesAsync();
+
+        (await _service.ReconnectAsync(session.Id, participant.Id, "new", reconnectToken: "anything")).Should().BeNull();
+        participant.ConnectionId.Should().Be("old");
+    }
+
+    [Fact]
+    public async Task GuestProof_ShouldBeScopedToItsParticipantAndSession()
+    {
+        var session = CreateSession();
+        var other = CreateSession("OTHER");
+        _db.AddRange(session, other);
+        var first = await _service.JoinSessionAsync(session.Id, "First", false, true, "first");
+        var second = await _service.JoinSessionAsync(session.Id, "Second", false, false, "second");
+
+        (await _service.ReconnectAsync(session.Id, first.Participant.Id, "new", reconnectToken: second.ReconnectToken)).Should().BeNull();
+        (await _service.ReconnectAsync(other.Id, first.Participant.Id, "new", reconnectToken: first.ReconnectToken)).Should().BeNull();
+        first.Participant.ConnectionId.Should().Be("first");
+    }
+
+    [Fact]
+    public async Task ClaimGuestHostAsync_ShouldNotClaimAnotherIdentityWithOnlyCreatorReservation()
+    {
+        var session = CreateSession();
+        session.GuestHostTokenHash = GuestHostToken.Hash("creator-reservation");
+        _db.Add(session);
+        var victim = await _service.JoinSessionAsync(session.Id, "Victim", false, false, "victim");
+
+        var result = await _service.ClaimGuestHostAsync(session.Id, "Creator", false, "new",
+            "creator-reservation", victim.Participant.Id);
+
+        result.Should().BeNull();
+        victim.Participant.ConnectionId.Should().Be("victim");
+        victim.Participant.IsOrganizer.Should().BeFalse();
+        session.GuestHostClaimedAt.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ClaimGuestHostAsync_ShouldReuseAnExistingParticipantOnlyWithItsProof()
+    {
+        var session = CreateSession();
+        session.GuestHostTokenHash = GuestHostToken.Hash("creator-reservation");
+        _db.Add(session);
+        var joined = await _service.JoinSessionAsync(session.Id, "Creator", false, false, "old");
+
+        var claimed = await _service.ClaimGuestHostAsync(session.Id, "Creator", true, "new",
+            "creator-reservation", joined.Participant.Id, reconnectToken: joined.ReconnectToken);
+
+        claimed!.Participant.Id.Should().Be(joined.Participant.Id);
+        claimed.Participant.IsOrganizer.Should().BeTrue();
+        claimed.Participant.IsObserver.Should().BeTrue();
+        claimed.ReconnectToken.Should().Be(joined.ReconnectToken);
+        claimed.PreviousConnectionId.Should().Be("old");
+        (await _db.Participants.CountAsync()).Should().Be(1);
+    }
+
+    [Fact]
+    public async Task GuestHostProof_ShouldSurviveTransferAndNeverRestoreOldHostPrivileges()
+    {
+        var session = CreateSession();
+        session.GuestHostTokenHash = GuestHostToken.Hash("creator-reservation");
+        _db.Add(session);
+        await _db.SaveChangesAsync();
+        var first = (await _service.ClaimGuestHostAsync(session.Id, "Creator", false, "first", "creator-reservation"))!;
+        first.ReconnectToken.Should().NotBe("creator-reservation");
+        var target = await _service.JoinSessionAsync(session.Id, "Target", true, false, "target");
+        (await _service.TransferHostAsync(first.Participant.Id, target.Participant.Id)).Status.Should().Be(HostTransferStatus.Success);
+
+        var oldHost = await _service.ReconnectAsync(session.Id, first.Participant.Id, "old-host-rejoin", reconnectToken: first.ReconnectToken);
+        var newHost = await _service.ReconnectAsync(session.Id, target.Participant.Id, "new-host-rejoin", reconnectToken: target.ReconnectToken);
+
+        oldHost!.Participant.IsOrganizer.Should().BeFalse();
+        newHost!.Participant.IsOrganizer.Should().BeTrue();
+        newHost.Participant.IsObserver.Should().BeTrue();
+        (await _service.ClaimGuestHostAsync(session.Id, "Creator", false, "reclaim", "creator-reservation")).Should().BeNull();
     }
 
     private async Task<(Session Session, Participant Host, Participant Target)> CreateSessionWithHostAndTargetAsync(

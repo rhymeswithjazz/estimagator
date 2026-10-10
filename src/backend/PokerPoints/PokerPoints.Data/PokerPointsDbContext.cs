@@ -91,6 +91,11 @@ public class PokerPointsDbContext : DbContext
 
             entity.HasIndex(e => e.AccessCode).IsUnique();
 
+            entity.HasOne<Story>()
+                .WithMany()
+                .HasForeignKey(e => e.CurrentStoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             entity.HasOne(e => e.Organizer)
                 .WithMany(u => u.Sessions)
                 .HasForeignKey(e => e.OrganizerId)
@@ -108,6 +113,7 @@ public class PokerPointsDbContext : DbContext
             entity.Property(e => e.IsObserver).HasDefaultValue(false);
             entity.Property(e => e.IsOrganizer).HasDefaultValue(false);
             entity.Property(e => e.ConnectionId).HasMaxLength(255);
+            entity.Property(e => e.ReconnectTokenHash).HasMaxLength(64);
             entity.Property(e => e.JoinedAt).HasDefaultValueSql("NOW()");
 
             entity.HasOne(e => e.Session)

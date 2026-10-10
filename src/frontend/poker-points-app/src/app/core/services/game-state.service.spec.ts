@@ -49,6 +49,8 @@ class MockSignalRService {
   readonly getSessionState = vi.fn();
   readonly getStoryQueue = vi.fn().mockResolvedValue([]);
   readonly transferHost = vi.fn();
+  readonly switchRole = vi.fn();
+  readonly castVote = vi.fn().mockResolvedValue(undefined);
   readonly sendEmojiReaction = vi.fn().mockResolvedValue(undefined);
 }
 
@@ -128,8 +130,154 @@ describe('GameStateService', () => {
     expect(signalR.sendEmojiReaction).not.toHaveBeenCalled();
   });
 
+  it('stores caller-only proof and sends it on refresh without adding it to public state', async () => {
+    expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBe('guest-proof');
+    expect(service.currentParticipant()).not.toHaveProperty('reconnectToken');
+    await service.attemptReconnect('ABC123');
+    expect(signalR.joinSession).toHaveBeenLastCalledWith(
+      'ABC123', 'Host', false, 'host-id', undefined, 'guest-proof',
+    );
+  });
+
+  it('preserves proof through role changes and automatic transport reconnect', async () => {
+    signalR.switchRole.mockResolvedValue({ ...hostParticipant, isObserver: true });
+    await service.switchRole(true);
+    expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBe('guest-proof');
+    signalR.joinSession.mockResolvedValue({
+      participant: { ...hostParticipant, isObserver: true }, reconnectToken: 'guest-proof',
+    });
+    signalR.reconnected$.next();
+    await vi.waitFor(() => expect(signalR.joinSession).toHaveBeenLastCalledWith(
+      'ABC123', 'Host', true, 'host-id', undefined, 'guest-proof',
+    ));
+    await vi.waitFor(() => expect(service.getStoredIdentityForSession('ABC123')?.isObserver).toBe(true));
+    expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBe('guest-proof');
+  });
+
+  it('does not silently create a new participant after reconnect rejection', async () => {
+    signalR.joinSession.mockRejectedValue(new Error('Unable to verify participant'));
+    signalR.joinSession.mockClear();
+    expect(await service.attemptReconnect('ABC123')).toBe(false);
+    expect(signalR.joinSession).toHaveBeenCalledTimes(1);
+    expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBe('guest-proof');
+  });
+
+  it('clears only reconnect identity when the user explicitly chooses a new participant', async () => {
+    service.storeGuestHostToken('ABC123', 'creator-reservation');
+    service.forgetParticipantIdentity('ABC123');
+    await service.joinSession('ABC123', 'New guest', false);
+    expect(signalR.joinSession).toHaveBeenLastCalledWith(
+      'ABC123', 'New guest', false, undefined, 'creator-reservation', undefined,
+    );
+  });
+
+  it('discards the guest proof when a verified reconnect links the participant to an account', async () => {
+    signalR.joinSession.mockResolvedValue({ participant: hostParticipant, reconnectToken: null });
+    await service.attemptReconnect('ABC123');
+    expect(service.getStoredIdentityForSession('ABC123')?.participantId).toBe('host-id');
+    expect(service.getStoredIdentityForSession('ABC123')?.reconnectToken).toBeUndefined();
+  });
+
+  it('does not reuse a room proof for another room', async () => {
+    await service.joinSession('OTHER1', 'Host', false);
+    expect(signalR.joinSession).toHaveBeenLastCalledWith(
+      'OTHER1', 'Host', false, undefined, undefined, undefined,
+    );
+  });
+
+  it('restores revealed results and selected vote from a reconnect snapshot', async () => {
+    const state = revealedState();
+    signalR.getSessionState.mockResolvedValue(state);
+    await service.attemptReconnect('ABC123');
+    expect(service.currentStory()?.id).toBe('revealed-story');
+    expect(service.votesRevealed()).toBe(true);
+    expect(service.votingResults()).toEqual({ average: 6.5, isConsensus: false });
+    expect(service.myVote()).toBe('5');
+    expect(service.canVote()).toBe(false);
+    await service.castVote('13');
+    expect(signalR.castVote).not.toHaveBeenCalled();
+  });
+
+  it('retains revealed results when host and participant roles change', () => {
+    const state = revealedState();
+    state.participants = [
+      { ...hostParticipant, isOrganizer: false, isObserver: true },
+      { ...targetParticipant, isOrganizer: true },
+    ];
+    signalR.sessionState$.next(state);
+    expect(service.votingResults()?.average).toBe(6.5);
+    expect(service.revealedVotes()).toHaveLength(2);
+    expect(service.isOrganizer()).toBe(false);
+    expect(service.myVote()).toBeNull();
+  });
+
+  it('clears stale results and selection when a snapshot shows a reset round', () => {
+    const state = revealedState();
+    signalR.sessionState$.next(state);
+    signalR.sessionState$.next({
+      ...state,
+      currentStory: { ...state.currentStory!, status: 'active', finalScore: null },
+      revealedVotes: null,
+      votingResults: null,
+      voteStatuses: [{ participantId: hostParticipant.id, hasVoted: false }],
+    });
+    expect(service.votesRevealed()).toBe(false);
+    expect(service.votingResults()).toBeNull();
+    expect(service.myVote()).toBeNull();
+    expect(service.canVote()).toBe(true);
+  });
+
+  it('treats an empty completed round as revealed', () => {
+    signalR.sessionState$.next({
+      ...revealedState(),
+      revealedVotes: [],
+      votingResults: { average: null, isConsensus: false },
+    });
+    expect(service.votesRevealed()).toBe(true);
+    expect(service.votingResults()).toEqual({ average: null, isConsensus: false });
+    expect(service.myVote()).toBeNull();
+    expect(service.canVote()).toBe(false);
+  });
+
+  it('clears the displayed results when the current story is deleted', () => {
+    signalR.sessionState$.next(revealedState());
+    signalR.storyDeleted$.next('revealed-story');
+    expect(service.currentStory()).toBeNull();
+    expect(service.votingResults()).toBeNull();
+    expect(service.revealedVotes()).toBeNull();
+    expect(service.myVote()).toBeNull();
+    expect(service.canVote()).toBe(false);
+  });
+
+  it('clears the previous round timer and results when voting resets', () => {
+    signalR.sessionState$.next(revealedState());
+    signalR.timerStarted$.next({
+      endTimeUtc: new Date(Date.now() + 60000).toISOString(), durationSeconds: 60,
+    });
+    expect(service.timerRunning()).toBe(true);
+    signalR.votesReset$.next({ storyId: 'revealed-story' });
+    expect(service.timerRunning()).toBe(false);
+    expect(service.revealedVotes()).toBeNull();
+    expect(service.votingResults()).toBeNull();
+    expect(service.myVote()).toBeNull();
+  });
+
+  function revealedState(): GameState {
+    return {
+      ...createGameState([hostParticipant, targetParticipant]),
+      currentStory: {
+        id: 'revealed-story', title: 'Story', url: null, status: 'completed', finalScore: 6.5,
+      },
+      revealedVotes: [
+        { participantId: hostParticipant.id, displayName: 'Host', cardValue: '5' },
+        { participantId: targetParticipant.id, displayName: 'Target', cardValue: '8' },
+      ],
+      votingResults: { average: 6.5, isConsensus: false },
+    };
+  }
+
   async function joinAsHost(): Promise<void> {
-    signalR.joinSession.mockResolvedValue(hostParticipant);
+    signalR.joinSession.mockResolvedValue({ participant: hostParticipant, reconnectToken: 'guest-proof' });
     signalR.getSessionState.mockResolvedValue(
       createGameState([hostParticipant, targetParticipant]),
     );

@@ -269,6 +269,10 @@ namespace PokerPoints.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<string>("ReconnectTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
                     b.Property<Guid>("SessionId")
                         .HasColumnType("uuid");
 
@@ -300,6 +304,9 @@ namespace PokerPoints.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
+
+                    b.Property<Guid?>("CurrentStoryId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("DeckType")
                         .IsRequired()
@@ -336,6 +343,8 @@ namespace PokerPoints.Data.Migrations
 
                     b.HasIndex("AccessCode")
                         .IsUnique();
+
+                    b.HasIndex("CurrentStoryId");
 
                     b.HasIndex("OrganizerId");
 
@@ -565,6 +574,11 @@ namespace PokerPoints.Data.Migrations
 
             modelBuilder.Entity("PokerPoints.Data.Entities.Session", b =>
                 {
+                    b.HasOne("PokerPoints.Data.Entities.Story", null)
+                        .WithMany()
+                        .HasForeignKey("CurrentStoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("PokerPoints.Data.Entities.User", "Organizer")
                         .WithMany("Sessions")
                         .HasForeignKey("OrganizerId")

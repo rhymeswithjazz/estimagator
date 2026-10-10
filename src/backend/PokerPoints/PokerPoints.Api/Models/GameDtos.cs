@@ -12,7 +12,8 @@ public record GameStateResponse(
     List<ParticipantDto> Participants,
     List<VoteStatusDto> VoteStatuses,
     List<VoteDto>? RevealedVotes,
-    TimerStateDto? ActiveTimer
+    TimerStateDto? ActiveTimer,
+    VotingResultsDto? VotingResults = null
 );
 
 public record VoteStatusDto(
@@ -91,3 +92,5 @@ public static class EmojiReactionOptions
         "☕"
     };
 }
+
+public record VotingResultsDto(decimal? Average, bool IsConsensus);

@@ -25,6 +25,7 @@ const AUTH_STORAGE_KEY = 'estimagator-auth';
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
+  private refreshInFlight: Promise<boolean> | null = null;
 
   private readonly state = signal<AuthState>({
     user: null,
@@ -88,7 +89,24 @@ export class AuthService {
     this.clearAuth();
   }
 
-  async refreshToken(): Promise<boolean> {
+  async getValidAccessToken(): Promise<string> {
+    const { accessToken, expiresAt } = this.state();
+    if (accessToken && expiresAt && expiresAt.getTime() > Date.now() + 30000) {
+      return accessToken;
+    }
+    return (await this.refreshToken()) ? (this.accessToken() ?? '') : '';
+  }
+
+  refreshToken(): Promise<boolean> {
+    if (!this.refreshInFlight) {
+      this.refreshInFlight = this.refreshTokenCore().finally(() => {
+        this.refreshInFlight = null;
+      });
+    }
+    return this.refreshInFlight;
+  }
+
+  private async refreshTokenCore(): Promise<boolean> {
     const currentRefreshToken = this.state().refreshToken;
     if (!currentRefreshToken) {
       return false;
@@ -229,8 +247,9 @@ export class AuthService {
           expiresAt: expiry,
         }));
       } else {
-        // Token expired, try to refresh
-        this.refreshToken();
+        // Restore the proof before refreshing. Defer HTTP until dependency injection finishes.
+        this.state.update((s) => ({ ...s, refreshToken }));
+        queueMicrotask(() => void this.refreshToken());
       }
     } catch {
       localStorage.removeItem(AUTH_STORAGE_KEY);
