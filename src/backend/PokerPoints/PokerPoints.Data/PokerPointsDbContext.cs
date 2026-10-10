@@ -71,6 +71,12 @@ public class PokerPointsDbContext : DbContext
                 .HasMaxLength(20);
 
             entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasIndex(e => e.RefreshToken)
+                .HasFilter("\"RefreshToken\" IS NOT NULL");
+            entity.HasIndex(e => e.EmailVerificationToken)
+                .HasFilter("\"EmailVerificationToken\" IS NOT NULL");
+            entity.HasIndex(e => e.PasswordResetToken)
+                .HasFilter("\"PasswordResetToken\" IS NOT NULL");
             entity.HasIndex(e => new { e.ExternalProvider, e.ExternalId })
                 .IsUnique()
                 .HasFilter("\"ExternalId\" IS NOT NULL");
@@ -115,6 +121,9 @@ public class PokerPointsDbContext : DbContext
             entity.Property(e => e.ConnectionId).HasMaxLength(255);
             entity.Property(e => e.ReconnectTokenHash).HasMaxLength(64);
             entity.Property(e => e.JoinedAt).HasDefaultValueSql("NOW()");
+
+            entity.HasIndex(e => e.ConnectionId)
+                .HasFilter("\"ConnectionId\" IS NOT NULL");
 
             entity.HasOne(e => e.Session)
                 .WithMany(s => s.Participants)

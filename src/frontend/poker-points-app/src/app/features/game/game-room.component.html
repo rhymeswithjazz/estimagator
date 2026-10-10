@@ -325,15 +325,7 @@
             <!-- Waiting for votes -->
             <div>
               @if (timerRunning()) {
-                <!-- Timer Display (visible to all) -->
-                <div
-                  class="text-6xl font-mono font-bold mb-3 transition-colors"
-                  [class]="
-                    timerSecondsRemaining() < 10 ? 'text-red-400 animate-pulse' : 'text-white'
-                  "
-                >
-                  {{ formatTime(timerSecondsRemaining()) }}
-                </div>
+                <app-timer-countdown />
                 @if (isOrganizer()) {
                   <div class="flex items-center justify-center gap-3">
                     <button
@@ -408,13 +400,14 @@
         <!-- Participants around the table -->
         @for (voter of sortedVoters(); track voter.id; let i = $index) {
           <div
-            class="emoji-throw-target absolute flex flex-col items-center transition-all duration-500"
+            class="emoji-throw-target absolute left-1/2 top-1/2 flex flex-col items-center transition-[translate] duration-500"
             [class]="sizeMode() === 'compact' ? 'gap-1' : 'gap-2'"
             [class.z-40]="
               openEmojiTargetId() === voter.id || openEmojiReactionParticipantId() === voter.id
             "
             [style]="getParticipantPosition(i, sortedVoters().length)"
             [attr.data-participant-id]="voter.id"
+            [attr.tabindex]="voter.isConnected ? 0 : null"
             (mouseenter)="showParticipantEmojiPalette(voter)"
             (mouseleave)="hideParticipantEmojiPalette()"
             (focusin)="showParticipantEmojiPalette(voter)"
@@ -469,39 +462,7 @@
                 <span class="badge badge-green text-[10px] py-0">Host</span>
               }
             </div>
-            @if (canThrowAt(voter)) {
-              @if (openEmojiTargetId() === voter.id) {
-                <div
-                  class="emoji-throw-hover-bridge"
-                  aria-hidden="true"
-                  (mouseenter)="showEmojiPalette(voter)"
-                  (mouseleave)="hideEmojiPalette()"
-                ></div>
-              }
-              <app-emoji-throw-palette
-                [targetDisplayName]="voter.displayName"
-                [open]="openEmojiTargetId() === voter.id"
-                (mouseenter)="showEmojiPalette(voter)"
-                (mouseleave)="hideEmojiPalette()"
-                (emojiSelected)="throwEmoji(voter.id, $event)"
-              />
-            }
-            @if (canReactFrom(voter)) {
-              @if (openEmojiReactionParticipantId() === voter.id) {
-                <div
-                  class="emoji-throw-hover-bridge"
-                  aria-hidden="true"
-                  (mouseenter)="showEmojiReactionPalette(voter)"
-                  (mouseleave)="hideEmojiReactionPalette()"
-                ></div>
-              }
-              <app-emoji-reaction-palette
-                [open]="openEmojiReactionParticipantId() === voter.id"
-                (mouseenter)="showEmojiReactionPalette(voter)"
-                (mouseleave)="hideEmojiReactionPalette()"
-                (emojiSelected)="sendEmojiReaction($event)"
-              />
-            }
+            <ng-container *ngTemplateOutlet="emojiPalettes; context: { $implicit: voter }" />
           </div>
         }
       </div>
@@ -544,6 +505,7 @@
                   openEmojiReactionParticipantId() === observer.id
                 "
                 [attr.data-participant-id]="observer.id"
+                [attr.tabindex]="observer.isConnected ? 0 : null"
                 [attr.data-emoji-impact-target-id]="observer.id"
                 [attr.data-emoji-reaction-anchor-id]="observer.id"
                 (mouseenter)="showParticipantEmojiPalette(observer)"
@@ -556,39 +518,9 @@
                   [class]="observer.isConnected ? 'bg-emerald-500' : 'bg-gray-300'"
                 ></span>
                 {{ observer.displayName }}
-                @if (canThrowAt(observer)) {
-                  @if (openEmojiTargetId() === observer.id) {
-                    <div
-                      class="emoji-throw-hover-bridge"
-                      aria-hidden="true"
-                      (mouseenter)="showEmojiPalette(observer)"
-                      (mouseleave)="hideEmojiPalette()"
-                    ></div>
-                  }
-                  <app-emoji-throw-palette
-                    [targetDisplayName]="observer.displayName"
-                    [open]="openEmojiTargetId() === observer.id"
-                    (mouseenter)="showEmojiPalette(observer)"
-                    (mouseleave)="hideEmojiPalette()"
-                    (emojiSelected)="throwEmoji(observer.id, $event)"
-                  />
-                }
-                @if (canReactFrom(observer)) {
-                  @if (openEmojiReactionParticipantId() === observer.id) {
-                    <div
-                      class="emoji-throw-hover-bridge"
-                      aria-hidden="true"
-                      (mouseenter)="showEmojiReactionPalette(observer)"
-                      (mouseleave)="hideEmojiReactionPalette()"
-                    ></div>
-                  }
-                  <app-emoji-reaction-palette
-                    [open]="openEmojiReactionParticipantId() === observer.id"
-                    (mouseenter)="showEmojiReactionPalette(observer)"
-                    (mouseleave)="hideEmojiReactionPalette()"
-                    (emojiSelected)="sendEmojiReaction($event)"
-                  />
-                }
+                <ng-container
+                  *ngTemplateOutlet="emojiPalettes; context: { $implicit: observer }"
+                />
               </div>
             }
           </div>
@@ -835,61 +767,39 @@
   </div>
 </main>
 
-@for (dart of stuckDartAnimations(); track dart.id) {
-  <div
-    class="emoji-stuck-dart"
-    [attr.title]="dart.senderDisplayName"
-    [style]="getEmojiStuckDartStyle(dart)"
-  >
-    <span class="emoji-flight-glyph">
-      <app-emoji-throw-icon class="emoji-throw-icon--flight" [emoji]="dart.emoji" />
-    </span>
-  </div>
-}
+<ng-template #emojiPalettes let-participant>
+  @if (canThrowAt(participant) && openEmojiTargetId() === participant.id) {
+    <div
+      class="emoji-throw-hover-bridge"
+      aria-hidden="true"
+      (mouseenter)="showEmojiPalette(participant)"
+      (mouseleave)="hideEmojiPalette()"
+    ></div>
+    <app-emoji-throw-palette
+      animate.leave="emoji-palette-leave"
+      [targetDisplayName]="participant.displayName"
+      (mouseenter)="showEmojiPalette(participant)"
+      (mouseleave)="hideEmojiPalette()"
+      (emojiSelected)="throwEmoji(participant.id, $event)"
+    />
+  }
+  @if (canReactFrom(participant) && openEmojiReactionParticipantId() === participant.id) {
+    <div
+      class="emoji-throw-hover-bridge"
+      aria-hidden="true"
+      (mouseenter)="showEmojiReactionPalette(participant)"
+      (mouseleave)="hideEmojiReactionPalette()"
+    ></div>
+    <app-emoji-reaction-palette
+      animate.leave="emoji-palette-leave"
+      (mouseenter)="showEmojiReactionPalette(participant)"
+      (mouseleave)="hideEmojiReactionPalette()"
+      (emojiSelected)="sendEmojiReaction($event)"
+    />
+  }
+</ng-template>
 
-@for (splat of emojiSplatEffects(); track splat.id) {
-  <div
-    class="emoji-impact-splat"
-    [class.emoji-impact-splat--poop]="splat.kind === 'poop'"
-    [class.emoji-impact-splat--tomato]="splat.kind === 'tomato'"
-    [class.emoji-impact-splat--egg]="splat.kind === 'egg'"
-    aria-hidden="true"
-    [style]="getEmojiImpactSplatStyle(splat)"
-  >
-    @if (splat.kind === 'tomato') {
-      <img src="tomato-splat.svg" alt="" />
-    } @else if (splat.kind === 'egg') {
-      <img src="fried-egg-splat.svg" alt="" />
-    }
-  </div>
-}
-
-@for (reaction of emojiReactionAnimations(); track reaction.id) {
-  <div
-    class="emoji-reaction-balloon"
-    [attr.title]="reaction.senderDisplayName"
-    [style]="getEmojiReactionAnimationStyle(reaction)"
-  >
-    <span class="emoji-reaction-balloon-glyph">{{ reaction.emoji }}</span>
-  </div>
-}
-
-@for (animation of emojiAnimations(); track animation.id) {
-  <div
-    class="emoji-flight"
-    [class.emoji-flight--travel]="animation.mode === 'travel'"
-    [class.emoji-flight--pop]="animation.mode === 'pop'"
-    [class.emoji-flight--dart]="animation.profile === 'dart'"
-    [class.emoji-flight--airplane]="animation.profile === 'airplane'"
-    [class.emoji-flight--rock]="animation.profile === 'rock'"
-    [attr.title]="animation.senderDisplayName"
-    [style]="getEmojiAnimationStyle(animation)"
-  >
-    <span class="emoji-flight-glyph">
-      <app-emoji-throw-icon class="emoji-throw-icon--flight" [emoji]="animation.emoji" />
-    </span>
-  </div>
-}
+<app-emoji-overlay />
 
 <!-- History Panel (all participants) -->
 @if (isHistoryPanelOpen()) {

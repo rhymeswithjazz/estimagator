@@ -24,6 +24,7 @@ public static class JiraConfiguration
             if (!string.IsNullOrWhiteSpace(options.CertificatePath))
                 protection.ProtectKeysWithCertificate(X509CertificateLoader.LoadPkcs12FromFile(options.CertificatePath, options.CertificatePassword));
         }
+        builder.Services.AddMemoryCache();
         builder.Services.AddScoped<JiraLocks>();
         builder.Services.AddScoped<Services.SessionAuthorization>();
         builder.Services.AddScoped<JiraIssueService>();

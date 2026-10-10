@@ -194,13 +194,18 @@ public class AdminService : IAdminService
     public async Task<AdminSessionDetailDto?> GetSessionDetailAsync(Guid sessionId)
     {
         var session = await _db.Sessions
+            .AsNoTracking()
             .Include(s => s.Organizer)
             .Include(s => s.Participants)
-            .Include(s => s.Stories)
-                .ThenInclude(st => st.Votes)
             .FirstOrDefaultAsync(s => s.Id == sessionId);
 
         if (session == null) return null;
+
+        var stories = await _db.Stories
+            .Where(s => s.SessionId == sessionId)
+            .OrderBy(s => s.SortOrder)
+            .Select(s => new AdminStoryDto(s.Id, s.Title, s.Status, s.FinalScore, s.Votes.Count))
+            .ToListAsync();
 
         return new AdminSessionDetailDto(
             session.Id,
@@ -215,9 +220,7 @@ public class AdminService : IAdminService
             session.Participants.Select(p => new AdminParticipantDto(
                 p.Id, p.DisplayName, p.IsObserver, p.IsOrganizer, p.UserId
             )).ToList(),
-            session.Stories.Select(s => new AdminStoryDto(
-                s.Id, s.Title, s.Status, s.FinalScore, s.Votes.Count
-            )).ToList()
+            stories
         );
     }
 

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { getEmojiThrowOptionMetadata } from '../../core/models/session.models';
 
 @Component({
@@ -115,6 +115,7 @@ import { getEmojiThrowOptionMetadata } from '../../core/models/session.models';
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmojiThrowIconComponent {
   @Input({ required: true }) emoji = '';

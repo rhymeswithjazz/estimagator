@@ -161,30 +161,22 @@ export class UserListComponent implements OnInit {
   readonly users = signal<AdminUser[]>([]);
 
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  private latestRequest = 0;
 
   ngOnInit(): void {
-    this.loadUsers();
+    this.loadPage();
   }
 
-  async loadUsers(): Promise<void> {
-    this.isLoading.set(true);
-    try {
-      const result = await this.adminService.getUsers(1, 20, this.search() || undefined);
-      this.result.set(result);
-      this.users.set(result.items);
-    } finally {
-      this.isLoading.set(false);
-    }
-  }
-
-  async loadPage(page: number): Promise<void> {
+  async loadPage(page = 1): Promise<void> {
+    const request = ++this.latestRequest;
     this.isLoading.set(true);
     try {
       const result = await this.adminService.getUsers(page, 20, this.search() || undefined);
+      if (request !== this.latestRequest) return;
       this.result.set(result);
       this.users.set(result.items);
     } finally {
-      this.isLoading.set(false);
+      if (request === this.latestRequest) this.isLoading.set(false);
     }
   }
 
@@ -193,7 +185,7 @@ export class UserListComponent implements OnInit {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
-    this.searchTimeout = setTimeout(() => this.loadUsers(), 300);
+    this.searchTimeout = setTimeout(() => this.loadPage(), 300);
   }
 
   formatDate(dateStr: string): string {

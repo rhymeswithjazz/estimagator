@@ -185,29 +185,14 @@ export class SessionListComponent implements OnInit {
   readonly sessions = signal<AdminSession[]>([]);
 
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  private latestRequest = 0;
 
   ngOnInit(): void {
-    this.loadSessions();
+    this.loadPage();
   }
 
-  async loadSessions(): Promise<void> {
-    this.isLoading.set(true);
-    try {
-      const isActive = this.statusFilter() === 'all' ? undefined : this.statusFilter() === 'active';
-      const result = await this.adminService.getSessions(
-        1,
-        20,
-        this.search() || undefined,
-        isActive,
-      );
-      this.result.set(result);
-      this.sessions.set(result.items);
-    } finally {
-      this.isLoading.set(false);
-    }
-  }
-
-  async loadPage(page: number): Promise<void> {
+  async loadPage(page = 1): Promise<void> {
+    const request = ++this.latestRequest;
     this.isLoading.set(true);
     try {
       const isActive = this.statusFilter() === 'all' ? undefined : this.statusFilter() === 'active';
@@ -217,10 +202,11 @@ export class SessionListComponent implements OnInit {
         this.search() || undefined,
         isActive,
       );
+      if (request !== this.latestRequest) return;
       this.result.set(result);
       this.sessions.set(result.items);
     } finally {
-      this.isLoading.set(false);
+      if (request === this.latestRequest) this.isLoading.set(false);
     }
   }
 
@@ -229,12 +215,12 @@ export class SessionListComponent implements OnInit {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
-    this.searchTimeout = setTimeout(() => this.loadSessions(), 300);
+    this.searchTimeout = setTimeout(() => this.loadPage(), 300);
   }
 
   onStatusChange(value: string): void {
     this.statusFilter.set(value);
-    this.loadSessions();
+    this.loadPage();
   }
 
   formatDate(dateStr: string): string {

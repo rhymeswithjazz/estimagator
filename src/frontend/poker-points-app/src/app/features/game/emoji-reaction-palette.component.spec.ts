@@ -8,9 +8,7 @@ import { EmojiReactionPaletteComponent } from './emoji-reaction-palette.componen
 
 describe('EmojiReactionPaletteComponent', () => {
   it('renders the positive reaction options with send labels', async () => {
-    await render(EmojiReactionPaletteComponent, {
-      inputs: { open: true },
-    });
+    await render(EmojiReactionPaletteComponent);
 
     for (const emoji of EMOJI_REACTION_OPTIONS) {
       const label = getEmojiReactionOptionMetadata(emoji)?.label;

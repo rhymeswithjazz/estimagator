@@ -599,4 +599,45 @@ public class SessionServiceTests : IDisposable
         (await _db.Votes.SingleAsync()).CardValue.Should().Be("5");
     }
 
+    [Fact]
+    public async Task GetGameStateAsync_ShouldReportOnlyCurrentStoryVotes()
+    {
+        var session = new Session { AccessCode = "STATE1", IsActive = true };
+        var voter = new Participant { Session = session, DisplayName = "Voter" };
+        var waiting = new Participant { Session = session, DisplayName = "Waiting" };
+        var past = new Story { Session = session, Title = "Past", Status = "completed" };
+        var current = new Story { Session = session, Title = "Current", Status = "active" };
+        _db.AddRange(
+            session, voter, waiting, past, current,
+            new Vote { Story = past, Participant = voter, CardValue = "3" },
+            new Vote { Story = past, Participant = waiting, CardValue = "5" },
+            new Vote { Story = current, Participant = voter, CardValue = "8" });
+        await _db.SaveChangesAsync();
+        session.CurrentStoryId = current.Id;
+        await _db.SaveChangesAsync();
+
+        var state = await _service.GetGameStateAsync("state1");
+
+        state!.CurrentStory!.Id.Should().Be(current.Id);
+        state.RevealedVotes.Should().BeNull();
+        state.VoteStatuses.Should().BeEquivalentTo(new[]
+        {
+            new VoteStatusDto(voter.Id, true),
+            new VoteStatusDto(waiting.Id, false)
+        });
+        (await _service.GetCurrentStoryAsync("state1")).Should().Be(new CurrentStoryRef(session.Id, current.Id, "active"));
+    }
+
+    [Fact]
+    public async Task GetCurrentStoryAsync_ShouldReturnNull_WhenSessionIsInactive()
+    {
+        var session = new Session { AccessCode = "ENDED1", IsActive = false };
+        var story = new Story { Session = session, Title = "Story", Status = "completed" };
+        _db.AddRange(session, story);
+        await _db.SaveChangesAsync();
+        session.CurrentStoryId = story.Id;
+        await _db.SaveChangesAsync();
+
+        (await _service.GetCurrentStoryAsync("ENDED1")).Should().BeNull();
+    }
 }

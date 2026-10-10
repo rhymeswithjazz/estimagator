@@ -196,7 +196,7 @@ test('host searches Jira and imports selected issues into the live queue', async
         if (msg.type !== 1) continue;
         const result =
           msg.target === 'JoinSession'
-            ? participant
+            ? { participant, reconnectToken: null }
             : msg.target === 'GetStoryQueue'
               ? []
               : msg.target === 'GetSessionState'

@@ -370,9 +370,13 @@ export class GameStateService {
     try {
       await this.signalR.leaveSession();
     } finally {
-      this.clearSessionState();
-      await this.signalR.disconnect();
+      await this.disconnect();
     }
+  }
+
+  async disconnect(): Promise<void> {
+    this.clearSessionState();
+    await this.signalR.disconnect();
   }
 
   async castVote(cardValue: string): Promise<void> {
@@ -440,8 +444,7 @@ export class GameStateService {
   async endSession(): Promise<void> {
     if (!this.isOrganizer()) return;
     await this.signalR.endSession();
-    this.clearSessionState();
-    await this.signalR.disconnect();
+    await this.disconnect();
   }
 
   async revealVotes(): Promise<void> {
