@@ -1,9 +1,9 @@
 version: "3.8"
 
 # =============================================================================
-# Estimagator - STAGING Environment - Portainer Stack Configuration
+# Estimagator - STAGING Environment - Stack Configuration
 # =============================================================================
-# Deploy via Portainer: Stacks > Add Stack > Web Editor > Paste this file
+# Deploy: docker compose -f stack.staging.yml up -d
 #
 # STAGING CONFIGURATION:
 #   - Uses :develop image tags (auto-deployed from develop branch)
@@ -11,7 +11,7 @@ version: "3.8"
 #   - Separate port: 7118 (production uses 7117)
 #   - ASPNETCORE_ENVIRONMENT=Staging
 #
-# Required Environment Variables (set in Portainer's Environment Variables):
+# Required Environment Variables (set in a .env file beside this one):
 #   - POSTGRES_PASSWORD: Database password (can be different from production)
 #   - JWT_SECRET: 64+ character secret for auth tokens (can be different from production)
 #   - SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD: For email verification
