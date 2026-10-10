@@ -1,5 +1,6 @@
-# Build stage
-FROM node:22-alpine AS build
+# Build stage. The output is static files, identical for every CPU, so build it
+# once on the builder's own CPU instead of once per platform under QEMU emulation.
+FROM --platform=$BUILDPLATFORM node:22-alpine AS build
 WORKDIR /app
 
 # Copy package files for layer caching

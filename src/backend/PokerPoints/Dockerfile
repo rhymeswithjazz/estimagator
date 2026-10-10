@@ -1,5 +1,7 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+# Build stage. Runs on the builder's own CPU and cross-compiles for the target,
+# because running the SDK under QEMU emulation is about 20x slower.
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+ARG TARGETARCH
 WORKDIR /src
 
 # Copy solution and project files first for layer caching
@@ -8,11 +10,11 @@ COPY PokerPoints.Api/PokerPoints.Api.csproj PokerPoints.Api/
 COPY PokerPoints.Data/PokerPoints.Data.csproj PokerPoints.Data/
 
 # Restore dependencies (only production projects, not test projects)
-RUN dotnet restore PokerPoints.Api/PokerPoints.Api.csproj
+RUN dotnet restore PokerPoints.Api/PokerPoints.Api.csproj -a $TARGETARCH
 
 # Copy remaining source and build
 COPY . .
-RUN dotnet publish PokerPoints.Api/PokerPoints.Api.csproj -c Release -o /app/publish
+RUN dotnet publish PokerPoints.Api/PokerPoints.Api.csproj -c Release -a $TARGETARCH --no-restore -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
@@ -28,7 +30,7 @@ COPY --from=build /app/publish .
 RUN chown -R appuser:appgroup /app
 USER appuser
 
-# Expose port (internal, Synology proxy handles external)
+# Expose port (internal, the frontend's nginx proxies to it)
 EXPOSE 5000
 
 # Health check for container orchestration
