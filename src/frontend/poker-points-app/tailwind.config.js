@@ -5,24 +5,24 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary green - based on #3F7602 (Gator green / Green family name)
+        // Primary green - based on #47772C (Gator green / Green family name)
         'poker-green': {
-          DEFAULT: '#3F7602',
-          50: '#f4f9ec',
-          100: '#e6f2d4',
-          200: '#cde5ad',
-          300: '#acd37c',
-          400: '#8bc053',
-          500: '#3F7602',
-          600: '#3F7602',
-          700: '#345f05',
-          800: '#2a4c04',
-          900: '#1e3603',
+          DEFAULT: '#47772C',
+          50: '#F4F8EF',
+          100: '#E5F0D9',
+          200: '#CCE1B3',
+          300: '#A5CC7D',
+          400: '#80B649',
+          500: '#47772C',
+          600: '#47772C',
+          700: '#365B27',
+          800: '#2B4A24',
+          900: '#233D22',
         },
         'poker-felt': {
-          DEFAULT: '#3F7602',
-          light: '#5a9a1a',
-          dark: '#2a4c04',
+          DEFAULT: '#47772C',
+          light: '#80B649',
+          dark: '#2B4A24',
         },
         'poker-gold': {
           DEFAULT: '#f4c430',
@@ -52,7 +52,7 @@ module.exports = {
       },
       boxShadow: {
         'glow-gold': '0 0 20px rgba(244, 196, 48, 0.4)',
-        'glow-green': '0 0 30px rgba(63, 118, 2, 0.5)',
+        'glow-green': '0 0 30px rgba(71, 119, 44, 0.5)',
         'card': '0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
         'card-hover': '0 20px 40px -10px rgba(0, 0, 0, 0.4), 0 8px 16px -4px rgba(0, 0, 0, 0.3)',
         'table': 'inset 0 2px 30px rgba(0, 0, 0, 0.3), 0 10px 40px rgba(0, 0, 0, 0.4)',

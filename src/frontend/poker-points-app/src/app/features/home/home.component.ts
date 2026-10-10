@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink, AccountDropdownComponent, ThemeSelectorComponent],
+  imports: [BrandComponent, FormsModule, RouterLink, AccountDropdownComponent, ThemeSelectorComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {

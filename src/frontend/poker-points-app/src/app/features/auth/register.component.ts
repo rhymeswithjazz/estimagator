@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, ThemeSelectorComponent],
+  imports: [BrandComponent, FormsModule, RouterLink, ThemeSelectorComponent],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {

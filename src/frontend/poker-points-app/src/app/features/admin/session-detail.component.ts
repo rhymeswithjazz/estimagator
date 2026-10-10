@@ -11,7 +11,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
   template: `
     <div class="space-y-6">
       <div class="flex items-center space-x-4">
-        <a routerLink="/admin/sessions" class="text-emerald-600 hover:text-emerald-900">
+        <a routerLink="/admin/sessions" class="text-poker-green-600 hover:text-poker-green-900">
           &larr; Back to Sessions
         </a>
       </div>
@@ -19,7 +19,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
       @if (isLoading()) {
         <div class="text-center py-8">
           <div
-            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+            class="animate-spin h-8 w-8 border-4 border-poker-green-600 border-t-transparent rounded-full mx-auto"
           ></div>
         </div>
       } @else if (session()) {
@@ -68,7 +68,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
               <p class="text-sm text-gray-500">Organizer</p>
               <a
                 [routerLink]="['/admin/users', session()!.organizer!.id]"
-                class="text-emerald-600 hover:text-emerald-900"
+                class="text-poker-green-600 hover:text-poker-green-900"
               >
                 {{ session()!.organizer!.email }} ({{ session()!.organizer!.displayName }})
               </a>
@@ -79,7 +79,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
             <a
               [href]="'/game/' + session()!.accessCode"
               target="_blank"
-              class="px-4 py-2 border border-emerald-600 text-emerald-600 rounded-lg hover:bg-emerald-50"
+              class="px-4 py-2 border border-poker-green-600 text-poker-green-600 rounded-lg hover:bg-poker-green-50"
             >
               Open Game Room
             </a>
@@ -108,7 +108,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
                     <span class="font-medium">{{ p.displayName }}</span>
                     @if (p.isOrganizer) {
                       <span
-                        class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-800 rounded font-medium"
+                        class="px-2 py-0.5 text-xs bg-poker-green-100 text-poker-green-800 rounded font-medium"
                       >
                         Organizer
                       </span>
@@ -124,7 +124,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
                   @if (p.userId) {
                     <a
                       [routerLink]="['/admin/users', p.userId]"
-                      class="text-emerald-600 hover:text-emerald-900 text-sm"
+                      class="text-poker-green-600 hover:text-poker-green-900 text-sm"
                     >
                       View User
                     </a>

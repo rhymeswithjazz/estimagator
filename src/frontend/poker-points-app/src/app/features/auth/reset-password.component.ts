@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,13 +9,13 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ThemeSelectorComponent],
+  imports: [BrandComponent, CommonModule, FormsModule, RouterLink, ThemeSelectorComponent],
   template: `
     <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative">
       <app-theme-selector class="absolute right-4 top-4 z-20" />
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-6">
-          <h1 class="text-2xl font-bold text-emerald-600">Estimagator</h1>
+          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"><app-brand size="md" /></a>
           <p class="text-gray-500 text-sm">Bite-sized estimation for agile teams</p>
         </div>
 
@@ -41,7 +42,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
             <p class="text-gray-600 mb-6">This password reset link is invalid.</p>
             <a
               routerLink="/forgot-password"
-              class="inline-block bg-emerald-600 text-white px-6 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+              class="inline-block bg-poker-green-600 text-white px-6 py-2 rounded-md hover:bg-poker-green-700 transition-colors"
             >
               Request New Link
             </a>
@@ -63,7 +64,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
                   name="password"
                   required
                   minlength="6"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
                   placeholder="At least 6 characters"
                 />
               </div>
@@ -78,7 +79,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
                   [(ngModel)]="confirmPassword"
                   name="confirmPassword"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
                   placeholder="Confirm your password"
                 />
               </div>
@@ -92,7 +93,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
               <button
                 type="submit"
                 [disabled]="isLoading() || !isValid()"
-                class="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                class="w-full bg-poker-green-600 text-white py-2 px-4 rounded-md hover:bg-poker-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 {{ isLoading() ? 'Resetting...' : 'Reset Password' }}
               </button>
@@ -101,10 +102,10 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
         } @else {
           <div class="text-center py-4">
             <div
-              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 mb-4"
+              class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-poker-green-100 mb-4"
             >
               <svg
-                class="h-6 w-6 text-emerald-600"
+                class="h-6 w-6 text-poker-green-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -123,7 +124,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
             </p>
             <a
               routerLink="/login"
-              class="inline-block bg-emerald-600 text-white px-6 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+              class="inline-block bg-poker-green-600 text-white px-6 py-2 rounded-md hover:bg-poker-green-700 transition-colors"
             >
               Sign In
             </a>

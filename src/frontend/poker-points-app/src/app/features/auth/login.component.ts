@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, ThemeSelectorComponent],
+  imports: [BrandComponent, FormsModule, RouterLink, ThemeSelectorComponent],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {

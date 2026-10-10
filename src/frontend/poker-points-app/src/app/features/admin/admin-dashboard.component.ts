@@ -21,7 +21,7 @@ import { AdminService } from '../../core/services/admin.service';
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Active Sessions</div>
-          <div class="mt-2 text-3xl font-bold text-emerald-600">{{ activeSessionCount() }}</div>
+          <div class="mt-2 text-3xl font-bold text-poker-green-600">{{ activeSessionCount() }}</div>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
           <div class="text-sm font-medium text-gray-500">Ended Sessions</div>
@@ -38,7 +38,7 @@ import { AdminService } from '../../core/services/admin.service';
         >
           <h2 class="text-lg font-semibold text-gray-900">User Management</h2>
           <p class="mt-2 text-gray-600">View, edit, and manage registered users</p>
-          <div class="mt-4 text-emerald-600 font-medium">View Users &rarr;</div>
+          <div class="mt-4 text-poker-green-600 font-medium">View Users &rarr;</div>
         </a>
 
         <a
@@ -47,7 +47,7 @@ import { AdminService } from '../../core/services/admin.service';
         >
           <h2 class="text-lg font-semibold text-gray-900">Session Management</h2>
           <p class="mt-2 text-gray-600">View and manage estimation sessions</p>
-          <div class="mt-4 text-emerald-600 font-medium">View Sessions &rarr;</div>
+          <div class="mt-4 text-poker-green-600 font-medium">View Sessions &rarr;</div>
         </a>
       </div>
     </div>

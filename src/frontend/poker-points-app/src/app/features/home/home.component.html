@@ -5,15 +5,7 @@
       class="sticky top-0 px-5 py-3 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md z-20"
     >
       <div class="flex items-center gap-2">
-        <img src="brand/logo.svg" alt="Estimagator" class="w-8 h-8" />
-        <div class="flex items-center">
-          <span class="text-2xl font-display font-bold text-gray-900 tracking-tighter leading-none"
-            >Estima</span
-          >
-          <span class="text-2xl font-display font-bold text-poker-green-600 italic leading-none"
-            >gator</span
-          >
-        </div>
+        <app-brand />
       </div>
       <div class="flex items-center gap-3">
         <app-theme-selector />
@@ -51,15 +43,7 @@
     <div class="text-center max-w-md w-full relative z-10">
       <!-- Logo / Brand -->
       <div class="mb-10">
-        <img
-          src="brand/logo.svg"
-          alt="Estimagator - friendly alligator mascot"
-          class="w-28 h-28 mx-auto mb-4 drop-shadow-lg"
-        />
-        <h1 class="text-5xl font-display font-bold tracking-tight">
-          <span class="text-gray-900 tracking-tighter leading-none">Estima</span
-          ><span class="text-poker-green-600 italic tracking-wider leading-none">gator</span>
-        </h1>
+        <h1><app-brand size="lg" /></h1>
         <p class="text-lg text-gray-500 font-medium mt-3">Bite-sized estimation for agile teams</p>
       </div>
 

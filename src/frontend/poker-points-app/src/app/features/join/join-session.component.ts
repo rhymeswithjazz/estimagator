@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-join-session',
   standalone: true,
-  imports: [FormsModule, RouterLink, ThemeSelectorComponent],
+  imports: [BrandComponent, FormsModule, RouterLink, ThemeSelectorComponent],
   templateUrl: './join-session.component.html',
 })
 export class JoinSessionComponent implements OnInit {

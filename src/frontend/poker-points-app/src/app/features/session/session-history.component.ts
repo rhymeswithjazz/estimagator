@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import { Story } from '../../core/models/session.models';
 import { JiraConnectionComponent } from '../jira/jira-connection.component';
@@ -10,7 +11,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-session-history',
   standalone: true,
-  imports: [StoryEstimateComponent, JiraConnectionComponent, RouterLink, ThemeSelectorComponent],
+  imports: [BrandComponent, StoryEstimateComponent, JiraConnectionComponent, RouterLink, ThemeSelectorComponent],
   templateUrl: './session-history.component.html',
 })
 export class SessionHistoryComponent implements OnInit {

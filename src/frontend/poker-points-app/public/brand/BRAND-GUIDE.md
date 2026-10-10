@@ -1,170 +1,56 @@
-# Estimagator Brand Guide
+# Estimagator brand guide
 
-## Brand Identity
+Estimagator is a friendly planning poker tool for agile teams.
 
-**Estimagator** - A playful, friendly estimation tool for agile teams.
+**Tagline:** Bite-sized estimation for agile teams.
 
-**Tagline**: "Bite-sized estimation for agile teams"
+## Scout logo
 
-**Personality**: Friendly, approachable, fun but professional. The alligator mascot brings warmth and memorability while the clean design maintains credibility for business use.
+The canonical artwork is `logo.svg`, supplied as `estimagator-04-scout.svg`: an alligator shaped like the letter E. Preserve its paths, colors, proportions, and clear space. Do not substitute an emoji, the previous card-biting alligator, or a generic crocodile. Avoid shadows and effects on the mark itself.
 
----
+Use the shared Angular `BrandComponent` for application branding. Its compact, stacked, and hero sizes pair Scout with one consistent wordmark. The wordmark uses Poppins bold (system sans-serif fallback), with “Estima” in Outline Green and “gator” in Deep Green. In dark mode, the text uses pale green tones for contrast; the mascot retains its original colors.
 
-## Logo Assets
+## Colors
 
-### Primary Logo (`logo.svg`)
-Full detailed alligator mascot biting a playing card. Use for:
-- Marketing materials
-- Large format displays
-- About pages
+| Role | Color | Usage |
+| --- | --- | --- |
+| Scout Green | `#80B649` | Mascot fill, decorative accents |
+| Deep Green | `#47772C` | Primary controls, links, wordmark accent |
+| Outline Green | `#233D22` | Mascot outline, wordmark text |
+| Pale Green | `#F4F8EF` | Subtle backgrounds and email panels |
+| Hover Green | `#365B27` | Button hover/pressed treatments |
 
-### Horizontal Logo (`logo-horizontal.svg`)
-Compact gator icon with wordmark. Use for:
-- App header
-- Email signatures
-- Documentation headers
+White button text sits on Deep Green or darker, not the bright mascot fill. Existing gold highlights, status colors, and user theme controls remain available. `poker-green` is the existing internal Tailwind token family; its values now follow the Scout palette.
 
-### Icon (`logo-icon.svg`)
-Simplified gator head with card. Use for:
-- App icons
-- Social media avatars
-- Small UI elements
+## Assets
 
-### Favicon (`favicon.svg`)
-Minimal gator face in circle. Use for:
-- Browser favicon
-- Mobile app icon base
+| File | Purpose |
+| --- | --- |
+| `logo.svg` | Canonical supplied Scout artwork, 272 × 256 viewBox |
+| `logo-horizontal.svg` | Scout and wordmark for standalone light-background use |
+| `logo-icon.svg`, `croc.svg` | Compatibility names containing the same Scout artwork |
+| `favicon.svg` | Square, tighter framing for small browser icons |
+| `favicon-32.png`, `favicon-48.png` | Raster browser icons |
+| `../favicon.ico` | Legacy browser icon containing 16, 32, and 48 px versions |
+| `apple-touch-icon.png` | 180 px icon on an opaque pale background |
+| `logo-email.png` | 544 × 512 transparent PNG export of the supplied SVG |
 
----
+The browser/tab title, application name, account emails, and sender default use **Estimagator**. Internal project names, database names, storage keys, and authentication identifiers are not display branding and must not be renamed as part of a visual update.
 
-## Color Palette
+## Email
 
-### Primary Colors
+Verification and password-reset emails share the Scout header, wordmark, tagline, and Deep Green buttons. The backend embeds `Assets/logo-email.png` into its assembly and attaches it to HTML email as a CID-linked image. Emails retain a plain-text alternative, readable wordmark and logo alt text when images are unavailable. No hosted image URL or SVG-capable email client is required.
 
-| Name | Hex | Usage |
-|------|-----|-------|
-| **Gator Green** | `#3F7602` | Primary brand color, buttons, links |
-| **Gator Green Light** | `#5a9a1a` | Hover states, gradients |
-| **Gator Green Dark** | `#2a4c04` | Text on light backgrounds, accents |
+SMTP sender name/address overrides remain configurable. Administrators requesting verification or password reset use these same templates.
 
-### Accent Colors
+## Regeneration
 
-| Name | Hex | Usage |
-|------|-----|-------|
-| **Gold** | `#f4c430` | Highlights, "gator" in wordmark, badges |
-| **Gold Light** | `#f9d777` | Gradients, glows |
-| **Gold Dark** | `#daa520` | Borders, darker accents |
+From the repository root, run:
 
-### Supporting Colors
-
-| Name | Hex | Usage |
-|------|-----|-------|
-| **Poker Red** | `#dc2626` | Errors, warnings, card suits |
-| **Wood** | `#8b4513` | Table borders, warm accents |
-
-### Extended Green Scale
-
-```
-50:  #f4f9ec  - Backgrounds
-100: #e6f2d4  - Light fills
-200: #cde5ad  - Borders
-300: #acd37c  - Disabled states
-400: #8bc053  - Secondary buttons
-500: #3F7602  - Primary (DEFAULT)
-600: #3F7602  - Primary
-700: #345f05  - Hover states
-800: #2a4c04  - Active states
-900: #1e3603  - Dark mode primary
+```sh
+bash scripts/generate-brand-assets.sh
 ```
 
----
+Requires Python 3, `rsvg-convert` (librsvg), and `magick` (ImageMagick). The script derives the variants from `logo.svg` and copies the identical email PNG to the backend. Commit the outputs together; normal app builds do not need these export tools. Inspect the app in light/dark mode and on mobile, and inspect both email templates after changing the artwork.
 
-## Typography
-
-### Font Stack
-
-| Type | Font | Fallback |
-|------|------|----------|
-| **Display** | Poppins | system-ui, sans-serif |
-| **Body** | Inter | system-ui, sans-serif |
-| **Mono** | JetBrains Mono | Menlo, monospace |
-
-### Usage
-
-- **Poppins**: Headlines, logo wordmark, hero text
-- **Inter**: Body copy, UI labels, descriptions
-- **JetBrains Mono**: Code snippets, session codes, technical data
-
-### Weights
-
-- **Bold (700)**: Headlines, wordmark
-- **Semibold (600)**: Subheadings, buttons
-- **Medium (500)**: Labels, navigation
-- **Regular (400)**: Body text
-
----
-
-## Logo Usage Guidelines
-
-### Do's
-- Maintain aspect ratio when scaling
-- Use sufficient contrast against backgrounds
-- Leave clear space around logo (minimum: height of the "E" in wordmark)
-
-### Don'ts
-- Don't stretch or distort
-- Don't change the colors arbitrarily
-- Don't place on busy backgrounds without a container
-- Don't rotate the logo
-- Don't add effects (shadows, glows) to the logo itself
-
-### Minimum Sizes
-
-| Asset | Minimum Width |
-|-------|---------------|
-| Horizontal logo | 160px |
-| Icon | 32px |
-| Favicon | 16px |
-
----
-
-## Wordmark Treatment
-
-The wordmark "Estimagator" uses a two-tone treatment:
-- **"Estima"** in Gator Green (`#3F7602`)
-- **"gator"** in Gold (`#f4c430`)
-
-This split emphasizes the playful alligator theme while keeping "estimation" readable.
-
----
-
-## Application Examples
-
-### Light Background
-- Logo: Full color
-- Text: Gator Green Dark (`#2a4c04`)
-- Accents: Gold (`#f4c430`)
-
-### Dark Background
-- Logo: Full color (white card background provides contrast)
-- Text: White or light gray
-- Accents: Gold Light (`#f9d777`)
-
-### Monochrome (when color isn't available)
-- Use Gator Green Dark (`#2a4c04`) or white depending on background
-
----
-
-## File Formats
-
-| File | Format | Purpose |
-|------|--------|---------|
-| `logo.svg` | SVG | Primary mascot logo |
-| `logo-horizontal.svg` | SVG | Header logo with wordmark |
-| `logo-icon.svg` | SVG | App icon, avatars |
-| `favicon.svg` | SVG | Browser favicon |
-
-For raster formats (PNG, ICO), export from SVG at required sizes:
-- Favicon: 16x16, 32x32, 48x48
-- App icons: 192x192, 512x512
-- Social: 1200x630 (OpenGraph)
+The app and browser-icon URLs use `?v=scout-1` to bypass the previous assets' long-lived cache. Bump that revision in `BrandComponent` and `index.html` when replacing these assets again. Deploy both the frontend assets and the backend assembly to update the app and emails together.

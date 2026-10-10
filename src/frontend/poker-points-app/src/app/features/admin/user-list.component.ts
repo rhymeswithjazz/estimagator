@@ -18,7 +18,7 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
             placeholder="Search users..."
             [ngModel]="search()"
             (ngModelChange)="onSearchChange($event)"
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-poker-green-500 focus:border-poker-green-500"
           />
         </div>
       </div>
@@ -26,7 +26,7 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
       @if (isLoading()) {
         <div class="text-center py-8">
           <div
-            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+            class="animate-spin h-8 w-8 border-4 border-poker-green-600 border-t-transparent rounded-full mx-auto"
           ></div>
         </div>
       } @else {
@@ -107,7 +107,7 @@ import { AdminUser, PagedResult } from '../../core/models/admin.models';
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <a
                       [routerLink]="['/admin/users', user.id]"
-                      class="text-emerald-600 hover:text-emerald-900"
+                      class="text-poker-green-600 hover:text-poker-green-900"
                     >
                       View
                     </a>

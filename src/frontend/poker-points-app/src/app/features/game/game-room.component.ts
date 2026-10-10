@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import {
   Component,
@@ -62,6 +63,7 @@ import confetti from 'canvas-confetti';
   selector: 'app-game-room',
   standalone: true,
   imports: [
+    BrandComponent,
     StoryEstimateComponent,
     DecimalPipe,
     FormsModule,

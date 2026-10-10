@@ -1,3 +1,4 @@
+import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
@@ -10,6 +11,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
   selector: 'app-admin-layout',
   standalone: true,
   imports: [
+    BrandComponent,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
@@ -23,8 +25,8 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
             <div class="flex items-center">
-              <a routerLink="/" class="flex items-center text-xl font-bold text-emerald-600">
-                Estimagator
+              <a routerLink="/" class="flex items-center" aria-label="Estimagator home">
+                <app-brand />
               </a>
               <span
                 class="ml-4 px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full font-medium"
@@ -35,23 +37,23 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
             <div class="flex items-center space-x-1">
               <a
                 routerLink="/admin"
-                routerLinkActive="bg-emerald-50 text-emerald-700"
+                routerLinkActive="bg-poker-green-50 text-poker-green-700"
                 [routerLinkActiveOptions]="{ exact: true }"
-                class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 rounded-md"
+                class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-poker-green-600 hover:bg-gray-50 rounded-md"
               >
                 Dashboard
               </a>
               <a
                 routerLink="/admin/users"
-                routerLinkActive="bg-emerald-50 text-emerald-700"
-                class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 rounded-md"
+                routerLinkActive="bg-poker-green-50 text-poker-green-700"
+                class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-poker-green-600 hover:bg-gray-50 rounded-md"
               >
                 Users
               </a>
               <a
                 routerLink="/admin/sessions"
-                routerLinkActive="bg-emerald-50 text-emerald-700"
-                class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-gray-50 rounded-md"
+                routerLinkActive="bg-poker-green-50 text-poker-green-700"
+                class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-poker-green-600 hover:bg-gray-50 rounded-md"
               >
                 Sessions
               </a>

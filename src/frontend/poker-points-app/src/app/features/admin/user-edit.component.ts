@@ -12,7 +12,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
   template: `
     <div class="space-y-6">
       <div class="flex items-center space-x-4">
-        <a routerLink="/admin/users" class="text-emerald-600 hover:text-emerald-900">
+        <a routerLink="/admin/users" class="text-poker-green-600 hover:text-poker-green-900">
           &larr; Back to Users
         </a>
       </div>
@@ -20,7 +20,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
       @if (isLoading()) {
         <div class="text-center py-8">
           <div
-            class="animate-spin h-8 w-8 border-4 border-emerald-600 border-t-transparent rounded-full mx-auto"
+            class="animate-spin h-8 w-8 border-4 border-poker-green-600 border-t-transparent rounded-full mx-auto"
           ></div>
         </div>
       } @else if (user()) {
@@ -34,7 +34,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
                 type="text"
                 [ngModel]="displayName()"
                 (ngModelChange)="displayName.set($event)"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-poker-green-500 focus:border-poker-green-500"
               />
             </div>
 
@@ -43,7 +43,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
               <select
                 [ngModel]="role()"
                 (ngModelChange)="role.set($event)"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-poker-green-500 focus:border-poker-green-500"
               >
                 <option value="User">User</option>
                 <option value="Admin">Admin</option>
@@ -55,7 +55,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
               <select
                 [ngModel]="emailVerified().toString()"
                 (ngModelChange)="emailVerified.set($event === 'true')"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-emerald-500 focus:border-emerald-500"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-poker-green-500 focus:border-poker-green-500"
               >
                 <option value="true">Yes</option>
                 <option value="false">No</option>
@@ -72,7 +72,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
             <button
               (click)="saveUser()"
               [disabled]="isSaving()"
-              class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+              class="px-4 py-2 bg-poker-green-600 text-white rounded-lg hover:bg-poker-green-700 disabled:opacity-50"
             >
               {{ isSaving() ? 'Saving...' : 'Save Changes' }}
             </button>
@@ -81,7 +81,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
               <button
                 (click)="resendVerification()"
                 [disabled]="isResending()"
-                class="px-4 py-2 border border-emerald-600 text-emerald-600 rounded-lg hover:bg-emerald-50 disabled:opacity-50"
+                class="px-4 py-2 border border-poker-green-600 text-poker-green-600 rounded-lg hover:bg-poker-green-50 disabled:opacity-50"
               >
                 {{ isResending() ? 'Sending...' : 'Resend Verification' }}
               </button>
@@ -129,7 +129,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
                     }
                     @if (session.isOrganizer) {
                       <span
-                        class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-800 rounded font-medium"
+                        class="px-2 py-0.5 text-xs bg-poker-green-100 text-poker-green-800 rounded font-medium"
                       >
                         Organizer
                       </span>
@@ -147,7 +147,7 @@ import { AdminUserDetail } from '../../core/models/admin.models';
                     </span>
                     <a
                       [routerLink]="['/admin/sessions', session.id]"
-                      class="text-emerald-600 hover:text-emerald-900 text-sm"
+                      class="text-poker-green-600 hover:text-poker-green-900 text-sm"
                     >
                       View
                     </a>

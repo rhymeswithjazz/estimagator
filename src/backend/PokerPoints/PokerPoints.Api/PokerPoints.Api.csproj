@@ -20,4 +20,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Assets/logo-email.png" LogicalName="Estimagator.Brand.Logo.png" />
+    <InternalsVisibleTo Include="PokerPoints.Api.Tests" />
+  </ItemGroup>
+
 </Project>

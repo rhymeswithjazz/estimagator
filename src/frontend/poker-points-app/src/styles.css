@@ -46,8 +46,8 @@
 
   /* Primary button with shine effect */
   .btn-primary {
-    @apply relative overflow-hidden px-6 py-3 bg-gradient-to-b from-poker-green-400 to-poker-green-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200;
-    @apply hover:from-poker-green-300 hover:to-poker-green-500 hover:shadow-glow-green hover:-translate-y-0.5;
+    @apply relative overflow-hidden px-6 py-3 bg-gradient-to-b from-poker-green-600 to-poker-green-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200;
+    @apply hover:from-poker-green-700 hover:to-poker-green-800 hover:shadow-glow-green hover:-translate-y-0.5;
     @apply active:translate-y-0 active:shadow-md;
     @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-lg;
   }
@@ -209,7 +209,7 @@
     background:
       radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
       radial-gradient(ellipse at 70% 70%, rgba(0, 0, 0, 0.2) 0%, transparent 50%),
-      linear-gradient(180deg, #5a9a1a 0%, #3f7602 100%);
+      linear-gradient(180deg, #80b649 0%, #47772c 100%);
     @apply shadow-table;
   }
 
@@ -357,11 +357,11 @@
 }
 
 .dark .bg-poker-green-50 {
-  background-color: rgb(30 54 3 / 0.48);
+  background-color: rgb(35 61 34 / 0.48);
 }
 
 .dark .bg-poker-green-100 {
-  background-color: rgb(42 76 4 / 0.72);
+  background-color: rgb(43 74 36 / 0.72);
 }
 
 .dark .bg-red-50 {
@@ -411,7 +411,7 @@
 .dark .text-poker-green-800,
 .dark .text-poker-green-700,
 .dark .text-poker-green-600 {
-  color: #cde5ad;
+  color: #cce1b3;
 }
 
 .dark .text-red-800 {
@@ -444,7 +444,7 @@
 
 .dark .border-poker-green-200,
 .dark .border-poker-green-300 {
-  border-color: rgb(90 154 26 / 0.5);
+  border-color: rgb(128 182 73 / 0.5);
 }
 
 .dark .border-red-200 {
@@ -477,13 +477,13 @@
 }
 
 .dark .btn-secondary {
-  background-color: rgb(30 54 3 / 0.5);
-  border-color: rgb(90 154 26 / 0.45);
-  color: #cde5ad;
+  background-color: rgb(35 61 34 / 0.5);
+  border-color: rgb(128 182 73 / 0.45);
+  color: #cce1b3;
 }
 
 .dark .btn-secondary:hover {
-  background-color: rgb(42 76 4 / 0.8);
+  background-color: rgb(43 74 36 / 0.8);
   border-color: rgb(139 192 83 / 0.6);
 }
 
@@ -492,8 +492,8 @@
 }
 
 .dark .btn-ghost:hover {
-  background-color: rgb(42 76 4 / 0.45);
-  color: #cde5ad;
+  background-color: rgb(43 74 36 / 0.45);
+  color: #cce1b3;
 }
 
 .dark .input-field {
@@ -504,7 +504,7 @@
 
 .dark .input-field:focus {
   background-color: #111827;
-  border-color: #5a9a1a;
+  border-color: #80b649;
 }
 
 .dark .input-field::placeholder {
@@ -522,8 +522,8 @@
 .dark .role-button-unselected:hover,
 .dark .deck-option-selected,
 .dark .role-button-selected {
-  background-color: rgb(30 54 3 / 0.48);
-  border-color: #5a9a1a;
+  background-color: rgb(35 61 34 / 0.48);
+  border-color: #80b649;
 }
 
 .dark .badge-gray {
@@ -556,7 +556,7 @@
 .dark .hover\:bg-poker-green-50:hover,
 .dark .hover\:bg-poker-green-50\/50:hover,
 .dark .hover\:bg-poker-green-100:hover {
-  background-color: rgb(42 76 4 / 0.72);
+  background-color: rgb(43 74 36 / 0.72);
 }
 
 .dark .hover\:bg-red-50:hover,
