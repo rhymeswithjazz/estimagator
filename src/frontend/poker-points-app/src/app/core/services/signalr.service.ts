@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import * as signalR from '@microsoft/signalr';
+import type { HubConnection } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -28,7 +28,8 @@ export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'rec
 })
 export class SignalRService {
   private readonly authService = inject(AuthService);
-  private connection: signalR.HubConnection | null = null;
+  private connection: HubConnection | null = null;
+  private connecting: Promise<void> | null = null;
 
   // Connection state as Signal
   private readonly _connectionState = signal<ConnectionState>('disconnected');
@@ -58,14 +59,22 @@ export class SignalRService {
   readonly reconnected$ = new Subject<void>();
   readonly sessionEnded$ = new Subject<void>();
 
-  async connect(): Promise<void> {
-    if (this.connection?.state === signalR.HubConnectionState.Connected) {
+  connect(): Promise<void> {
+    return (this.connecting ??= this.open().finally(() => (this.connecting = null)));
+  }
+
+  private async open(): Promise<void> {
+    const { HubConnectionBuilder, HubConnectionState, LogLevel } =
+      await import('@microsoft/signalr');
+
+    if (this.connection?.state === HubConnectionState.Connected) {
       return;
     }
 
+    await this.connection?.stop();
     this._connectionState.set('connecting');
 
-    this.connection = new signalR.HubConnectionBuilder()
+    this.connection = new HubConnectionBuilder()
       .withUrl(environment.hubUrl, {
         accessTokenFactory: () => this.authService.getValidAccessToken(),
       })
@@ -77,7 +86,7 @@ export class SignalRService {
           return delay;
         },
       })
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(LogLevel.Information)
       .build();
 
     this.registerEventHandlers();
@@ -94,10 +103,12 @@ export class SignalRService {
   }
 
   async disconnect(): Promise<void> {
-    if (this.connection) {
-      await this.connection.stop();
-      this._connectionState.set('disconnected');
-    }
+    const connection = this.connection;
+    if (!connection) return;
+
+    this.connection = null;
+    this._connectionState.set('disconnected');
+    await connection.stop();
   }
 
   private registerEventHandlers(): void {
@@ -185,20 +196,24 @@ export class SignalRService {
   }
 
   private registerConnectionEvents(): void {
-    if (!this.connection) return;
+    const connection = this.connection;
+    if (!connection) return;
 
-    this.connection.onreconnecting(() => {
+    connection.onreconnecting(() => {
+      if (this.connection !== connection) return;
       this._connectionState.set('reconnecting');
       console.log('SignalR reconnecting...');
     });
 
-    this.connection.onreconnected(() => {
+    connection.onreconnected(() => {
+      if (this.connection !== connection) return;
       this._connectionState.set('connected');
       this.reconnected$.next();
       console.log('SignalR reconnected');
     });
 
-    this.connection.onclose(() => {
+    connection.onclose(() => {
+      if (this.connection !== connection) return;
       this._connectionState.set('disconnected');
       console.log('SignalR connection closed');
     });

@@ -281,6 +281,9 @@ namespace PokerPoints.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConnectionId")
+                        .HasFilter("\"ConnectionId\" IS NOT NULL");
+
                     b.HasIndex("SessionId");
 
                     b.HasIndex("UserId");
@@ -478,6 +481,15 @@ namespace PokerPoints.Data.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("EmailVerificationToken")
+                        .HasFilter("\"EmailVerificationToken\" IS NOT NULL");
+
+                    b.HasIndex("PasswordResetToken")
+                        .HasFilter("\"PasswordResetToken\" IS NOT NULL");
+
+                    b.HasIndex("RefreshToken")
+                        .HasFilter("\"RefreshToken\" IS NOT NULL");
 
                     b.HasIndex("ExternalProvider", "ExternalId")
                         .IsUnique()

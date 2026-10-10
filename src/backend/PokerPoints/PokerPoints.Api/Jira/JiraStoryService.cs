@@ -42,6 +42,9 @@ public class JiraStoryService(PokerPointsDbContext db, SessionAuthorization auth
         var fields = await issues.FieldsAsync(user, request.SiteId);
         var site = await db.JiraSites.SingleAsync(s => s.UserId == user && s.SiteId == request.SiteId);
         var order = await db.Stories.Where(s => s.SessionId == session.Id).MaxAsync(s => (int?)s.SortOrder) ?? 0;
+        var linked = (await db.JiraStoryLinks.Where(l => l.SessionId == session.Id && l.SiteId == site.SiteId)
+            .Select(l => l.IssueId).ToListAsync()).ToHashSet();
+        var savedMappings = new Dictionary<(string Project, string Type), string>();
         var imported = new List<StoryDto>();
         var skipped = new List<object>();
         foreach (var item in request.Issues.DistinctBy(i => i.IssueId))
@@ -49,7 +52,7 @@ public class JiraStoryService(PokerPointsDbContext db, SessionAuthorization auth
             try
             {
                 var issue = await issues.GetAsync(user, request.SiteId, item.IssueId, fields, item.FieldId);
-                if (await db.JiraStoryLinks.AnyAsync(l => l.SessionId == session.Id && l.SiteId == site.SiteId && l.IssueId == issue.Id))
+                if (linked.Contains(issue.Id))
                 { skipped.Add(new { issueId = issue.Id, reason = "Already imported." }); continue; }
                 await authorization.RequireHostAsync(code, user, true);
                 var story = new Story
@@ -75,8 +78,14 @@ public class JiraStoryService(PokerPointsDbContext db, SessionAuthorization auth
                     Message = issue.UnavailableReason
                 };
                 db.Stories.Add(story);
-                await issues.SaveMappingAsync(user, site.SiteId, issue);
+                var mappingKey = (issue.ProjectId, issue.IssueTypeId);
+                if (issue.FieldId != null && issue.UnavailableReason == null && savedMappings.GetValueOrDefault(mappingKey) != issue.FieldId)
+                {
+                    await issues.SaveMappingAsync(user, site.SiteId, issue);
+                    savedMappings[mappingKey] = issue.FieldId;
+                }
                 await db.SaveChangesAsync();
+                linked.Add(issue.Id);
                 imported.Add(StoryDto.From(story));
             }
             catch (JiraException ex) when (ex.Status is 400 or 403 or 404)

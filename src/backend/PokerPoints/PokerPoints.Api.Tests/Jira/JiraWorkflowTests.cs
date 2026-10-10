@@ -324,11 +324,29 @@ public class JiraWorkflowTests
         f.Handler.FieldName = "Story point estimate";
         var issue = await f.Issues.GetAsync(f.User, "site", "100", await f.Issues.FieldsAsync(f.User, "site"));
         Assert.Equal("customfield_42", issue.FieldId);
-        f.Handler.AmbiguousFields = true;
-        issue = await f.Issues.GetAsync(f.User, "site", "100", await f.Issues.FieldsAsync(f.User, "site"));
+        using var ambiguous = new Fixture();
+        ambiguous.Handler.FieldName = "Story point estimate";
+        ambiguous.Handler.AmbiguousFields = true;
+        issue = await ambiguous.Issues.GetAsync(ambiguous.User, "site", "100", await ambiguous.Issues.FieldsAsync(ambiguous.User, "site"));
         Assert.Null(issue.FieldId);
         Assert.Equal(2, issue.Fields.Count);
         Assert.Equal("Choose an estimation field.", issue.UnavailableReason);
+    }
+
+    [Fact]
+    public async Task SearchUsesInlineEditMetadataAndCachedFields()
+    {
+        using var f = new Fixture();
+        f.Handler.InlineEditMeta = true;
+        var request = new JiraSearchRequest("site", "10", null, null);
+
+        var issue = Assert.Single((await f.Issues.SearchAsync(f.User, request)).Issues);
+        await f.Issues.SearchAsync(f.User, request);
+
+        Assert.Equal("customfield_42", issue.FieldId);
+        Assert.Null(issue.UnavailableReason);
+        Assert.Equal("editmeta", f.Handler.Search!.Value.GetProperty("expand").GetString());
+        Assert.Equal(3, f.Handler.Requests);
     }
 
     [Fact]
@@ -370,7 +388,7 @@ public class JiraWorkflowTests
             Configuration = Microsoft.Extensions.Options.Options.Create(new JiraOptions { Enabled = enabled, FrontendUrl = "https://app.example", CallbackUrl = "https://app.example/api/integrations/jira/callback" });
             Locks = new(Db);
             Client = new(new HttpClient(Handler), Db, provider, Configuration, Locks);
-            Issues = new(Client, Db, Locks);
+            Issues = new(Client, Db, Locks, new Microsoft.Extensions.Caching.Memory.MemoryCache(new Microsoft.Extensions.Caching.Memory.MemoryCacheOptions()));
             var proxy = new Mock<IClientProxy>();
             proxy.Setup(p => p.SendCoreAsync(It.IsAny<string>(), It.IsAny<object?[]>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
             var hub = new Mock<IHubContext<PokerHub>>();
@@ -411,6 +429,7 @@ public class JiraWorkflowTests
         public int RefreshCount;
         public bool LoseResponse;
         public bool Editable = true;
+        public bool InlineEditMeta;
         public string FieldName = "Story Points";
         public bool AmbiguousFields;
         public HttpStatusCode? Status;
@@ -440,13 +459,7 @@ public class JiraWorkflowTests
                 if (AmbiguousFields) fields.Add(new { id = "customfield_99", name = "Story Points", schema = new { type = "number" } });
                 return Json(fields);
             }
-            if (path.EndsWith("/editmeta"))
-            {
-                var fields = new Dictionary<string, object>();
-                if (Editable) fields["customfield_42"] = new { name = FieldName, schema = new { type = "number" }, operations = new[] { "set" } };
-                if (Editable && AmbiguousFields) fields["customfield_99"] = new { name = "Story Points", schema = new { type = "number" }, operations = new[] { "set" } };
-                return Json(new { fields });
-            }
+            if (path.EndsWith("/editmeta")) return Json(EditMeta());
             if (path.EndsWith("/search/jql"))
             {
                 Search = await request.Content!.ReadFromJsonAsync<JsonElement>(cancellationToken);
@@ -463,7 +476,18 @@ public class JiraWorkflowTests
             if (path.Contains("/issue/")) return Json(Issue());
             throw new InvalidOperationException("Unexpected fake Jira request: " + path);
         }
-        private object Issue() => new { id = "100", key = "TEAM-1", fields = new { summary = "Server summary", status = new { name = "To Do" }, project = new { id = "10" }, issuetype = new { id = "20" }, customfield_42 = Value } };
+        private object EditMeta()
+        {
+            var fields = new Dictionary<string, object>();
+            if (Editable) fields["customfield_42"] = new { name = FieldName, schema = new { type = "number" }, operations = new[] { "set" } };
+            if (Editable && AmbiguousFields) fields["customfield_99"] = new { name = "Story Points", schema = new { type = "number" }, operations = new[] { "set" } };
+            return new { fields };
+        }
+        private object Issue()
+        {
+            var fields = new { summary = "Server summary", status = new { name = "To Do" }, project = new { id = "10" }, issuetype = new { id = "20" }, customfield_42 = Value };
+            return InlineEditMeta ? new { id = "100", key = "TEAM-1", fields, editmeta = EditMeta() } : new { id = "100", key = "TEAM-1", fields };
+        }
         private static HttpResponseMessage Json(object body) => new(HttpStatusCode.OK) { Content = JsonContent.Create(body) };
     }
 }

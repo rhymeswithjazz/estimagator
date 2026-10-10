@@ -18,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddJira();
 
 // Database
-builder.Services.AddDbContext<PokerPointsDbContext>(options =>
+builder.Services.AddDbContextPool<PokerPointsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Authentication configuration
@@ -95,7 +95,9 @@ builder.Services.AddRateLimiter(options =>
 // Auth services
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<IEmailService>(sp => sp.GetRequiredService<EmailService>());
+builder.Services.AddHostedService(sp => sp.GetRequiredService<EmailService>());
 
 // Services
 builder.Services.AddSingleton<ITimerService, TimerService>();

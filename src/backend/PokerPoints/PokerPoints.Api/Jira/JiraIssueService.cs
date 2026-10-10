@@ -1,12 +1,16 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using PokerPoints.Data;
 using PokerPoints.Data.Entities;
 
 namespace PokerPoints.Api.Jira;
 
-public class JiraIssueService(JiraClient client, PokerPointsDbContext db, JiraLocks locks)
+public class JiraIssueService(JiraClient client, PokerPointsDbContext db, JiraLocks locks, IMemoryCache cache)
 {
+    private static readonly string[] IssueFields = ["summary", "status", "project", "issuetype"];
+    private static readonly TimeSpan FieldCacheDuration = TimeSpan.FromMinutes(5);
+
     public Task<JsonElement> ProjectsAsync(Guid user, string site, int startAt) => client.SendAsync(user, site,
         HttpMethod.Get, $"project/search?maxResults=50&startAt={Math.Max(0, startAt)}");
 
@@ -39,50 +43,71 @@ public class JiraIssueService(JiraClient client, PokerPointsDbContext db, JiraLo
             jql,
             maxResults = 25,
             nextPageToken = request.NextPageToken,
-            fields = new[] { "summary", "status", "project", "issuetype" }.Concat(fields.Select(f => f.Id)).ToArray()
+            expand = "editmeta",
+            fields = IssueFields.Concat(fields.Select(f => f.Id)).ToArray()
         });
+        var mappings = await db.JiraFieldMappings.AsNoTracking()
+            .Where(m => m.UserId == user && m.SiteId == request.SiteId).ToListAsync();
         var issues = new List<JiraIssue>();
         foreach (var issue in response.GetProperty("issues").EnumerateArray())
-            issues.Add(await DescribeAsync(user, request.SiteId, issue, fields));
+        {
+            var (project, type) = ProjectAndType(issue);
+            var mapping = mappings.FirstOrDefault(m => m.ProjectId == project && m.IssueTypeId == type);
+            issues.Add(Describe(issue, fields, await EditableAsync(user, request.SiteId, issue), mapping));
+        }
         return new(issues, response.TryGetProperty("nextPageToken", out var next) ? next.GetString() : null);
     }
 
-    public async Task<List<JiraField>> FieldsAsync(Guid user, string site)
-    {
-        var result = await client.SendAsync(user, site, HttpMethod.Get, "field");
-        return result.EnumerateArray().Where(f => f.TryGetProperty("schema", out var schema)
-            && schema.TryGetProperty("type", out var type) && type.GetString() == "number")
-            .Select(f => new JiraField(f.GetProperty("id").GetString()!, f.GetProperty("name").GetString()!)).ToList();
-    }
+    public async Task<List<JiraField>> FieldsAsync(Guid user, string site) =>
+        (await cache.GetOrCreateAsync((typeof(JiraIssueService), user, site), async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = FieldCacheDuration;
+            var result = await client.SendAsync(user, site, HttpMethod.Get, "field");
+            return result.EnumerateArray().Where(f => f.TryGetProperty("schema", out var schema)
+                && schema.TryGetProperty("type", out var type) && type.GetString() == "number")
+                .Select(f => new JiraField(f.GetProperty("id").GetString()!, f.GetProperty("name").GetString()!)).ToList();
+        }))!;
 
-    public Task<JsonElement> ReadAsync(Guid user, string site, string issue, IEnumerable<string> fields) =>
-        client.SendAsync(user, site, HttpMethod.Get, $"issue/{Uri.EscapeDataString(issue)}?fields={Uri.EscapeDataString(string.Join(',', fields))}");
+    public Task<JsonElement> ReadAsync(Guid user, string site, string issue, IEnumerable<string> fields, bool editMeta = false) =>
+        client.SendAsync(user, site, HttpMethod.Get,
+            $"issue/{Uri.EscapeDataString(issue)}?fields={Uri.EscapeDataString(string.Join(',', fields))}{(editMeta ? "&expand=editmeta" : "")}");
 
     public async Task<JiraIssue> GetAsync(Guid user, string site, string issue, List<JiraField> fields, string? selected = null)
     {
-        var raw = await ReadAsync(user, site, issue, new[] { "summary", "status", "project", "issuetype" }.Concat(fields.Select(f => f.Id)));
-        return await DescribeAsync(user, site, raw, fields, selected);
+        var raw = await ReadAsync(user, site, issue, IssueFields.Concat(fields.Select(f => f.Id)), editMeta: true);
+        var (project, type) = ProjectAndType(raw);
+        var mapping = await db.JiraFieldMappings.FindAsync(user, site, project, type);
+        return Describe(raw, fields, await EditableAsync(user, site, raw), mapping, selected);
     }
 
-    public async Task<List<JiraField>> EditableAsync(Guid user, string site, string issue)
+    public async Task<List<JiraField>> EditableAsync(Guid user, string site, string issue) =>
+        Editable(await client.SendAsync(user, site, HttpMethod.Get, $"issue/{Uri.EscapeDataString(issue)}/editmeta"));
+
+    private async Task<List<JiraField>> EditableAsync(Guid user, string site, JsonElement raw)
     {
-        var meta = await client.SendAsync(user, site, HttpMethod.Get, $"issue/{Uri.EscapeDataString(issue)}/editmeta");
-        return meta.GetProperty("fields").EnumerateObject().Where(f =>
+        if (raw.TryGetProperty("editmeta", out var meta)) return Editable(meta);
+        // Jira left out the expansion we asked for, so fall back to one request per issue.
+        try { return await EditableAsync(user, site, raw.GetProperty("id").GetString()!); }
+        catch (JiraException ex) when (ex.Status is 403 or 404) { return []; }
+    }
+
+    private static List<JiraField> Editable(JsonElement meta) => !meta.TryGetProperty("fields", out var fields) ? [] :
+        fields.EnumerateObject().Where(f =>
             f.Value.TryGetProperty("schema", out var schema) && schema.TryGetProperty("type", out var type) && type.GetString() == "number"
             && f.Value.TryGetProperty("operations", out var ops) && ops.EnumerateArray().Any(o => o.GetString() == "set"))
             .Select(f => new JiraField(f.Name, f.Value.GetProperty("name").GetString()!)).ToList();
+
+    private static (string Project, string Type) ProjectAndType(JsonElement raw)
+    {
+        var data = raw.GetProperty("fields");
+        return (data.GetProperty("project").GetProperty("id").GetString()!, data.GetProperty("issuetype").GetProperty("id").GetString()!);
     }
 
-    private async Task<JiraIssue> DescribeAsync(Guid user, string site, JsonElement raw, List<JiraField> fields, string? selected = null)
+    private static JiraIssue Describe(JsonElement raw, List<JiraField> fields, List<JiraField> editable, JiraFieldMapping? mapping, string? selected = null)
     {
         var data = raw.GetProperty("fields");
         var id = raw.GetProperty("id").GetString()!;
-        var project = data.GetProperty("project").GetProperty("id").GetString()!;
-        var type = data.GetProperty("issuetype").GetProperty("id").GetString()!;
-        List<JiraField> editable;
-        try { editable = await EditableAsync(user, site, id); }
-        catch (JiraException ex) when (ex.Status is 403 or 404) { editable = []; }
-        var mapping = await db.JiraFieldMappings.FindAsync(user, site, project, type);
+        var (project, type) = ProjectAndType(raw);
         var standards = fields.Where(f => f.Name.Equals("Story Points", StringComparison.OrdinalIgnoreCase)
             || f.Name.Equals("Story point estimate", StringComparison.OrdinalIgnoreCase)).ToList();
         var candidates = standards.Where(s => editable.Any(e => e.Id == s.Id)).ToList();

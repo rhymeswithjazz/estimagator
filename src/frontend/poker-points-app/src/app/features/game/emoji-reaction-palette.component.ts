@@ -1,8 +1,7 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  HostBinding,
-  Input,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
@@ -41,19 +40,9 @@ import {
         box-shadow:
           0 18px 35px rgb(0 0 0 / 0.18),
           0 6px 14px rgb(0 0 0 / 0.12);
-        opacity: 0;
-        pointer-events: none;
-        transform: translateX(-50%) translateY(6px) scale(0.98);
-        transition:
-          opacity 150ms ease,
-          transform 150ms ease;
+        transform: translateX(-50%);
+        animation: emojiPaletteIn 150ms ease;
         white-space: nowrap;
-      }
-
-      app-emoji-reaction-palette.emoji-reaction-palette--open {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0) scale(1);
       }
 
       app-emoji-reaction-palette button {
@@ -86,9 +75,9 @@ import {
     `,
   ],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmojiReactionPaletteComponent {
-  @HostBinding('class.emoji-reaction-palette--open') @Input() open = false;
   @Output() readonly emojiSelected = new EventEmitter<string>();
 
   readonly emojiReactionOptions = EMOJI_REACTION_OPTIONS;

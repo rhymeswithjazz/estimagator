@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Poppins:wght@600;700;800&display=swap')
-layer(base);
-
 @import 'tailwindcss' source('./');
 
 @custom-variant dark (&:is(.dark *));
@@ -886,6 +883,25 @@ layer(base);
 
 .dark ::selection {
   background-color: rgba(139, 192, 83, 0.35);
+}
+
+.emoji-palette-leave {
+  pointer-events: none;
+  animation: emojiPaletteOut 150ms ease forwards;
+}
+
+@keyframes emojiPaletteIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px) scale(0.98);
+  }
+}
+
+@keyframes emojiPaletteOut {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px) scale(0.98);
+  }
 }
 
 .emoji-impact-splat {

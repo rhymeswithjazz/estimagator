@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
+using System.Threading.Channels;
 using Microsoft.Extensions.Options;
 using PokerPoints.Api.Authentication;
 
@@ -13,10 +14,11 @@ public interface IEmailService
     Task SendPasswordResetEmailAsync(string toEmail, string displayName, string token);
 }
 
-public class EmailService : IEmailService
+public class EmailService : BackgroundService, IEmailService
 {
     private readonly EmailConfiguration _config;
     private readonly ILogger<EmailService> _logger;
+    private readonly Channel<MailMessage> _outbox = Channel.CreateBounded<MailMessage>(500);
 
     public EmailService(IOptions<EmailConfiguration> config, ILogger<EmailService> logger)
     {
@@ -24,10 +26,29 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task SendVerificationEmailAsync(string toEmail, string displayName, string token)
+    public Task SendVerificationEmailAsync(string toEmail, string displayName, string token)
     {
-        using var message = CreateVerificationEmail(toEmail, displayName, token);
-        await SendEmailAsync(message);
+        Enqueue(CreateVerificationEmail(toEmail, displayName, token));
+        return Task.CompletedTask;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var message in _outbox.Reader.ReadAllAsync(stoppingToken))
+        {
+            using (message)
+            {
+                await SendEmailAsync(message);
+            }
+        }
+    }
+
+    private void Enqueue(MailMessage message)
+    {
+        if (_outbox.Writer.TryWrite(message)) return;
+
+        _logger.LogError("Email outbox is full. Dropped email to {Email}", message.To[0].Address);
+        message.Dispose();
     }
 
     internal MailMessage CreateVerificationEmail(string toEmail, string displayName, string token)
@@ -81,10 +102,10 @@ public class EmailService : IEmailService
         return CreateMessage(toEmail, subject, htmlBody, textBody);
     }
 
-    public async Task SendPasswordResetEmailAsync(string toEmail, string displayName, string token)
+    public Task SendPasswordResetEmailAsync(string toEmail, string displayName, string token)
     {
-        using var message = CreatePasswordResetEmail(toEmail, displayName, token);
-        await SendEmailAsync(message);
+        Enqueue(CreatePasswordResetEmail(toEmail, displayName, token));
+        return Task.CompletedTask;
     }
 
     internal MailMessage CreatePasswordResetEmail(string toEmail, string displayName, string token)
@@ -195,7 +216,6 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send email to {Email}", message.To[0].Address);
-            throw;
         }
     }
 }

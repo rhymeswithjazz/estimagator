@@ -11,6 +11,7 @@ public interface ISessionService
     Task<Session?> GetSessionByCodeAsync(string accessCode);
     Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode);
     Task<GameStateResponse?> GetGameStateAsync(string accessCode);
+    Task<CurrentStoryRef?> GetCurrentStoryAsync(string accessCode);
     Task<Story?> GetOrCreateCurrentStoryAsync(Guid sessionId);
     Task<Story?> GetOrCreateActiveStoryAsync(Guid sessionId);
     Task<bool> StoryBelongsToSessionAsync(Guid sessionId, Guid storyId);
@@ -28,6 +29,8 @@ public interface ISessionService
     Task<bool> DeactivateSessionByHostAsync(Guid sessionId);
     Task<SessionHistoryResponse?> GetSessionHistoryAsync(string accessCode, Guid userId);
 }
+
+public record CurrentStoryRef(Guid SessionId, Guid Id, string Status);
 
 public class SessionService : ISessionService
 {
@@ -71,16 +74,22 @@ public class SessionService : ISessionService
     public async Task<List<UserSessionResponse>> GetUserSessionsAsync(Guid userId)
     {
         var sessions = await _db.Sessions
+            .AsNoTracking()
             .Include(s => s.Participants)
-            .Include(s => s.Stories)
             .Where(s => s.OrganizerId == userId || s.Participants.Any(p => p.UserId == userId))
             .OrderByDescending(s => s.CreatedAt)
             .Take(20)
             .ToListAsync();
 
+        var currentStoryIds = sessions.Select(s => s.CurrentStoryId).OfType<Guid>().ToList();
+        var currentStories = await _db.Stories
+            .AsNoTracking()
+            .Where(st => currentStoryIds.Contains(st.Id))
+            .ToDictionaryAsync(st => st.Id);
+
         return sessions.Select(session =>
         {
-            var currentStory = session.Stories.FirstOrDefault(s => s.Id == session.CurrentStoryId);
+            var currentStory = session.CurrentStoryId is { } id ? currentStories.GetValueOrDefault(id) : null;
             return new UserSessionResponse(
                 session.Id,
                 session.AccessCode,
@@ -105,14 +114,19 @@ public class SessionService : ISessionService
 
     public async Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode)
     {
+        var code = accessCode.ToUpperInvariant();
         var session = await _db.Sessions
+            .AsNoTracking()
             .Include(s => s.Participants)
-            .Include(s => s.Stories)
-            .FirstOrDefaultAsync(s => s.AccessCode == accessCode.ToUpperInvariant());
+            .FirstOrDefaultAsync(s => s.AccessCode == code);
 
         if (session == null) return null;
 
-        var currentStory = session.Stories.FirstOrDefault(s => s.Id == session.CurrentStoryId);
+        var currentStory = session.CurrentStoryId is { } currentStoryId
+            ? await _db.Stories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Id == currentStoryId && st.SessionId == session.Id)
+            : null;
 
         return new SessionInfoResponse(
             session.Id,
@@ -129,15 +143,20 @@ public class SessionService : ISessionService
 
     public async Task<GameStateResponse?> GetGameStateAsync(string accessCode)
     {
+        var code = accessCode.ToUpperInvariant();
         var session = await _db.Sessions
+            .AsNoTracking()
             .Include(s => s.Participants)
-            .Include(s => s.Stories)
-                .ThenInclude(st => st.Votes)
-            .FirstOrDefaultAsync(s => s.AccessCode == accessCode.ToUpperInvariant() && s.IsActive);
+            .FirstOrDefaultAsync(s => s.AccessCode == code && s.IsActive);
 
         if (session == null) return null;
 
-        var currentStory = session.Stories.FirstOrDefault(s => s.Id == session.CurrentStoryId);
+        var currentStory = session.CurrentStoryId is { } currentStoryId
+            ? await _db.Stories
+                .AsNoTracking()
+                .Include(st => st.Votes)
+                .FirstOrDefaultAsync(st => st.Id == currentStoryId && st.SessionId == session.Id)
+            : null;
         var sessionInfo = new SessionInfoResponse(
             session.Id,
             session.AccessCode,
@@ -155,13 +174,13 @@ public class SessionService : ISessionService
 
         if (currentStory != null)
         {
-            var votes = currentStory.Votes.ToList();
-            var votingParticipants = session.Participants.Where(p => !p.IsObserver).ToList();
+            var votes = currentStory.Votes;
+            var voterIds = votes.Select(v => v.ParticipantId).ToHashSet();
 
-            voteStatuses = votingParticipants.Select(p => new VoteStatusDto(
-                p.Id,
-                votes.Any(v => v.ParticipantId == p.Id)
-            )).ToList();
+            voteStatuses = session.Participants
+                .Where(p => !p.IsObserver)
+                .Select(p => new VoteStatusDto(p.Id, voterIds.Contains(p.Id)))
+                .ToList();
 
             if (currentStory.Status == "completed")
             {
@@ -184,6 +203,15 @@ public class SessionService : ISessionService
             activeTimer,
             revealedVotes != null ? VotingService.CalculateResults(revealedVotes.Select(v => v.CardValue)) : null
         );
+    }
+
+    public Task<CurrentStoryRef?> GetCurrentStoryAsync(string accessCode)
+    {
+        var code = accessCode.ToUpperInvariant();
+        return _db.Stories
+            .Where(st => st.Session.AccessCode == code && st.Session.IsActive && st.Session.CurrentStoryId == st.Id)
+            .Select(st => new CurrentStoryRef(st.SessionId, st.Id, st.Status))
+            .FirstOrDefaultAsync();
     }
 
     public async Task<Story?> GetOrCreateCurrentStoryAsync(Guid sessionId)
@@ -398,11 +426,14 @@ public class SessionService : ISessionService
 
     public async Task<SessionHistoryResponse?> GetSessionHistoryAsync(string accessCode, Guid userId)
     {
+        var code = accessCode.ToUpperInvariant();
         var session = await _db.Sessions
+            .AsNoTracking()
+            .AsSplitQuery()
             .Include(s => s.Participants)
             .Include(s => s.Stories)
                 .ThenInclude(st => st.Votes)
-            .FirstOrDefaultAsync(s => s.AccessCode == accessCode.ToUpperInvariant());
+            .FirstOrDefaultAsync(s => s.AccessCode == code);
 
         if (session == null) return null;
 

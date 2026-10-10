@@ -5,6 +5,7 @@ namespace PokerPoints.Api.Services;
 public interface IEmojiThrowRateLimiter
 {
     bool TryAcquire(string connectionId, TimeSpan cooldown);
+    void Release(string connectionId);
 }
 
 public class EmojiThrowRateLimiter : IEmojiThrowRateLimiter
@@ -38,4 +39,6 @@ public class EmojiThrowRateLimiter : IEmojiThrowRateLimiter
             }
         }
     }
+
+    public void Release(string connectionId) => _lastThrowByConnection.TryRemove(connectionId, out _);
 }

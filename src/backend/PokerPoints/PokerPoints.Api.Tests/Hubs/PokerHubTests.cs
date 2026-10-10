@@ -203,7 +203,6 @@ public class PokerHubTests
             "ABC123",
             "sender-connection",
             isObserver: true);
-        var gameState = CreateGameState(updatedParticipant, new StoryDto(StoryId, "Story", null, "active", null));
         var refreshedGameState = CreateGameState(updatedParticipant, new StoryDto(StoryId, "Story", null, "active", null));
 
         fixture.ParticipantService
@@ -213,8 +212,10 @@ public class PokerHubTests
             .Setup(s => s.UpdateRoleAsync(SenderConnectionId, true))
             .ReturnsAsync(updatedParticipant);
         fixture.SessionService
-            .SetupSequence(s => s.GetGameStateAsync("ABC123"))
-            .ReturnsAsync(gameState)
+            .Setup(s => s.GetCurrentStoryAsync("ABC123"))
+            .ReturnsAsync(new CurrentStoryRef(Guid.NewGuid(), StoryId, "active"));
+        fixture.SessionService
+            .Setup(s => s.GetGameStateAsync("ABC123"))
             .ReturnsAsync(refreshedGameState);
 
         // Act
@@ -713,6 +714,7 @@ public class PokerHubTests
         var authService = new Mock<IAuthService>();
         var timerService = new Mock<ITimerService>();
         var rateLimiter = new Mock<IEmojiThrowRateLimiter>();
+        rateLimiter.Setup(r => r.TryAcquire(It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(true);
         var callerClient = new Mock<ISingleClientProxy>();
         var groupClient = new Mock<IClientProxy>();
         var clients = new Mock<IHubCallerClients>();

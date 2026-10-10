@@ -125,14 +125,13 @@ public class TimerService : ITimerService, IDisposable
         var votingService = scope.ServiceProvider.GetRequiredService<IVotingService>();
         var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
 
-        var gameState = await sessionService.GetGameStateAsync(accessCode);
-        if (gameState?.CurrentStory == null) return;
+        var currentStory = await sessionService.GetCurrentStoryAsync(accessCode);
 
         // Only auto-reveal if votes haven't been revealed yet
-        if (gameState.RevealedVotes != null) return;
+        if (currentStory == null || currentStory.Status == "completed") return;
 
-        var result = await votingService.RevealVotesAsync(gameState.CurrentStory.Id);
-        var completedStory = await sessionService.CompleteStoryAsync(gameState.Session.Id, gameState.CurrentStory.Id, result.Average);
+        var result = await votingService.RevealVotesAsync(currentStory.Id);
+        var completedStory = await sessionService.CompleteStoryAsync(currentStory.SessionId, currentStory.Id, result.Average);
 
         await _hubContext.Clients.Group(accessCode).SendAsync("VotesRevealed", result);
 

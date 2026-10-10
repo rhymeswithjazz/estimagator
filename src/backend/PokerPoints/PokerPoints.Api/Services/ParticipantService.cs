@@ -9,7 +9,7 @@ public interface IParticipantService
     Task<ParticipantJoinResult> JoinSessionAsync(Guid sessionId, string displayName, bool isObserver, bool isOrganizer, string connectionId, Guid? userId = null);
     Task<ParticipantJoinResult?> ReconnectAsync(Guid sessionId, Guid participantId, string connectionId, Guid? userId = null, string? reconnectToken = null);
     Task<ParticipantJoinResult?> ClaimGuestHostAsync(Guid sessionId, string displayName, bool isObserver, string connectionId, string guestHostToken, Guid? existingParticipantId = null, Guid? userId = null, string? reconnectToken = null);
-    Task DisconnectAsync(string connectionId);
+    Task<Participant?> DisconnectAsync(string connectionId);
     Task<Participant?> GetByConnectionIdAsync(string connectionId);
     Task<Participant?> GetByIdAsync(Guid participantId);
     Task<Participant?> UpdateRoleAsync(string connectionId, bool isObserver);
@@ -191,16 +191,17 @@ public class ParticipantService : IParticipantService
         return new ParticipantJoinResult(participant, token);
     }
 
-    public async Task DisconnectAsync(string connectionId)
+    public async Task<Participant?> DisconnectAsync(string connectionId)
     {
-        var participant = await _db.Participants
-            .FirstOrDefaultAsync(p => p.ConnectionId == connectionId);
+        var participant = await GetByConnectionIdAsync(connectionId);
 
         if (participant != null)
         {
             participant.ConnectionId = null;
             await _db.SaveChangesAsync();
         }
+
+        return participant;
     }
 
     public async Task<Participant?> GetByConnectionIdAsync(string connectionId)
