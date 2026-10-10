@@ -15,7 +15,9 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
       <app-theme-selector class="absolute right-4 top-4 z-20" />
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
         <div class="text-center mb-6">
-          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"><app-brand size="md" /></a>
+          <a routerLink="/" class="inline-flex mb-3" aria-label="Estimagator home"
+            ><app-brand size="md"
+          /></a>
           <p class="text-gray-500 text-sm">Bite-sized estimation for agile teams</p>
         </div>
 
@@ -26,7 +28,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
               Enter your email address and we'll send you a link to reset your password.
             </p>
 
-            <form (ngSubmit)="onSubmit()" class="space-y-4">
+            <form (ngSubmit)="onSubmit()" class="stack-y-4">
               <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
                   Email Address
@@ -37,7 +39,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
                   [(ngModel)]="email"
                   name="email"
                   required
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-poker-green-500 focus:border-transparent"
                   placeholder="you@example.com"
                 />
               </div>
@@ -59,7 +61,10 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 
             <p class="mt-6 text-center text-sm text-gray-600">
               Remember your password?
-              <a routerLink="/login" class="text-poker-green-600 hover:text-poker-green-700 font-medium">
+              <a
+                routerLink="/login"
+                class="text-poker-green-600 hover:text-poker-green-700 font-medium"
+              >
                 Sign in
               </a>
             </p>

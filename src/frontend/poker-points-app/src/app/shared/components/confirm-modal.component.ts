@@ -18,7 +18,7 @@ export interface ConfirmModalConfig {
         (click)="onBackdropClick($event)"
       >
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
 
         <!-- Modal -->
         <div

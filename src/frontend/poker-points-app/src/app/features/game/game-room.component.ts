@@ -404,7 +404,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
 
     // No vote yet - empty card placeholder
-    return 'bg-white border-2 border-dashed border-gray-300 shadow-sm';
+    return 'bg-white border-2 border-dashed border-gray-300 shadow-xs';
   }
 
   // Get CSS classes for selectable card in deck
@@ -417,7 +417,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
 
     if (isSelected) {
-      return 'bg-gradient-to-b from-poker-green-400 to-poker-green-600 text-white border-poker-green-300 shadow-glow-green';
+      return 'bg-linear-to-b/srgb from-poker-green-400 to-poker-green-600 text-white border-poker-green-300 shadow-glow-green';
     }
 
     return 'bg-white text-gray-800 border-gray-200 hover:border-poker-green-400 hover:shadow-card-hover cursor-pointer';

@@ -151,7 +151,7 @@
       } @else {
         <div class="flex items-center gap-2">
           <div
-            class="w-8 h-8 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm"
+            class="w-8 h-8 rounded-full bg-linear-to-br/srgb from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white font-bold text-sm"
           >
             {{ currentParticipant()?.displayName?.charAt(0)?.toUpperCase() }}
           </div>
@@ -237,7 +237,7 @@
         <div class="text-center relative z-10">
           @if (votesRevealed()) {
             <!-- Results Display -->
-            <div class="space-y-4">
+            <div class="stack-y-4">
               @if (votingResults(); as results) {
                 @if (results.isConsensus) {
                   <div class="relative">
@@ -264,7 +264,10 @@
                   <div>
                     @if (results.average !== null) {
                       <div class="text-white/50 text-sm uppercase tracking-wider mb-1">Average</div>
-                      <div class="text-5xl font-display font-bold text-white">
+                      <div
+                        data-testid="vote-average"
+                        class="text-5xl font-display font-bold text-white"
+                      >
                         {{ results.average | number: '1.1-1' }}
                       </div>
                     } @else {
@@ -330,7 +333,7 @@
                   <div class="flex items-center justify-center gap-3">
                     <button
                       (click)="extendTimer(60)"
-                      class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded hover:bg-white/20 hover:text-white transition-all font-medium"
+                      class="px-2 py-1 text-xs bg-white/10 text-white/70 rounded-sm hover:bg-white/20 hover:text-white transition-all font-medium"
                     >
                       +1 min
                     </button>
@@ -470,7 +473,8 @@
       <!-- Observers Section -->
       @if (observers().length > 0) {
         <div
-          class="absolute -right-32 top-1/2 z-20 -translate-y-1/2 bg-white p-2 min-w-[100px] rounded-lg shadow-sm border border-gray-200 text-sm"
+          data-testid="observer-list"
+          class="absolute -right-32 top-1/2 z-20 -translate-y-1/2 bg-white p-2 min-w-[100px] rounded-lg shadow-xs border border-gray-200 text-sm"
         >
           <div
             class="flex items-center gap-1.5 text-gray-500 text-xs mb-2 uppercase tracking-wider font-medium"
@@ -495,10 +499,10 @@
             </svg>
             Observers
           </div>
-          <div class="space-y-1">
+          <div class="stack-y-1">
             @for (observer of observers(); track observer.id) {
               <div
-                class="emoji-throw-target relative text-sm px-2 py-1 rounded flex items-center gap-2"
+                class="emoji-throw-target relative text-sm px-2 py-1 rounded-sm flex items-center gap-2"
                 [class]="observer.isConnected ? 'text-gray-900' : 'text-gray-400'"
                 [class.z-40]="
                   openEmojiTargetId() === observer.id ||
@@ -518,9 +522,7 @@
                   [class]="observer.isConnected ? 'bg-emerald-500' : 'bg-gray-300'"
                 ></span>
                 {{ observer.displayName }}
-                <ng-container
-                  *ngTemplateOutlet="emojiPalettes; context: { $implicit: observer }"
-                />
+                <ng-container *ngTemplateOutlet="emojiPalettes; context: { $implicit: observer }" />
               </div>
             }
           </div>
@@ -530,7 +532,7 @@
   </div>
 
   <!-- Row 3: Bottom Area - Story Title, Controls & Card Deck -->
-  <div class="bg-white border-t border-gray-200 px-4 py-2 space-y-1.5">
+  <div class="bg-white border-t border-gray-200 px-4 py-2 stack-y-1.5">
     @if (currentStory(); as story) {
       @if (story.status === 'completed') {
         <div class="max-w-2xl mx-auto max-h-[35vh] overflow-auto">
@@ -553,7 +555,7 @@
             [ngModel]="storyTitleInput()"
             (ngModelChange)="storyTitleInput.set($event)"
             placeholder="What are we estimating?"
-            class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-64"
+            class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-64"
             (keyup.escape)="cancelEditingStory()"
             autofocus
           />
@@ -562,7 +564,7 @@
             [ngModel]="storyUrlInput()"
             (ngModelChange)="storyUrlInput.set($event)"
             placeholder="Link (optional)"
-            class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-48"
+            class="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 w-48"
             (keyup.enter)="saveStoryTitle()"
             (keyup.escape)="cancelEditingStory()"
           />
@@ -627,7 +629,7 @@
           @if (isOrganizer()) {
             <button
               (click)="startEditingStory()"
-              class="p-1 text-gray-400 hover:text-poker-green-600 hover:bg-poker-green-50 rounded transition-all"
+              class="p-1 text-gray-400 hover:text-poker-green-600 hover:bg-poker-green-50 rounded-sm transition-all"
               title="Edit story title"
             >
               <svg
@@ -709,6 +711,7 @@
             @for (card of deckValues(); track card) {
               <button
                 (click)="selectCard(card)"
+                [attr.data-testid]="'vote-card-' + card"
                 [disabled]="!canVote()"
                 class="group relative w-11 h-14 rounded-lg font-bold text-base transition-all duration-200 border-2"
                 [class]="getSelectedCardClasses(card)"
@@ -753,7 +756,7 @@
               Voting locked - waiting for reset
             </span>
           } @else if (hasVoted()) {
-            <span class="text-gray-500">
+            <span data-testid="my-vote" class="text-gray-500">
               Your vote:
               <span class="text-poker-green-600 font-bold text-base">{{ myVote() }}</span>
               <span class="text-gray-400 ml-1">(tap another card to change)</span>
@@ -832,7 +835,7 @@
       <select
         [ngModel]="selectedLeaveTransferTargetId()"
         (ngModelChange)="selectedLeaveTransferTargetId.set($event)"
-        class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+        class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
       >
         @for (participant of eligibleHostRecipients(); track participant.id) {
           <option [value]="participant.id">

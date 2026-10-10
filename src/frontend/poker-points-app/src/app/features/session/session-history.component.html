@@ -149,7 +149,7 @@
               class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-200"
             >
               <div
-                class="w-6 h-6 rounded-full bg-gradient-to-br from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white text-xs font-bold"
+                class="w-6 h-6 rounded-full bg-linear-to-br/srgb from-poker-green-400 to-poker-green-600 flex items-center justify-center text-white text-xs font-bold"
               >
                 {{ participant.displayName.charAt(0).toUpperCase() }}
               </div>
@@ -187,7 +187,7 @@
             <p>No stories were completed in this session</p>
           </div>
         } @else {
-          <div class="space-y-4">
+          <div class="stack-y-4">
             @for (story of completedStories(); track story.id; let i = $index) {
               <div class="border border-gray-200 rounded-xl overflow-hidden">
                 <!-- Story Header -->
@@ -266,7 +266,7 @@
                         <div class="flex items-center gap-2 text-sm">
                           <span class="text-gray-600">{{ vote.displayName }}:</span>
                           <span
-                            class="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded"
+                            class="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded-sm"
                             >{{ vote.cardValue ?? '?' }}</span
                           >
                         </div>

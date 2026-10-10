@@ -1,24 +1,35 @@
 name: Docker Build & Push
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Docker image tag (leave empty for latest)'
-        required: false
-        default: 'latest'
+  workflow_call:
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
+
+permissions:
+  contents: read
 
 env:
   DOCKER_USERNAME: rhymeswithjazz
-  API_IMAGE: rhymeswithjazz/estimagator-api
-  FRONTEND_IMAGE: rhymeswithjazz/estimagator-frontend
 
 jobs:
   build-and-push:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: API
+            image: rhymeswithjazz/estimagator-api
+            context: src/backend/PokerPoints
+          - name: Frontend
+            image: rhymeswithjazz/estimagator-frontend
+            context: src/frontend/poker-points-app
+    concurrency:
+      group: estimagator-image-publication-${{ matrix.name }}
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v6
@@ -27,9 +38,10 @@ jobs:
         id: calver
         run: |
           CALVER=$(date +'%Y.%m.%d')
-          echo "tag=${CALVER}" >> $GITHUB_OUTPUT
+          echo "tag=${CALVER}" >> "$GITHUB_OUTPUT"
           echo "📅 CalVer tag: ${CALVER}"
 
+      # Only the small runtime stages run emulated; the build stages cross-compile.
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -42,11 +54,11 @@ jobs:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract metadata for API
-        id: meta-api
+      - name: Extract metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.API_IMAGE }}
+          images: ${{ matrix.image }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -55,46 +67,31 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=raw,value=${{ steps.calver.outputs.tag }}
             type=sha,prefix={{branch}}-
+            type=sha,prefix=sha-,format=long
 
-      - name: Extract metadata for Frontend
-        id: meta-frontend
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.FRONTEND_IMAGE }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ steps.calver.outputs.tag }}
-            type=sha,prefix={{branch}}-
-
-      - name: Build and push API image
+      - name: Build and push image
+        id: build
         uses: docker/build-push-action@v6
         with:
-          context: src/backend/PokerPoints
-          file: src/backend/PokerPoints/Dockerfile
+          context: ${{ matrix.context }}
+          file: ${{ matrix.context }}/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.API_IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.API_IMAGE }}:buildcache,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ matrix.image }}:buildcache
+          cache-to: type=registry,ref=${{ matrix.image }}:buildcache,mode=max
 
-      - name: Build and push Frontend image
-        uses: docker/build-push-action@v6
-        with:
-          context: src/frontend/poker-points-app
-          file: src/frontend/poker-points-app/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta-frontend.outputs.tags }}
-          labels: ${{ steps.meta-frontend.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.FRONTEND_IMAGE }}:buildcache,mode=max
-
-      - name: Image digest
+      - name: Published image summary
+        env:
+          IMAGE: ${{ matrix.image }}
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          echo "API Image: ${{ steps.meta-api.outputs.tags }}"
-          echo "Frontend Image: ${{ steps.meta-frontend.outputs.tags }}"
+          {
+            echo "### ${{ matrix.name }} image published"
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Image: ${IMAGE}@${DIGEST}"
+            echo "Also tagged sha-${GITHUB_SHA}."
+            echo 'Watchtower on the droplet pulls the new `latest` tag on its next check and restarts the container.'
+            echo 'GitHub has published the image; it has not deployed or health-checked the application.'
+          } >> "$GITHUB_STEP_SUMMARY"

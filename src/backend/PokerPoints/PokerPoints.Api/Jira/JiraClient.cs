@@ -25,8 +25,14 @@ public class JiraClient(HttpClient http, PokerPointsDbContext db, IDataProtectio
     {
         RequireEnabled();
         await using var lease = await locks.AcquireAsync($"jira-auth:{userId}");
-        var token = await TokenAsync(new { grant_type = "authorization_code", client_id = options.Value.ClientId,
-            client_secret = options.Value.ClientSecret, code, redirect_uri = options.Value.CallbackUrl });
+        var token = await TokenAsync(new
+        {
+            grant_type = "authorization_code",
+            client_id = options.Value.ClientId,
+            client_secret = options.Value.ClientSecret,
+            code,
+            redirect_uri = options.Value.CallbackUrl
+        });
         if (!token.TryGetProperty("refresh_token", out _))
             throw new JiraException(400, "offline_access_required", "Reconnect Jira and grant offline access.");
         var sites = await ResourcesAsync(token.GetProperty("access_token").GetString()!);
@@ -75,8 +81,13 @@ public class JiraClient(HttpClient http, PokerPointsDbContext db, IDataProtectio
         {
             try
             {
-                var token = await TokenAsync(new { grant_type = "refresh_token", client_id = options.Value.ClientId,
-                    client_secret = options.Value.ClientSecret, refresh_token = refreshToken });
+                var token = await TokenAsync(new
+                {
+                    grant_type = "refresh_token",
+                    client_id = options.Value.ClientId,
+                    client_secret = options.Value.ClientSecret,
+                    refresh_token = refreshToken
+                });
                 SetTokens(auth, token);
                 accessToken = protector.Unprotect(auth.AccessToken);
                 await db.SaveChangesAsync();

@@ -1,11 +1,12 @@
 version: "3.8"
 
 # =============================================================================
-# Estimagator - Portainer Stack Configuration
+# Estimagator - Production Stack Configuration
 # =============================================================================
-# Deploy via Portainer: Stacks > Add Stack > Web Editor > Paste this file
+# Deploy on the droplet: docker compose -f stack.yml up -d
+# Watchtower on the host then keeps the :latest images up to date.
 #
-# Required Environment Variables (set in Portainer's Environment Variables):
+# Required Environment Variables (set in a .env file beside this one):
 #   - POSTGRES_PASSWORD: Database password
 #   - JWT_SECRET: 64+ character secret for auth tokens
 #   - SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD: For email verification

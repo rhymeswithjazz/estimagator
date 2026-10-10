@@ -18,7 +18,7 @@ art = source[source.index('<g '):source.rindex('</svg>')]
 (brand / 'logo-horizontal.svg').write_text('''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344 80" role="img" aria-labelledby="title">
 <title id="title">Estimagator</title>
 <svg width="80" height="80" viewBox="0 0 272 256">''' + art + '''</svg>
-<text x="88" y="52" font-family="Poppins, Arial, sans-serif" font-size="36" font-weight="700" fill="#233D22">Estima<tspan fill="#47772C">gator</tspan></text>
+<text x="88" y="52" font-family="Poppins, Arial, sans-serif" font-size="36" font-weight="700" letter-spacing="-1.8" fill="#233D22">Estima<tspan fill="#47772C" font-style="italic" letter-spacing="1.8">gator</tspan></text>
 </svg>
 ''')
 PY

@@ -21,7 +21,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
   ],
   template: `
     <div class="min-h-screen bg-gray-100">
-      <nav class="bg-white shadow-sm border-b">
+      <nav class="bg-white shadow-xs border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
             <div class="flex items-center">
@@ -34,7 +34,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
                 Admin
               </span>
             </div>
-            <div class="flex items-center space-x-1">
+            <div class="flex items-center stack-x-1">
               <a
                 routerLink="/admin"
                 routerLinkActive="bg-poker-green-50 text-poker-green-700"

@@ -17,7 +17,8 @@ public class EmailServiceTests
     {
         var service = new EmailService(Options.Create(new EmailConfiguration
         {
-            FromAddress = "hello@example.test", BaseUrl = "https://example.test"
+            FromAddress = "hello@example.test",
+            BaseUrl = "https://example.test"
         }), NullLogger<EmailService>.Instance);
         using var message = reset
             ? service.CreatePasswordResetEmail("member@example.test", "Alex <Team>", "a+b/c=?&")

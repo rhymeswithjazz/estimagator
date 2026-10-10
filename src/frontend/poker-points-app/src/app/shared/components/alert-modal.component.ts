@@ -11,7 +11,7 @@ import { AlertModalConfig } from '../../core/services/modal.service';
         (click)="onBackdropClick($event)"
       >
         <!-- Backdrop -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-xs"></div>
 
         <!-- Modal -->
         <div
@@ -22,7 +22,7 @@ import { AlertModalConfig } from '../../core/services/modal.service';
             @switch (config().style) {
               @case ('error') {
                 <div
-                  class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center"
+                  class="shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center"
                 >
                   <svg
                     class="w-5 h-5 text-red-600"
@@ -41,7 +41,7 @@ import { AlertModalConfig } from '../../core/services/modal.service';
               }
               @case ('success') {
                 <div
-                  class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center"
+                  class="shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center"
                 >
                   <svg
                     class="w-5 h-5 text-green-600"
@@ -60,7 +60,7 @@ import { AlertModalConfig } from '../../core/services/modal.service';
               }
               @default {
                 <div
-                  class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"
+                  class="shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center"
                 >
                   <svg
                     class="w-5 h-5 text-blue-600"

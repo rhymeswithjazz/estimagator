@@ -4,7 +4,11 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Story } from '../models/session.models';
 
-export interface JiraSuggestion { id: string; key: string; summary: string; }
+export interface JiraSuggestion {
+  id: string;
+  key: string;
+  summary: string;
+}
 export interface JiraField {
   id: string;
   name: string;
@@ -80,9 +84,11 @@ export class JiraService {
     );
   }
   suggestions(siteId: string, query: string) {
-    return firstValueFrom(this.http.get<JiraSuggestion[]>(`${this.base}/suggestions`, {
-      params: { siteId, query },
-    }));
+    return firstValueFrom(
+      this.http.get<JiraSuggestion[]>(`${this.base}/suggestions`, {
+        params: { siteId, query },
+      }),
+    );
   }
   search(siteId: string, projectId: string, jql: string, nextPageToken?: string) {
     return firstValueFrom(

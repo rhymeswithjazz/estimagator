@@ -53,7 +53,7 @@
       <div class="flex items-start gap-6">
         <!-- Avatar -->
         <div
-          class="w-20 h-20 rounded-full bg-gradient-to-br from-poker-green-500 to-poker-green-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg"
+          class="w-20 h-20 rounded-full bg-linear-to-br/srgb from-poker-green-500 to-poker-green-700 flex items-center justify-center text-white text-2xl font-bold shadow-lg"
         >
           {{ initials() }}
         </div>
@@ -85,7 +85,7 @@
               Edit profile
             </button>
           } @else {
-            <form (submit)="saveProfile(); $event.preventDefault()" class="space-y-4">
+            <form (submit)="saveProfile(); $event.preventDefault()" class="stack-y-4">
               <div>
                 <label class="block text-gray-600 text-sm font-medium mb-2">Display Name</label>
                 <input
@@ -156,7 +156,7 @@
       @if (createdSessions().length > 0) {
         <div class="glass-card p-6 mb-6">
           <h2 class="text-lg font-display font-bold text-gray-900 mb-4">My Sessions</h2>
-          <div class="space-y-3">
+          <div class="stack-y-3">
             @for (session of createdSessions(); track session.id) {
               <div class="relative">
                 <a
@@ -237,7 +237,7 @@
       @if (joinedSessions().length > 0) {
         <div class="glass-card p-6">
           <h2 class="text-lg font-display font-bold text-gray-900 mb-4">Joined Sessions</h2>
-          <div class="space-y-3">
+          <div class="stack-y-3">
             @for (session of joinedSessions(); track session.id) {
               <a
                 [routerLink]="

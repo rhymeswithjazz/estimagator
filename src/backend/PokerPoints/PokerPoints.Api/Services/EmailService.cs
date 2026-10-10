@@ -165,7 +165,7 @@ public class EmailService : BackgroundService, IEmailService
     private const string LogoContentId = "estimagator-scout";
     private const string BrandHeader = """
         <img src="cid:estimagator-scout" width="102" height="96" alt="Estimagator Scout alligator logo" style="display: block; width: 102px; height: 96px; margin: 0 auto 12px; border: 0;">
-        <h1 style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #233D22; margin: 0;">Estima<span style="color: #47772C;">gator</span></h1>
+        <h1 style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #233D22; margin: 0;">Estima<span style="color: #47772C; font-style: italic; letter-spacing: 1px;">gator</span></h1>
         <p style="color: #666; margin-top: 5px;">Bite-sized estimation for agile teams</p>
         """;
 

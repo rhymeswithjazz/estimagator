@@ -29,8 +29,12 @@ public class JiraController(PokerPointsDbContext db, JiraClient client, JiraIssu
     {
         client.RequireEnabled();
         var auth = await db.JiraAuthorizations.AsNoTracking().Include(a => a.Sites).SingleOrDefaultAsync(a => a.UserId == UserId);
-        return new { connected = auth != null, reconnectRequired = auth?.ReconnectRequired ?? false,
-            sites = auth?.Sites.Select(s => new { id = s.SiteId, s.Name, s.Url }).ToArray() };
+        return new
+        {
+            connected = auth != null,
+            reconnectRequired = auth?.ReconnectRequired ?? false,
+            sites = auth?.Sites.Select(s => new { id = s.SiteId, s.Name, s.Url }).ToArray()
+        };
     }
 
     public record ConnectRequest(string? ReturnPath);
@@ -45,14 +49,29 @@ public class JiraController(PokerPointsDbContext db, JiraClient client, JiraIssu
         if (returnPath == null || !System.Text.RegularExpressions.Regex.IsMatch(returnPath, @"^/(profile|session/[A-Za-z0-9]+/history|history/[A-Za-z0-9]+|game/[A-Za-z0-9]+)$"))
             returnPath = "/profile";
         db.JiraOAuthStates.RemoveRange(await db.JiraOAuthStates.Where(s => s.UserId == UserId || s.ExpiresAt < DateTime.UtcNow).ToListAsync());
-        db.JiraOAuthStates.Add(new() { Id = Hash(state), UserId = UserId, BrowserHash = Hash(browser),
-            ExpiresAt = DateTime.UtcNow.AddMinutes(10), ReturnPath = returnPath });
+        db.JiraOAuthStates.Add(new()
+        {
+            Id = Hash(state),
+            UserId = UserId,
+            BrowserHash = Hash(browser),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+            ReturnPath = returnPath
+        });
         await db.SaveChangesAsync();
-        Response.Cookies.Append("jira-oauth", browser, new CookieOptions { HttpOnly = true, Secure = options.Value.CallbackUrl.StartsWith("https://"),
-            SameSite = SameSiteMode.Lax, Path = "/api/integrations/jira", MaxAge = TimeSpan.FromMinutes(10) });
-        return new { url = "https://auth.atlassian.com/authorize?audience=api.atlassian.com&response_type=code&prompt=consent"
+        Response.Cookies.Append("jira-oauth", browser, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = options.Value.CallbackUrl.StartsWith("https://"),
+            SameSite = SameSiteMode.Lax,
+            Path = "/api/integrations/jira",
+            MaxAge = TimeSpan.FromMinutes(10)
+        });
+        return new
+        {
+            url = "https://auth.atlassian.com/authorize?audience=api.atlassian.com&response_type=code&prompt=consent"
             + $"&client_id={Uri.EscapeDataString(options.Value.ClientId)}&redirect_uri={Uri.EscapeDataString(options.Value.CallbackUrl)}"
-            + $"&scope={Uri.EscapeDataString(JiraClient.Scopes)}&state={state}" };
+            + $"&scope={Uri.EscapeDataString(JiraClient.Scopes)}&state={state}"
+        };
     }
 
     [AllowAnonymous]

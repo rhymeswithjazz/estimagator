@@ -9,8 +9,8 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
   standalone: true,
   imports: [RouterLink],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center space-x-4">
+    <div class="stack-y-6">
+      <div class="flex items-center stack-x-4">
         <a routerLink="/admin/sessions" class="text-poker-green-600 hover:text-poker-green-900">
           &larr; Back to Sessions
         </a>
@@ -23,7 +23,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
           ></div>
         </div>
       } @else if (session()) {
-        <div class="bg-white shadow rounded-lg p-6">
+        <div class="bg-white shadow-sm rounded-lg p-6">
           <div class="flex justify-between items-start mb-6">
             <div>
               <h1 class="text-2xl font-bold text-gray-900 font-mono">
@@ -94,28 +94,28 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
         </div>
 
         <!-- Participants -->
-        <div class="bg-white shadow rounded-lg p-6">
+        <div class="bg-white shadow-sm rounded-lg p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
             Participants ({{ session()!.participants.length }})
           </h2>
           @if (session()!.participants.length === 0) {
             <p class="text-gray-500">No participants</p>
           } @else {
-            <div class="space-y-2">
+            <div class="stack-y-2">
               @for (p of session()!.participants; track p.id) {
                 <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center stack-x-2">
                     <span class="font-medium">{{ p.displayName }}</span>
                     @if (p.isOrganizer) {
                       <span
-                        class="px-2 py-0.5 text-xs bg-poker-green-100 text-poker-green-800 rounded font-medium"
+                        class="px-2 py-0.5 text-xs bg-poker-green-100 text-poker-green-800 rounded-sm font-medium"
                       >
                         Organizer
                       </span>
                     }
                     @if (p.isObserver) {
                       <span
-                        class="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded font-medium"
+                        class="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-sm font-medium"
                       >
                         Observer
                       </span>
@@ -138,20 +138,20 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
         </div>
 
         <!-- Stories -->
-        <div class="bg-white shadow rounded-lg p-6">
+        <div class="bg-white shadow-sm rounded-lg p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">
             Stories ({{ session()!.stories.length }})
           </h2>
           @if (session()!.stories.length === 0) {
             <p class="text-gray-500">No stories</p>
           } @else {
-            <div class="space-y-2">
+            <div class="stack-y-2">
               @for (story of session()!.stories; track story.id) {
                 <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div class="flex items-center space-x-2">
+                  <div class="flex items-center stack-x-2">
                     <span class="font-medium">{{ story.title }}</span>
                     <span
-                      class="px-2 py-0.5 text-xs rounded font-medium"
+                      class="px-2 py-0.5 text-xs rounded-sm font-medium"
                       [class.bg-yellow-100]="story.status === 'pending'"
                       [class.text-yellow-800]="story.status === 'pending'"
                       [class.bg-blue-100]="story.status === 'active'"
@@ -162,7 +162,7 @@ import { AdminSessionDetail } from '../../core/models/admin.models';
                       {{ story.status }}
                     </span>
                   </div>
-                  <div class="text-gray-500 text-sm space-x-4">
+                  <div class="text-gray-500 text-sm stack-x-4">
                     @if (story.finalScore !== null) {
                       <span class="font-medium">Score: {{ story.finalScore }}</span>
                     }

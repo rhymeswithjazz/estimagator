@@ -8,7 +8,7 @@ Estimagator is a friendly planning poker tool for agile teams.
 
 The canonical artwork is `logo.svg`, supplied as `estimagator-04-scout.svg`: an alligator shaped like the letter E. Preserve its paths, colors, proportions, and clear space. Do not substitute an emoji, the previous card-biting alligator, or a generic crocodile. Avoid shadows and effects on the mark itself.
 
-Use the shared Angular `BrandComponent` for application branding. Its compact, stacked, and hero sizes pair Scout with one consistent wordmark. The wordmark uses Poppins bold (system sans-serif fallback), with “Estima” in Outline Green and “gator” in Deep Green. In dark mode, the text uses pale green tones for contrast; the mascot retains its original colors.
+Use the shared Angular `BrandComponent` for application branding. Its compact, stacked, and hero sizes pair Scout with one consistent wordmark. The wordmark uses Poppins bold (system sans-serif fallback), with a tightly spaced “Estima” in Outline Green and an italic, widely spaced “gator” in Deep Green. In dark mode, the text uses pale green tones for contrast; the mascot retains its original colors.
 
 ## Colors
 

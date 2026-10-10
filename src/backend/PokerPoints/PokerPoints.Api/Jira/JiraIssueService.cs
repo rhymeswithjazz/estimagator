@@ -38,8 +38,12 @@ public class JiraIssueService(JiraClient client, PokerPointsDbContext db, JiraLo
         var jql = string.IsNullOrWhiteSpace(request.Jql)
             ? $"project = {JsonSerializer.Serialize(request.ProjectId)} AND issuetype = Story ORDER BY Rank ASC" : request.Jql;
         var fields = await FieldsAsync(user, request.SiteId);
-        var response = await client.SendAsync(user, request.SiteId, HttpMethod.Post, "search/jql", new {
-            jql, maxResults = 25, nextPageToken = request.NextPageToken, expand = "editmeta",
+        var response = await client.SendAsync(user, request.SiteId, HttpMethod.Post, "search/jql", new
+        {
+            jql,
+            maxResults = 25,
+            nextPageToken = request.NextPageToken,
+            expand = "editmeta",
             fields = IssueFields.Concat(fields.Select(f => f.Id)).ToArray()
         });
         var mappings = await db.JiraFieldMappings.AsNoTracking()

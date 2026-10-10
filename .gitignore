@@ -130,3 +130,6 @@ PLAN.md
 # Browser test output
 tests/e2e/playwright-report/
 tests/e2e/test-results/
+
+# .NET test reports and coverage
+**/TestResults/

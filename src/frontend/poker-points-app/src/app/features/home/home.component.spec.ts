@@ -107,13 +107,15 @@ async function renderHome(options: { user?: unknown; createResponse?: unknown } 
     user: signal(options.user ?? null),
   };
   const sessionService = {
-    createSession: vi.fn().mockResolvedValue(options.createResponse ?? {
-      sessionId: 'session-id',
-      accessCode: 'ABC123',
-      name: null,
-      timerDurationSeconds: 300,
-      guestHostToken: 'guest-token',
-    }),
+    createSession: vi.fn().mockResolvedValue(
+      options.createResponse ?? {
+        sessionId: 'session-id',
+        accessCode: 'ABC123',
+        name: null,
+        timerDurationSeconds: 300,
+        guestHostToken: 'guest-token',
+      },
+    ),
     sessionExists: vi.fn(),
   };
   const gameState = {

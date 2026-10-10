@@ -11,7 +11,13 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [BrandComponent, JiraConnectionComponent, FormsModule, RouterLink, ThemeSelectorComponent],
+  imports: [
+    BrandComponent,
+    JiraConnectionComponent,
+    FormsModule,
+    RouterLink,
+    ThemeSelectorComponent,
+  ],
   templateUrl: './profile.component.html',
 })
 export class ProfileComponent implements OnInit {

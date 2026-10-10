@@ -40,10 +40,10 @@ import { GameStateService } from '../../core/services/game-state.service';
         </div>
 
         <!-- Panel Content -->
-        <div class="flex-1 overflow-auto p-4 space-y-6">
+        <div class="flex-1 overflow-auto p-4 stack-y-6">
           <!-- Story Queue Section (Organizer only) -->
           @if (isOrganizer()) {
-            <div class="space-y-3">
+            <div class="stack-y-3">
               <div class="flex items-center justify-between">
                 <div
                   class="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider"
@@ -78,7 +78,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 
               <!-- Add Stories Section -->
               @if (isAddingStories()) {
-                <div class="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div class="bg-gray-50 rounded-lg p-4 stack-y-3">
                   <div class="text-sm font-medium text-gray-700">Add Multiple Stories</div>
                   <p class="text-xs text-gray-500">
                     One story per line. Optionally add a URL with a tab or " | " separator.
@@ -87,7 +87,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                     [ngModel]="newStoriesText()"
                     (ngModelChange)="newStoriesText.set($event)"
                     placeholder="Story 1&#10;Story 2 | https://link.com&#10;Story 3&#9;https://another.link"
-                    class="w-full h-32 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 resize-none"
+                    class="w-full h-32 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20 resize-none"
                   ></textarea>
                   <div class="flex gap-2">
                     <button
@@ -106,13 +106,13 @@ import { GameStateService } from '../../core/services/game-state.service';
                 </div>
               } @else {
                 <!-- Quick Add Single Story -->
-                <div class="space-y-2">
+                <div class="stack-y-2">
                   <input
                     type="text"
                     [ngModel]="newStoryTitle()"
                     (ngModelChange)="newStoryTitle.set($event)"
                     placeholder="Story title..."
-                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
                     (keyup.enter)="addSingleStory()"
                   />
                   <input
@@ -120,7 +120,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                     [ngModel]="newStoryUrl()"
                     (ngModelChange)="newStoryUrl.set($event)"
                     placeholder="URL (optional)"
-                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
                     (keyup.enter)="addSingleStory()"
                   />
                   <div class="flex gap-2">
@@ -155,7 +155,7 @@ import { GameStateService } from '../../core/services/game-state.service';
               }
 
               <!-- Story Queue List -->
-              <div class="space-y-2">
+              <div class="stack-y-2">
                 <div class="text-sm font-medium text-gray-700 flex items-center justify-between">
                   <span>Queued Stories</span>
                   @if (storyQueue().length > 0) {
@@ -181,7 +181,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                     No stories queued
                   </div>
                 } @else {
-                  <div class="space-y-2">
+                  <div class="stack-y-2">
                     @for (story of storyQueue(); track story.id; let i = $index) {
                       <div
                         class="group border rounded-lg p-3 transition-colors"
@@ -231,7 +231,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                             @if (story.status === 'pending') {
                               <button
                                 (click)="startStoryFromQueue(story.id)"
-                                class="p-1.5 text-poker-green-600 hover:bg-poker-green-50 rounded transition-colors"
+                                class="p-1.5 text-poker-green-600 hover:bg-poker-green-50 rounded-sm transition-colors"
                                 title="Start voting on this story"
                               >
                                 <svg
@@ -256,7 +256,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                             } @else if (story.status === 'completed') {
                               <button
                                 (click)="restartStoryFromQueue(story.id)"
-                                class="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                                class="p-1.5 text-amber-600 hover:bg-amber-50 rounded-sm transition-colors"
                                 title="Re-vote on this story"
                               >
                                 <svg
@@ -276,7 +276,7 @@ import { GameStateService } from '../../core/services/game-state.service';
                             }
                             <button
                               (click)="deleteStoryFromQueue(story.id)"
-                              class="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                              class="p-1.5 text-red-500 hover:bg-red-50 rounded-sm transition-colors"
                               title="Remove story"
                             >
                               <svg
@@ -302,7 +302,7 @@ import { GameStateService } from '../../core/services/game-state.service';
               </div>
             </div>
 
-            <div class="space-y-3 pt-2 border-t border-gray-100">
+            <div class="stack-y-3 pt-2 border-t border-gray-100">
               <div
                 class="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider"
               >
@@ -323,11 +323,11 @@ import { GameStateService } from '../../core/services/game-state.service';
               </div>
 
               @if (eligibleHostRecipients().length > 0) {
-                <div class="space-y-2">
+                <div class="stack-y-2">
                   <select
                     [ngModel]="selectedHostRecipientId() || eligibleHostRecipients()[0].id"
                     (ngModelChange)="selectedHostRecipientId.set($event)"
-                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
+                    class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-hidden focus:border-poker-green-500 focus:ring-2 focus:ring-poker-green-500/20"
                   >
                     @for (participant of eligibleHostRecipients(); track participant.id) {
                       <option [value]="participant.id">
@@ -343,7 +343,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 
                   @if (showTransferConfirm()) {
                     <div
-                      class="bg-poker-green-50 border border-poker-green-200 rounded-lg p-3 space-y-3"
+                      class="bg-poker-green-50 border border-poker-green-200 rounded-lg p-3 stack-y-3"
                     >
                       <p class="text-sm text-poker-green-900">
                         Transfer host controls to
@@ -389,7 +389,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 
         <!-- Danger Zone Footer (always at bottom, organizer only) -->
         @if (isOrganizer()) {
-          <div class="p-4 border-t border-gray-200 space-y-3 bg-white">
+          <div class="p-4 border-t border-gray-200 stack-y-3 bg-white">
             <div
               class="flex items-center gap-2 text-sm font-semibold text-red-600 uppercase tracking-wider"
             >
@@ -410,7 +410,7 @@ import { GameStateService } from '../../core/services/game-state.service';
             </div>
 
             @if (showDeactivateConfirm()) {
-              <div class="bg-red-50 border border-red-200 rounded-lg p-4 space-y-3">
+              <div class="bg-red-50 border border-red-200 rounded-lg p-4 stack-y-3">
                 <p class="text-sm text-red-800">
                   Are you sure you want to end this session? The join link will stop working and
                   participants won't be able to rejoin.

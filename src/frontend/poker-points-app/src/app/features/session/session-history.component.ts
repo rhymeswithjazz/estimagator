@@ -11,7 +11,13 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-session-history',
   standalone: true,
-  imports: [BrandComponent, StoryEstimateComponent, JiraConnectionComponent, RouterLink, ThemeSelectorComponent],
+  imports: [
+    BrandComponent,
+    StoryEstimateComponent,
+    JiraConnectionComponent,
+    RouterLink,
+    ThemeSelectorComponent,
+  ],
   templateUrl: './session-history.component.html',
 })
 export class SessionHistoryComponent implements OnInit {

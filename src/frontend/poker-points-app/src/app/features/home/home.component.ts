@@ -12,7 +12,13 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [BrandComponent, FormsModule, RouterLink, AccountDropdownComponent, ThemeSelectorComponent],
+  imports: [
+    BrandComponent,
+    FormsModule,
+    RouterLink,
+    AccountDropdownComponent,
+    ThemeSelectorComponent,
+  ],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {

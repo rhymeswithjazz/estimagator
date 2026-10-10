@@ -13,7 +13,9 @@
     ></div>
   </div>
 
-  <a routerLink="/" class="inline-flex mb-6 relative z-10" aria-label="Estimagator home"><app-brand /></a>
+  <a routerLink="/" class="inline-flex mb-6 relative z-10" aria-label="Estimagator home"
+    ><app-brand
+  /></a>
 
   @if (isLoading()) {
     <!-- Loading State -->
@@ -95,7 +97,7 @@
           <p class="text-lg font-mono font-bold text-poker-green-600 mb-4">{{ sessionCode() }}</p>
         }
         <p class="text-gray-500 mb-6">This session has been ended by the organizer.</p>
-        <div class="space-y-3">
+        <div class="stack-y-3">
           <a
             [routerLink]="['/session', sessionCode(), 'history']"
             class="btn-secondary w-full inline-flex items-center justify-center gap-2"
@@ -232,7 +234,7 @@
 
             @if (error()) {
               <p class="mb-4 text-red-500 text-sm flex items-center justify-center gap-1.5">
-                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fill-rule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -283,7 +285,7 @@
             What should we call you?
           </h2>
 
-          <form (submit)="joinGame(); $event.preventDefault()" class="space-y-5">
+          <form (submit)="joinGame(); $event.preventDefault()" class="stack-y-5">
             <!-- Name Input -->
             <div>
               <input
@@ -297,7 +299,7 @@
               />
               @if (error()) {
                 <p class="mt-2 text-red-500 text-sm flex items-center justify-center gap-1.5">
-                  <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fill-rule="evenodd"
                       d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -311,7 +313,7 @@
 
             @if (isNewSession()) {
               <!-- Role Selection for New Sessions -->
-              <div class="space-y-2">
+              <div class="stack-y-2">
                 <label class="block text-sm font-medium text-gray-700 text-left mb-3"
                   >Your role</label
                 >
@@ -324,7 +326,7 @@
                     [class.role-button-unselected]="selectedRole() !== 'host-voter'"
                   >
                     <div class="flex items-start gap-3">
-                      <div class="flex-shrink-0 mt-0.5">
+                      <div class="shrink-0 mt-0.5">
                         @if (selectedRole() === 'host-voter') {
                           <svg
                             class="w-5 h-5 text-poker-green-600"
@@ -358,7 +360,7 @@
                     [class.role-button-unselected]="selectedRole() !== 'host-observer'"
                   >
                     <div class="flex items-start gap-3">
-                      <div class="flex-shrink-0 mt-0.5">
+                      <div class="shrink-0 mt-0.5">
                         @if (selectedRole() === 'host-observer') {
                           <svg
                             class="w-5 h-5 text-poker-green-600"
@@ -391,7 +393,7 @@
                 <button
                   type="button"
                   (click)="toggleObserver()"
-                  class="relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-poker-green-500/50"
+                  class="relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-hidden focus:ring-2 focus:ring-poker-green-500/50"
                   [class]="isObserver() ? 'bg-poker-green-500' : 'bg-gray-300'"
                   role="switch"
                   [attr.aria-checked]="isObserver()"
