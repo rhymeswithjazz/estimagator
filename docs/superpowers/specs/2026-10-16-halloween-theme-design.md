@@ -27,7 +27,7 @@ It should feel like the same poker room dressed up for October, not a different 
 
 ## Table
 
-In `styles.css`, a `.halloween .poker-table` rule, next to the existing `.dark` overrides. Same shape, size, shadow and inner rim as today. Only the felt changes: near-black purple instead of green, with an orange glow where the highlight sits today. The table's green border (`border-poker-green-800` in the game room template) becomes a dark purple or orange-brown to match.
+In `styles.css`, a `.halloween .poker-table` rule, next to the existing `.dark` overrides. Same shape, size, shadow and inner rim as today. The felt is near-black purple instead of green, with an orange glow where the highlight sits today. Faint cobwebs sit in the top-left and bottom-right corners, and two small bats near the top right, drawn as extra background layers on the table so they can't move the seats. The table's green border (`border-poker-green-800` in the game room template) becomes a dark purple or orange-brown to match.
 
 ## Card backs
 
