@@ -706,6 +706,74 @@ public class PokerHubTests
         Mock.Get(fixture.Hub.Groups).Verify(g => g.RemoveFromGroupAsync("old-connection", "ABC123", It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [Fact]
+    public async Task SetCardBack_ShouldSaveAndBroadcast_WhenCallerIsHost()
+    {
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", SenderConnectionId, isOrganizer: true));
+        fixture.SessionService
+            .Setup(s => s.SetCardBackAsync(SessionId, "scout-deco"))
+            .ReturnsAsync(true);
+
+        await fixture.Hub.SetCardBack("scout-deco");
+
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync(
+                "CardBackChanged",
+                It.Is<object?[]>(args => args.Length == 1 && args[0] != null && args[0]!.Equals(new CardBackChangedEvent("scout-deco"))),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SetCardBack_ShouldSendError_WhenCallerIsNotHost()
+    {
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", SenderConnectionId));
+
+        await fixture.Hub.SetCardBack("scout-deco");
+
+        VerifyError(fixture.CallerClient, "Only the host can change the card back");
+        fixture.SessionService.Verify(s => s.SetCardBackAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SetCardBack_ShouldSendError_WhenSessionIsInactive()
+    {
+        var fixture = CreateFixture();
+        var host = CreateParticipant(SenderId, "Sender", "ABC123", SenderConnectionId, isOrganizer: true);
+        host.Session.IsActive = false;
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(host);
+
+        await fixture.Hub.SetCardBack("scout-deco");
+
+        VerifyError(fixture.CallerClient, "Only the host can change the card back");
+        fixture.SessionService.Verify(s => s.SetCardBackAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SetCardBack_ShouldSendError_WhenCardBackIsUnknown()
+    {
+        var fixture = CreateFixture();
+        fixture.ParticipantService
+            .Setup(s => s.GetByConnectionIdAsync(SenderConnectionId))
+            .ReturnsAsync(CreateParticipant(SenderId, "Sender", "ABC123", SenderConnectionId, isOrganizer: true));
+
+        await fixture.Hub.SetCardBack("Scout-Night");
+
+        VerifyError(fixture.CallerClient, "Unknown card back");
+        fixture.SessionService.Verify(s => s.SetCardBackAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+        fixture.GroupClient.Verify(
+            c => c.SendCoreAsync("CardBackChanged", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
     private static HubFixture CreateFixture(ClaimsPrincipal? user = null)
     {
         var sessionService = new Mock<ISessionService>();

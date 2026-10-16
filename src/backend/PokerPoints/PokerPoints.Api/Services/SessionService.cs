@@ -27,6 +27,7 @@ public interface ISessionService
     Task DeleteStoryAsync(Guid sessionId, Guid storyId);
     Task<bool> DeactivateSessionAsync(string accessCode, Guid organizerId);
     Task<bool> DeactivateSessionByHostAsync(Guid sessionId);
+    Task<bool> SetCardBackAsync(Guid sessionId, string cardBack);
     Task<SessionHistoryResponse?> GetSessionHistoryAsync(string accessCode, Guid userId);
 }
 
@@ -411,6 +412,16 @@ public class SessionService : ISessionService
         if (session == null) return false;
 
         await DeactivateLoadedSessionAsync(session);
+        return true;
+    }
+
+    public async Task<bool> SetCardBackAsync(Guid sessionId, string cardBack)
+    {
+        var session = await _db.Sessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.IsActive);
+        if (session == null) return false;
+
+        session.CardBack = cardBack;
+        await _db.SaveChangesAsync();
         return true;
     }
 

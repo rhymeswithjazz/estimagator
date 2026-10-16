@@ -664,4 +664,16 @@ public class SessionServiceTests : IDisposable
 
         (await _service.GetCurrentStoryAsync("ENDED1")).Should().BeNull();
     }
+
+    [Fact]
+    public async Task SetCardBackAsync_ShouldUpdateActiveSession()
+    {
+        var created = await _service.CreateSessionAsync("fibonacci");
+
+        var updated = await _service.SetCardBackAsync(created.SessionId, "art-deco");
+
+        updated.Should().BeTrue();
+        var session = await _db.Sessions.SingleAsync(s => s.Id == created.SessionId);
+        session.CardBack.Should().Be("art-deco");
+    }
 }

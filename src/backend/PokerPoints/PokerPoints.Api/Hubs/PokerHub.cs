@@ -480,6 +480,37 @@ public class PokerHub : Hub
         ));
     }
 
+    public async Task SetCardBack(string cardBack)
+    {
+        var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
+        if (participant == null)
+        {
+            await Clients.Caller.SendAsync("Error", "Not in a session");
+            return;
+        }
+
+        if (!participant.IsOrganizer || !participant.Session.IsActive)
+        {
+            await Clients.Caller.SendAsync("Error", "Only the host can change the card back");
+            return;
+        }
+
+        if (!CardBacks.IsValid(cardBack))
+        {
+            await Clients.Caller.SendAsync("Error", "Unknown card back");
+            return;
+        }
+
+        var session = participant.Session;
+        if (!await _sessionService.SetCardBackAsync(session.Id, cardBack))
+        {
+            await Clients.Caller.SendAsync("Error", "Session not found or already ended");
+            return;
+        }
+
+        await Clients.Group(session.AccessCode).SendAsync("CardBackChanged", new CardBackChangedEvent(cardBack));
+    }
+
     public async Task NextStory(string? title = null)
     {
         var participant = await _participantService.GetByConnectionIdAsync(Context.ConnectionId);
