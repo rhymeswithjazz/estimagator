@@ -799,6 +799,7 @@ public class PokerHubTests
                 null,
                 "fibonacci",
                 120,
+                "classic-red",
                 true,
                 DateTime.UtcNow,
                 new List<ParticipantDto> { participantDto },

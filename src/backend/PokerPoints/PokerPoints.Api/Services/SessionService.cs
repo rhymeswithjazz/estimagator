@@ -7,7 +7,7 @@ namespace PokerPoints.Api.Services;
 
 public interface ISessionService
 {
-    Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120);
+    Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120, string cardBack = CardBacks.Default);
     Task<Session?> GetSessionByCodeAsync(string accessCode);
     Task<SessionInfoResponse?> GetSessionInfoAsync(string accessCode);
     Task<GameStateResponse?> GetGameStateAsync(string accessCode);
@@ -44,7 +44,7 @@ public class SessionService : ISessionService
         _timerService = timerService;
     }
 
-    public async Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120)
+    public async Task<CreateSessionResponse> CreateSessionAsync(string deckType, string? name = null, Guid? organizerId = null, int timerDurationSeconds = 120, string cardBack = CardBacks.Default)
     {
         var accessCode = await GenerateUniqueAccessCodeAsync();
         var guestHostToken = organizerId.HasValue ? null : GuestHostToken.Generate();
@@ -54,6 +54,7 @@ public class SessionService : ISessionService
             AccessCode = accessCode,
             Name = name,
             DeckType = deckType,
+            CardBack = cardBack,
             TimerDurationSeconds = timerDurationSeconds,
             IsActive = true,
             OrganizerId = organizerId,
@@ -134,6 +135,7 @@ public class SessionService : ISessionService
             session.Name,
             session.DeckType,
             session.TimerDurationSeconds,
+            session.CardBack,
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),
@@ -163,6 +165,7 @@ public class SessionService : ISessionService
             session.Name,
             session.DeckType,
             session.TimerDurationSeconds,
+            session.CardBack,
             session.IsActive,
             session.CreatedAt,
             session.Participants.Select(ToParticipantDto).ToList(),

@@ -37,10 +37,14 @@ public class SessionsController : ControllerBase
             }
         }
 
+        var cardBack = request?.CardBack ?? CardBacks.Default;
+        if (!CardBacks.IsValid(cardBack))
+            return BadRequest(new { error = "Unknown card back" });
+
         var deckType = request?.DeckType ?? "fibonacci";
         var name = request?.Name;
         var timerDuration = request?.TimerDurationSeconds ?? 300;
-        var result = await _sessionService.CreateSessionAsync(deckType, name, organizerId, timerDuration);
+        var result = await _sessionService.CreateSessionAsync(deckType, name, organizerId, timerDuration, cardBack);
         return Created($"/api/sessions/{result.AccessCode}", result);
     }
 
