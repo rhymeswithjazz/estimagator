@@ -631,7 +631,8 @@
 }
 
 .dark .border-poker-green-200,
-.dark .border-poker-green-300 {
+.dark .border-poker-green-300,
+.dark .vote-card-selected {
   border-color: rgb(128 182 73 / 0.5);
 }
 
