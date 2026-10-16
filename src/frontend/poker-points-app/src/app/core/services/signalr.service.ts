@@ -3,6 +3,8 @@ import type { HubConnection } from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  CardBack,
+  CardBackChangedEvent,
   GameState,
   JoinSessionResponse,
   Participant,
@@ -37,6 +39,7 @@ export class SignalRService {
   readonly isConnected = computed(() => this._connectionState() === 'connected');
 
   // Event streams
+  readonly cardBackChanged$ = new Subject<CardBackChangedEvent>();
   readonly userJoined$ = new Subject<UserJoinedEvent>();
   readonly userLeft$ = new Subject<UserLeftEvent>();
   readonly hostTransferred$ = new Subject<HostTransferredEvent>();
@@ -192,6 +195,10 @@ export class SignalRService {
 
     this.connection.on('SessionEnded', () => {
       this.sessionEnded$.next();
+    });
+
+    this.connection.on('CardBackChanged', (event: CardBackChangedEvent) => {
+      this.cardBackChanged$.next(event);
     });
   }
 
@@ -385,5 +392,12 @@ export class SignalRService {
       throw new Error('Not connected to SignalR hub');
     }
     await this.connection.invoke('SendEmojiReaction', emoji);
+  }
+
+  async setCardBack(cardBack: CardBack): Promise<void> {
+    if (!this.connection) {
+      throw new Error('Not connected to SignalR hub');
+    }
+    await this.connection.invoke('SetCardBack', cardBack);
   }
 }

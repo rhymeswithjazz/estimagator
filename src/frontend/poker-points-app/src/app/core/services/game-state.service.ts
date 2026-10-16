@@ -2,6 +2,9 @@ import { Injectable, signal, computed, DestroyRef, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SignalRService } from './signalr.service';
 import {
+  CardBack,
+  DEFAULT_CARD_BACK,
+  toCardBack,
   GameState,
   Participant,
   Story,
@@ -39,6 +42,7 @@ export class GameStateService {
   private readonly _voteStatuses = signal<VoteStatus[]>([]);
   private readonly _revealedVotes = signal<Vote[] | null>(null);
   private readonly _deckType = signal<DeckType>('fibonacci');
+  private readonly _cardBack = signal<CardBack>(DEFAULT_CARD_BACK);
   private readonly _myVote = signal<string | null>(null);
   private readonly _votingResults = signal<{ average: number | null; isConsensus: boolean } | null>(
     null,
@@ -59,6 +63,7 @@ export class GameStateService {
   readonly voteStatuses = this._voteStatuses.asReadonly();
   readonly revealedVotes = this._revealedVotes.asReadonly();
   readonly deckType = this._deckType.asReadonly();
+  readonly cardBack = this._cardBack.asReadonly();
   readonly myVote = this._myVote.asReadonly();
   readonly votingResults = this._votingResults.asReadonly();
   readonly storyQueue = this._storyQueue.asReadonly();
@@ -119,6 +124,10 @@ export class GameStateService {
   }
 
   private subscribeToSignalREvents(): void {
+    this.signalR.cardBackChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => this._cardBack.set(toCardBack(event.cardBack)));
+
     this.signalR.userJoined$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
       this._participants.update((list) => {
         const existing = list.find((p) => p.id === event.participant.id);
@@ -273,6 +282,7 @@ export class GameStateService {
     this._revealedVotes.set(state.revealedVotes);
     this._votingResults.set(state.revealedVotes !== null ? (state.votingResults ?? null) : null);
     this._deckType.set(state.session.deckType as DeckType);
+    this._cardBack.set(toCardBack(state.session.cardBack));
     this._sessionName.set(state.session.name);
 
     const currentParticipant = this._currentParticipant();
@@ -411,6 +421,11 @@ export class GameStateService {
         isObserver: participant.isObserver,
       });
     }
+  }
+
+  async setCardBack(cardBack: CardBack): Promise<void> {
+    if (!this.isOrganizer()) return;
+    await this.signalR.setCardBack(cardBack);
   }
 
   async transferHost(targetParticipantId: string): Promise<boolean> {
@@ -630,6 +645,7 @@ export class GameStateService {
   }
 
   private clearSessionState(): void {
+    this._cardBack.set(DEFAULT_CARD_BACK);
     this._sessionCode.set(null);
     this._sessionName.set(null);
     this._currentParticipant.set(null);

@@ -3,6 +3,7 @@ export interface CreateSessionRequest {
   deckType?: string;
   name?: string;
   timerDurationSeconds?: number;
+  cardBack?: string;
 }
 
 export interface CreateSessionResponse {
@@ -19,6 +20,7 @@ export interface SessionInfo {
   name: string | null;
   deckType: string;
   timerDurationSeconds: number;
+  cardBack: string;
   isActive: boolean;
   createdAt: string;
   participants: Participant[];
@@ -282,6 +284,28 @@ export const DECK_VALUES: Record<DeckType, string[]> = {
   linear: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '?', '☕'],
   tshirt: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '?', '☕'],
 };
+
+export const CARD_BACKS = [
+  { id: 'classic-red', label: 'Classic Red' },
+  { id: 'classic-blue', label: 'Classic Blue' },
+  { id: 'midnight-neon', label: 'Midnight Neon' },
+  { id: 'art-deco', label: 'Art Deco' },
+  { id: 'retro-sunset', label: 'Retro Sunset' },
+  { id: 'scout-night', label: 'Scout Night' },
+  { id: 'scout-deco', label: 'Scout Deco' },
+] as const;
+
+export type CardBack = (typeof CARD_BACKS)[number]['id'];
+
+export const DEFAULT_CARD_BACK: CardBack = 'classic-red';
+
+export function toCardBack(value: string | null | undefined): CardBack {
+  return CARD_BACKS.find((back) => back.id === value)?.id ?? DEFAULT_CARD_BACK;
+}
+
+export interface CardBackChangedEvent {
+  cardBack: string;
+}
 
 // Session history types
 export interface SessionHistoryResponse {
