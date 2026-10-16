@@ -8,6 +8,14 @@ type ThemeOption = {
   iconPath: string;
 };
 
+const HALLOWEEN_OPTION: ThemeOption = {
+  value: 'halloween',
+  label: 'Halloween',
+  title: 'Use Halloween theme',
+  iconPath:
+    'M12 7V4.5m0 0c.6-.8 1.6-1.2 2.5-1M12 7c-4.4 0-8 2.9-8 6.5S7.6 20 12 20s8-2.9 8-6.5S16.4 7 12 7zm0 0c-1.7 1.3-2.75 3.8-2.75 6.5S10.3 18.7 12 20m0-13c1.7 1.3 2.75 3.8 2.75 6.5S13.7 18.7 12 20',
+};
+
 @Component({
   selector: 'app-theme-selector',
   standalone: true,
@@ -132,7 +140,7 @@ type ThemeOption = {
 export class ThemeSelectorComponent {
   private readonly themeService = inject(ThemeService);
 
-  readonly preference = this.themeService.preference;
+  readonly preference = this.themeService.effectivePreference;
 
   readonly options: ThemeOption[] = [
     {
@@ -156,6 +164,7 @@ export class ThemeSelectorComponent {
       iconPath:
         'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25M5.25 4.5h13.5A2.25 2.25 0 0121 6.75v7.5a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 14.25v-7.5A2.25 2.25 0 015.25 4.5z',
     },
+    ...(this.themeService.halloweenAvailable ? [HALLOWEEN_OPTION] : []),
   ];
 
   setTheme(preference: ThemePreference): void {
