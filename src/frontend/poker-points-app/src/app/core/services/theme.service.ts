@@ -1,10 +1,16 @@
 import { DOCUMENT } from '@angular/common';
-import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, InjectionToken, signal } from '@angular/core';
 
-export type ThemePreference = 'light' | 'dark' | 'system';
+export type ThemePreference = 'light' | 'dark' | 'system' | 'halloween';
 export type ResolvedTheme = 'light' | 'dark';
 
 const THEME_STORAGE_KEY = 'poker-points-theme';
+const OCTOBER = 9;
+
+export const CURRENT_DATE = new InjectionToken<() => Date>('CURRENT_DATE', {
+  providedIn: 'root',
+  factory: () => () => new Date(),
+});
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -12,11 +18,21 @@ export class ThemeService {
   private readonly mediaQuery =
     typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
+  readonly halloweenAvailable = inject(CURRENT_DATE)().getMonth() === OCTOBER;
   readonly preference = signal<ThemePreference>(this.getStoredPreference());
+  readonly effectivePreference = computed<ThemePreference>(() => {
+    const preference = this.preference();
+    return preference === 'halloween' && !this.halloweenAvailable ? 'system' : preference;
+  });
+  readonly isHalloween = computed(() => this.effectivePreference() === 'halloween');
   private readonly systemTheme = signal<ResolvedTheme>(this.getSystemTheme());
   readonly resolvedTheme = computed<ResolvedTheme>(() => {
-    const preference = this.preference();
-    return preference === 'system' ? this.systemTheme() : preference;
+    const preference = this.effectivePreference();
+    if (preference === 'system') {
+      return this.systemTheme();
+    }
+
+    return preference === 'halloween' ? 'dark' : preference;
   });
 
   constructor() {
@@ -25,7 +41,7 @@ export class ThemeService {
     });
 
     effect(() => {
-      this.applyTheme(this.resolvedTheme(), this.preference());
+      this.applyTheme(this.resolvedTheme(), this.effectivePreference(), this.isHalloween());
     });
   }
 
@@ -52,15 +68,20 @@ export class ThemeService {
     return this.mediaQuery?.matches ? 'dark' : 'light';
   }
 
-  private applyTheme(resolvedTheme: ResolvedTheme, preference: ThemePreference): void {
+  private applyTheme(
+    resolvedTheme: ResolvedTheme,
+    preference: ThemePreference,
+    isHalloween: boolean,
+  ): void {
     const root = this.document.documentElement;
 
     root.classList.toggle('dark', resolvedTheme === 'dark');
+    root.classList.toggle('halloween', isHalloween);
     root.dataset['theme'] = preference;
     root.style.colorScheme = resolvedTheme;
   }
 
   private isThemePreference(value: string | null): value is ThemePreference {
-    return value === 'light' || value === 'dark' || value === 'system';
+    return value === 'light' || value === 'dark' || value === 'system' || value === 'halloween';
   }
 }

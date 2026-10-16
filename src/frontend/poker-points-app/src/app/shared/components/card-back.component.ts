@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { CardBack } from '../../core/models/session.models';
+import { TableCardBack } from '../../core/models/session.models';
 
 @Component({
   selector: 'app-card-back',
@@ -12,7 +12,7 @@ import { CardBack } from '../../core/models/session.models';
   `,
 })
 export class CardBackComponent {
-  readonly back = input.required<CardBack>();
+  readonly back = input.required<TableCardBack>();
   readonly backClass = computed(() => `card-back card-back-${this.back()}`);
   readonly hasLogo = computed(() => this.back().startsWith('scout-'));
 }

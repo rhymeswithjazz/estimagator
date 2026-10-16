@@ -19,7 +19,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { AuthService } from '../../core/services/auth.service';
-import { Participant, Vote } from '../../core/models/session.models';
+import { ThemeService } from '../../core/services/theme.service';
+import { getTableCardBack, Participant, Vote } from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
 import { StoryHistoryPanelComponent } from './story-history-panel.component';
 import { AccountDropdownComponent } from './account-dropdown.component';
@@ -80,6 +81,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly gameState = inject(GameStateService); // public for debug access
   private readonly signalR = inject(SignalRService);
   readonly authService = inject(AuthService);
+  private readonly themeService = inject(ThemeService);
 
   // State from GameStateService
   readonly sessionCode = this.gameState.sessionCode;
@@ -91,7 +93,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly connectionState = this.signalR.connectionState;
   readonly currentStory = this.gameState.currentStory;
   readonly deckValues = this.gameState.deckValues;
-  readonly cardBack = this.gameState.cardBack;
+  readonly tableCardBack = computed(() =>
+    getTableCardBack(this.gameState.cardBack(), this.themeService.isHalloween()),
+  );
   readonly myVote = this.gameState.myVote;
   readonly canVote = this.gameState.canVote;
   readonly hasVoted = this.gameState.hasVoted;
@@ -419,10 +423,10 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
 
     if (isSelected) {
-      return 'bg-linear-to-b/srgb from-poker-green-400 to-poker-green-600 text-white border-poker-green-300 shadow-glow-green';
+      return 'vote-card-selected text-white';
     }
 
-    return 'bg-white text-gray-800 border-gray-200 hover:border-poker-green-400 hover:shadow-card-hover cursor-pointer';
+    return 'vote-card-idle bg-white text-gray-800 border-gray-200 cursor-pointer';
   }
 
   async ngOnInit(): Promise<void> {

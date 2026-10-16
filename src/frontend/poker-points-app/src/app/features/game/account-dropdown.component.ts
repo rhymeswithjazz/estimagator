@@ -51,7 +51,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
               <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                 Theme
               </div>
-              <app-theme-selector />
+              <app-theme-selector class="theme-selector--icons" />
             </div>
             <a
               routerLink="/profile"
