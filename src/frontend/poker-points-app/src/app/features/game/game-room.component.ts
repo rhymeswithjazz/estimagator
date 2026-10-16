@@ -31,6 +31,19 @@ import { EmojiReactionPaletteComponent } from './emoji-reaction-palette.componen
 import { TimerCountdownComponent } from './timer-countdown.component';
 import confetti from 'canvas-confetti';
 
+const CONFETTI_COLORS = [
+  '#FFD700',
+  '#FF6B6B',
+  '#4ECDC4',
+  '#45B7D1',
+  '#96CEB4',
+  '#FFEAA7',
+  '#DDA0DD',
+];
+const HALLOWEEN_CONFETTI_COLORS = ['#f97316', '#a855f7', '#65a30d'];
+const HALLOWEEN_CONFETTI_EMOJI = ['🎃', '🦇', '🕷️', '👻'];
+const HALLOWEEN_CONFETTI_SCALAR = 1.6;
+
 @Component({
   selector: 'app-game-room',
   standalone: true,
@@ -235,11 +248,17 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     });
   }
 
+  private halloweenConfettiShapes?: confetti.Shape[];
+
   private triggerConfetti(): void {
     const duration = 3000;
     const end = Date.now() + duration;
 
-    const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+    const halloween = this.themeService.isHalloween();
+    const colors = halloween ? HALLOWEEN_CONFETTI_COLORS : CONFETTI_COLORS;
+    const style = halloween
+      ? { colors, shapes: this.getHalloweenConfettiShapes(), scalar: HALLOWEEN_CONFETTI_SCALAR }
+      : { colors };
 
     const frame = () => {
       confetti({
@@ -247,14 +266,14 @@ export class GameRoomComponent implements OnInit, OnDestroy {
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.6 },
-        colors,
+        ...style,
       });
       confetti({
         particleCount: 3,
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.6 },
-        colors,
+        ...style,
       });
 
       if (Date.now() < end) {
@@ -267,10 +286,20 @@ export class GameRoomComponent implements OnInit, OnDestroy {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors,
+      ...style,
     });
 
     frame();
+  }
+
+  private getHalloweenConfettiShapes(): confetti.Shape[] {
+    this.halloweenConfettiShapes ??= [
+      ...HALLOWEEN_CONFETTI_EMOJI.map((text) =>
+        confetti.shapeFromText({ text, scalar: HALLOWEEN_CONFETTI_SCALAR }),
+      ),
+      'circle',
+    ];
+    return this.halloweenConfettiShapes;
   }
 
   // Get vote for a specific participant (after reveal)

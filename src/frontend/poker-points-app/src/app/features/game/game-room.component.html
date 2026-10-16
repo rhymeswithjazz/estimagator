@@ -229,6 +229,7 @@
       <!-- The Poker Table -->
       <div
         class="w-[380px] h-[200px] poker-table rounded-[60px] border-[6px] border-poker-green-800 shadow-2xl flex items-center justify-center"
+        [class.poker-table--celebrate]="consensusRevealed()"
       >
         <!-- Inner felt rim -->
         <div class="absolute inset-2 rounded-[50px] border-2 border-white/5"></div>

@@ -36,6 +36,10 @@ In `styles.css`, a `.halloween .poker-table` rule, next to the existing `.dark` 
 - In the game room, the face-down card shows `jack-o-lantern` when Halloween is in effect, otherwise the room's back. Widen `CardBackComponent`'s input type so it accepts the extra id without loosening `CardBack` itself.
 - `data-card-back` on table cards shows the back actually drawn, so tests can check it.
 
+## Consensus celebration
+
+When the reveal shows everyone agreed, Halloween players get the same confetti timing as everyone else, but the pieces are 🎃 🦇 🕷️ 👻 with orange, purple and green paper. The table's glow flickers orange like a candle for the three seconds. The flicker is off for players whose system asks for reduced motion. Everyone else keeps the normal confetti.
+
 ## Voting cards
 
 Your selected card glows orange instead of green when Halloween is in effect, and the hover border turns orange. Today `getSelectedCardClasses` returns hard-coded Tailwind green classes, which the stylesheet can't cleanly override. Move the selected and hover looks into named classes in `styles.css` (as `deck-option-selected` already does), then add `.halloween` versions. Disabled and unselected cards keep the dark look.

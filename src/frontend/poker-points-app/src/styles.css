@@ -1214,3 +1214,36 @@
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M19 11c0-3 1-6 4-7' stroke='%2365a30d' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='20' cy='25' rx='17' ry='13' fill='%23f97316'/%3E%3Cellipse cx='20' cy='25' rx='7' ry='13' fill='none' stroke='%23c2410c' stroke-width='1.2'/%3E%3Cpath d='M10 23l4-6 4 6zM22 23l4-6 4 6zM18.5 27l1.5-2.5 1.5 2.5zM9 29Q20 40 31 29L27 30.5 25 28.5 22.5 31 20 28.5 17.5 31 15 28.5 13 30.5Z' fill='%23ffd166'/%3E%3C/svg%3E")
     center / 80% auto no-repeat;
 }
+
+.halloween .poker-table--celebrate {
+  animation: halloweenCandleFlicker 3s ease-in-out;
+}
+
+@keyframes halloweenCandleFlicker {
+  0%,
+  100% {
+    filter: none;
+  }
+  10%,
+  45%,
+  80% {
+    filter: brightness(1.35);
+    box-shadow: 0 0 60px rgba(249, 115, 22, 0.65);
+  }
+  20%,
+  60% {
+    filter: brightness(1.1);
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.3);
+  }
+  30%,
+  70% {
+    filter: brightness(1.45);
+    box-shadow: 0 0 75px rgba(249, 115, 22, 0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halloween .poker-table--celebrate {
+    animation: none;
+  }
+}
