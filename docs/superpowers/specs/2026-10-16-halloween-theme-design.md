@@ -15,14 +15,15 @@ It should feel like the same poker room dressed up for October, not a different 
 
 ## When it's available
 
-- The Halloween button shows in the theme selector from October 1 to October 31, in the browser's local time. The date is checked once when the app loads.
+- The Halloween button shows in the theme selector from October 1 to October 31, in the browser's local time, and only inside a game room. The date is checked once when the app loads.
+- Outside a game room a saved Halloween pick acts like Dark, and the button is hidden. This keeps the host's card back picker on the create form meaningful.
 - Outside October a saved Halloween pick acts exactly like System, and the button is hidden. The System button shows as selected. The pick stays saved, so it comes back on its own next October.
 
 ## Theme
 
 - `ThemeService` gains a fourth preference, `halloween`, saved to the same local storage key.
 - Halloween resolves to dark, so the `dark` class and the whole existing dark stylesheet apply unchanged. The service also toggles a `halloween` class on `<html>`, next to `dark`.
-- The service exposes whether Halloween is currently in effect (picked and in October) as a signal. The game room and throw palette read that one signal; nothing else checks dates.
+- The service exposes whether Halloween is currently in effect (picked, in October and in a game room) as a signal. The game room and throw palette read that one signal; nothing else checks dates.
 - Theme selector: a fourth button with a pumpkin icon and the label "Halloween", built the same way as the other three (inline SVG outline icon, same sizes and states). It's hidden outside October. The selector appears on many pages; check it still fits in the account dropdown and on mobile, where labels are already hidden.
 
 ## Table

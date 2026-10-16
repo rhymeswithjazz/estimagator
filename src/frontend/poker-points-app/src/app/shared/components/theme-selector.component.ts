@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { ThemePreference, ThemeService } from '../../core/services/theme.service';
 
 type ThemeOption = {
@@ -21,7 +21,7 @@ const HALLOWEEN_OPTION: ThemeOption = {
   standalone: true,
   template: `
     <div class="theme-selector" role="group" aria-label="Theme">
-      @for (option of options; track option.value) {
+      @for (option of options(); track option.value) {
         <button
           type="button"
           class="theme-selector__button"
@@ -154,7 +154,7 @@ export class ThemeSelectorComponent {
 
   readonly preference = this.themeService.effectivePreference;
 
-  readonly options: ThemeOption[] = [
+  private readonly baseOptions: ThemeOption[] = [
     {
       value: 'light',
       label: 'Light',
@@ -176,8 +176,13 @@ export class ThemeSelectorComponent {
       iconPath:
         'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25M5.25 4.5h13.5A2.25 2.25 0 0121 6.75v7.5a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 14.25v-7.5A2.25 2.25 0 015.25 4.5z',
     },
-    ...(this.themeService.halloweenAvailable ? [HALLOWEEN_OPTION] : []),
   ];
+
+  readonly options = computed(() =>
+    this.themeService.halloweenAvailable()
+      ? [...this.baseOptions, HALLOWEEN_OPTION]
+      : this.baseOptions,
+  );
 
   setTheme(preference: ThemePreference): void {
     this.themeService.setPreference(preference);
