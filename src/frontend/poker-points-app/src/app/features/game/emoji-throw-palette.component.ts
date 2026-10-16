@@ -1,12 +1,19 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   EventEmitter,
+  inject,
   Input,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { EMOJI_THROW_OPTIONS, getEmojiThrowOptionMetadata } from '../../core/models/session.models';
+import {
+  EMOJI_THROW_OPTIONS,
+  getEmojiThrowOptionMetadata,
+  HALLOWEEN_THROW_OPTIONS,
+} from '../../core/models/session.models';
+import { ThemeService } from '../../core/services/theme.service';
 import { EmojiThrowIconComponent } from './emoji-throw-icon.component';
 
 @Component({
@@ -14,7 +21,7 @@ import { EmojiThrowIconComponent } from './emoji-throw-icon.component';
   standalone: true,
   imports: [EmojiThrowIconComponent],
   template: `
-    @for (emoji of emojiThrowOptions; track emoji) {
+    @for (emoji of emojiThrowOptions(); track emoji) {
       <button
         type="button"
         (click)="selectEmoji(emoji, $event)"
@@ -81,7 +88,13 @@ export class EmojiThrowPaletteComponent {
   @Input({ required: true }) targetDisplayName = '';
   @Output() readonly emojiSelected = new EventEmitter<string>();
 
-  readonly emojiThrowOptions = EMOJI_THROW_OPTIONS;
+  private readonly themeService = inject(ThemeService);
+
+  readonly emojiThrowOptions = computed(() =>
+    this.themeService.isHalloween()
+      ? [...EMOJI_THROW_OPTIONS, ...HALLOWEEN_THROW_OPTIONS]
+      : EMOJI_THROW_OPTIONS,
+  );
 
   selectEmoji(emoji: string, event: Event): void {
     event.stopPropagation();
