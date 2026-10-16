@@ -339,8 +339,20 @@ describe('GameStateService', () => {
     expect(service.cardBack()).toBe('retro-sunset');
   });
 
-  it('falls back to classic red for a card back it does not know', () => {
+  it('falls back to classic red when the host sends a card back it does not know', () => {
+    signalR.cardBackChanged$.next({ cardBack: 'retro-sunset' });
     signalR.cardBackChanged$.next({ cardBack: 'tartan' });
+
+    expect(service.cardBack()).toBe('classic-red');
+  });
+
+  it('falls back to classic red when a snapshot has a card back it does not know', () => {
+    const state = createGameState([hostParticipant]);
+    signalR.sessionState$.next({
+      ...state,
+      session: { ...state.session, cardBack: 'scout-night' },
+    });
+    signalR.sessionState$.next({ ...state, session: { ...state.session, cardBack: 'tartan' } });
 
     expect(service.cardBack()).toBe('classic-red');
   });

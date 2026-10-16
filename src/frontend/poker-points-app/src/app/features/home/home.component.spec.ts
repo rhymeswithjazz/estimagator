@@ -66,7 +66,6 @@ describe('HomeComponent', () => {
         accessCode: 'ABC123',
         name: null,
         timerDurationSeconds: 300,
-        cardBack: 'classic-red',
         guestHostToken: null,
       },
     });
@@ -114,7 +113,6 @@ async function renderHome(options: { user?: unknown; createResponse?: unknown } 
         accessCode: 'ABC123',
         name: null,
         timerDurationSeconds: 300,
-        cardBack: 'classic-red',
         guestHostToken: 'guest-token',
       },
     ),
