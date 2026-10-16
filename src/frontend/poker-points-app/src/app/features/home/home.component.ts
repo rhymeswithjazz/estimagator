@@ -1,10 +1,16 @@
+import { CardBackPickerComponent } from '../../shared/components/card-back-picker.component';
 import { BrandComponent } from '../../shared/components/brand.component';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/services/auth.service';
-import { DeckType, DECK_VALUES } from '../../core/models/session.models';
+import {
+  CardBack,
+  DEFAULT_CARD_BACK,
+  DeckType,
+  DECK_VALUES,
+} from '../../core/models/session.models';
 import { GameStateService } from '../../core/services/game-state.service';
 import { AccountDropdownComponent } from '../game/account-dropdown.component';
 import { ThemeSelectorComponent } from '../../shared/components/theme-selector.component';
@@ -14,6 +20,7 @@ import { ThemeSelectorComponent } from '../../shared/components/theme-selector.c
   standalone: true,
   imports: [
     BrandComponent,
+    CardBackPickerComponent,
     FormsModule,
     RouterLink,
     AccountDropdownComponent,
@@ -43,6 +50,7 @@ export class HomeComponent {
   readonly createError = signal<string | null>(null);
 
   readonly selectedTimerDuration = signal(300);
+  readonly selectedCardBack = signal<CardBack>(DEFAULT_CARD_BACK);
   readonly customTimerMinutes = signal('');
   readonly isCustomTimer = signal(false);
 
@@ -98,6 +106,7 @@ export class HomeComponent {
         this.selectedDeck(),
         name,
         this.selectedTimerDuration(),
+        this.selectedCardBack(),
       );
 
       if (response.guestHostToken) {

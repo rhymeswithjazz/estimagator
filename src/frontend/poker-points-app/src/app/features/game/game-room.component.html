@@ -438,8 +438,12 @@
                   getParticipantVote(voter.id)?.cardValue ?? '-'
                 }}</span>
               } @else if (hasParticipantVoted(voter.id)) {
-                <!-- Face down card with pattern -->
-                <div class="card-back"></div>
+                <!-- Face down card -->
+                <app-card-back
+                  [back]="cardBack()"
+                  data-testid="table-card-back"
+                  [attr.data-card-back]="cardBack()"
+                />
               } @else {
                 <!-- No vote yet - empty card placeholder -->
               }

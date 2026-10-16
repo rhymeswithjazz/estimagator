@@ -204,6 +204,16 @@
                 }
               </div>
 
+              <div class="stack-y-2">
+                <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
+                  >Card Back</label
+                >
+                <app-card-back-picker
+                  [selected]="selectedCardBack()"
+                  (selectedChange)="selectedCardBack.set($event)"
+                />
+              </div>
+
               <!-- Timer Duration -->
               <div class="stack-y-2">
                 <label class="block text-gray-600 text-sm font-medium mb-1 text-left"
