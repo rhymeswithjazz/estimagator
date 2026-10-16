@@ -34,6 +34,8 @@ public record VotesRevealedEvent(List<VoteDto> Votes, decimal? Average, bool IsC
 
 public record VotesResetEvent(Guid? StoryId);
 
+public record CardBackChangedEvent(string CardBack);
+
 public record StoryUpdatedEvent(StoryDto Story);
 
 public record TimerStartedEvent(DateTimeOffset EndTimeUtc, int DurationSeconds);

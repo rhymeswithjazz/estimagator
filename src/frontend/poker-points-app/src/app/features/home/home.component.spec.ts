@@ -9,6 +9,18 @@ import { GameStateService } from '../../core/services/game-state.service';
 import { SessionService } from '../../core/services/session.service';
 import { HomeComponent } from './home.component';
 
+vi.mock('../../shared/components/card-back-picker.component', async () => {
+  const { Component } = await import('@angular/core');
+  class CardBackPickerComponent {}
+  Component({
+    selector: 'app-card-back-picker',
+    standalone: true,
+    inputs: ['selected'],
+    template: '',
+  })(CardBackPickerComponent);
+  return { CardBackPickerComponent };
+});
+
 describe('HomeComponent', () => {
   it('allows guests to open the create game flow', async () => {
     await renderHome();
@@ -44,7 +56,12 @@ describe('HomeComponent', () => {
     await fireEvent.click(screen.getByRole('button', { name: /^create game$/i }));
 
     await waitFor(() => {
-      expect(sessionService.createSession).toHaveBeenCalledWith('fibonacci', undefined, 300);
+      expect(sessionService.createSession).toHaveBeenCalledWith(
+        'fibonacci',
+        undefined,
+        300,
+        'classic-red',
+      );
       expect(gameState.storeGuestHostToken).toHaveBeenCalledWith('ABC123', 'guest-token');
       expect(gameState.joinSession).toHaveBeenCalledWith('ABC123', 'Riley', false, 'guest-token');
       expect(navigate).toHaveBeenCalledWith(['/game', 'ABC123']);

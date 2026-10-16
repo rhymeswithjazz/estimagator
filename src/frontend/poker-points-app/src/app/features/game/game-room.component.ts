@@ -1,4 +1,5 @@
 import { BrandComponent } from '../../shared/components/brand.component';
+import { CardBackComponent } from '../../shared/components/card-back.component';
 import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import {
   ChangeDetectionStrategy,
@@ -34,6 +35,7 @@ import confetti from 'canvas-confetti';
   standalone: true,
   imports: [
     BrandComponent,
+    CardBackComponent,
     StoryEstimateComponent,
     DecimalPipe,
     FormsModule,
@@ -89,6 +91,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly connectionState = this.signalR.connectionState;
   readonly currentStory = this.gameState.currentStory;
   readonly deckValues = this.gameState.deckValues;
+  readonly cardBack = this.gameState.cardBack;
   readonly myVote = this.gameState.myVote;
   readonly canVote = this.gameState.canVote;
   readonly hasVoted = this.gameState.hasVoted;
@@ -399,8 +402,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     }
 
     if (this.hasParticipantVoted(participant.id)) {
-      // Has voted - face down card with red background (card-back overlay adds pattern)
-      return 'bg-[#c41e3a] shadow-card';
+      return 'shadow-card';
     }
 
     // No vote yet - empty card placeholder

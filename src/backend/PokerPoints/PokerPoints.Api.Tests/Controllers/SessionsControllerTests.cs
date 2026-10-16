@@ -37,7 +37,7 @@ public class SessionsControllerTests
         var response = new CreateSessionResponse(Guid.NewGuid(), "ABC123", "Guest Game", 420);
 
         fixture.SessionService
-            .Setup(s => s.CreateSessionAsync("modified", "Guest Game", null, 420))
+            .Setup(s => s.CreateSessionAsync("modified", "Guest Game", null, 420, "classic-red"))
             .ReturnsAsync(response);
 
         var result = await fixture.Controller.CreateSession(request);
@@ -45,7 +45,7 @@ public class SessionsControllerTests
         var created = result.Result.Should().BeOfType<CreatedResult>().Subject;
         created.Value.Should().Be(response);
         fixture.SessionService.Verify(
-            s => s.CreateSessionAsync("modified", "Guest Game", null, 420),
+            s => s.CreateSessionAsync("modified", "Guest Game", null, 420, "classic-red"),
             Times.Once);
         fixture.AuthService.Verify(s => s.GetUserByIdAsync(It.IsAny<Guid>()), Times.Never);
     }
@@ -61,7 +61,7 @@ public class SessionsControllerTests
             .Setup(s => s.GetUserByIdAsync(userId))
             .ReturnsAsync(new User { Id = userId, EmailVerified = true });
         fixture.SessionService
-            .Setup(s => s.CreateSessionAsync("fibonacci", "Verified Game", userId, 300))
+            .Setup(s => s.CreateSessionAsync("fibonacci", "Verified Game", userId, 300, "classic-red"))
             .ReturnsAsync(response);
 
         var result = await fixture.Controller.CreateSession(
@@ -69,7 +69,7 @@ public class SessionsControllerTests
 
         result.Result.Should().BeOfType<CreatedResult>();
         fixture.SessionService.Verify(
-            s => s.CreateSessionAsync("fibonacci", "Verified Game", userId, 300),
+            s => s.CreateSessionAsync("fibonacci", "Verified Game", userId, 300, "classic-red"),
             Times.Once);
     }
 
@@ -84,7 +84,7 @@ public class SessionsControllerTests
             .Setup(s => s.GetUserByIdAsync(userId))
             .ReturnsAsync(new User { Id = userId, EmailVerified = false });
         fixture.SessionService
-            .Setup(s => s.CreateSessionAsync("fibonacci", "Guest Game", null, 300))
+            .Setup(s => s.CreateSessionAsync("fibonacci", "Guest Game", null, 300, "classic-red"))
             .ReturnsAsync(response);
 
         var result = await fixture.Controller.CreateSession(
@@ -92,8 +92,23 @@ public class SessionsControllerTests
 
         result.Result.Should().BeOfType<CreatedResult>();
         fixture.SessionService.Verify(
-            s => s.CreateSessionAsync("fibonacci", "Guest Game", null, 300),
+            s => s.CreateSessionAsync("fibonacci", "Guest Game", null, 300, "classic-red"),
             Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateSession_ShouldRejectUnknownCardBack()
+    {
+        var fixture = CreateFixture();
+        var request = new CreateSessionRequest("fibonacci", "Game", 300, "plaid");
+
+        var result = await fixture.Controller.CreateSession(request);
+
+        result.Result.Should().BeOfType<BadRequestObjectResult>();
+        fixture.SessionService.Verify(
+            s => s.CreateSessionAsync(
+                It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<Guid?>(), It.IsAny<int>(), It.IsAny<string>()),
+            Times.Never);
     }
 
     private static ControllerFixture CreateFixture(Guid? userId = null)

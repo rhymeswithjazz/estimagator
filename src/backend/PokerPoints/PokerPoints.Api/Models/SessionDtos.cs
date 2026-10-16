@@ -7,7 +7,8 @@ namespace PokerPoints.Api.Models;
 public record CreateSessionRequest(
     string DeckType = "fibonacci",
     string? Name = null,
-    int TimerDurationSeconds = 300
+    int TimerDurationSeconds = 300,
+    string? CardBack = null
 );
 
 public record CreateSessionResponse(
@@ -24,6 +25,7 @@ public record SessionInfoResponse(
     string? Name,
     string DeckType,
     int TimerDurationSeconds,
+    string CardBack,
     bool IsActive,
     DateTime CreatedAt,
     List<ParticipantDto> Participants,

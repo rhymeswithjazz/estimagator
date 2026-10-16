@@ -10,6 +10,7 @@ public class Session
     public string AccessCode { get; set; } = string.Empty;
     public string? Name { get; set; }
     public string DeckType { get; set; } = "fibonacci";
+    public string CardBack { get; set; } = "classic-red";
     public int TimerDurationSeconds { get; set; } = 300;
     public string? GuestHostTokenHash { get; set; }
     public DateTime? GuestHostClaimedAt { get; set; }

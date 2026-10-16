@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  CardBackChangedEvent,
   GameState,
   HostTransferredEvent,
   Participant,
@@ -21,6 +22,8 @@ import { GameStateService } from './game-state.service';
 import { SignalRService } from './signalr.service';
 
 class MockSignalRService {
+  readonly cardBackChanged$ = new Subject<CardBackChangedEvent>();
+  readonly setCardBack = vi.fn().mockResolvedValue(undefined);
   readonly userJoined$ = new Subject<UserJoinedEvent>();
   readonly userLeft$ = new Subject<UserLeftEvent>();
   readonly hostTransferred$ = new Subject<HostTransferredEvent>();
@@ -319,6 +322,40 @@ describe('GameStateService', () => {
 
     expect(joined).toBe(true);
   }
+
+  it('takes the card back from the session snapshot', () => {
+    const state = createGameState([hostParticipant]);
+    signalR.sessionState$.next({
+      ...state,
+      session: { ...state.session, cardBack: 'scout-night' },
+    });
+
+    expect(service.cardBack()).toBe('scout-night');
+  });
+
+  it('updates the card back when the host changes it', () => {
+    signalR.cardBackChanged$.next({ cardBack: 'retro-sunset' });
+
+    expect(service.cardBack()).toBe('retro-sunset');
+  });
+
+  it('falls back to classic red when the host sends a card back it does not know', () => {
+    signalR.cardBackChanged$.next({ cardBack: 'retro-sunset' });
+    signalR.cardBackChanged$.next({ cardBack: 'tartan' });
+
+    expect(service.cardBack()).toBe('classic-red');
+  });
+
+  it('falls back to classic red when a snapshot has a card back it does not know', () => {
+    const state = createGameState([hostParticipant]);
+    signalR.sessionState$.next({
+      ...state,
+      session: { ...state.session, cardBack: 'scout-night' },
+    });
+    signalR.sessionState$.next({ ...state, session: { ...state.session, cardBack: 'tartan' } });
+
+    expect(service.cardBack()).toBe('classic-red');
+  });
 });
 
 const hostParticipant: Participant = {
@@ -345,6 +382,7 @@ function createGameState(participants: Participant[]): GameState {
       name: 'Planning',
       deckType: 'fibonacci',
       timerDurationSeconds: 300,
+      cardBack: 'classic-red',
       isActive: true,
       createdAt: new Date().toISOString(),
       participants,

@@ -38,6 +38,30 @@ public class SessionServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task CreateSessionAsync_ShouldDefaultCardBackToClassicRed()
+    {
+        var result = await _service.CreateSessionAsync("fibonacci");
+
+        var session = await _db.Sessions.SingleAsync(s => s.Id == result.SessionId);
+        session.CardBack.Should().Be("classic-red");
+    }
+
+    [Fact]
+    public async Task CreateSessionAsync_ShouldStoreChosenCardBack()
+    {
+        var result = await _service.CreateSessionAsync("fibonacci", cardBack: "scout-night");
+
+        var session = await _db.Sessions.SingleAsync(s => s.Id == result.SessionId);
+        session.CardBack.Should().Be("scout-night");
+
+        var info = await _service.GetSessionInfoAsync(result.AccessCode);
+        info!.CardBack.Should().Be("scout-night");
+
+        var state = await _service.GetGameStateAsync(result.AccessCode);
+        state!.Session.CardBack.Should().Be("scout-night");
+    }
+
+    [Fact]
     public async Task CreateSessionAsync_ShouldCreateSessionWithUniqueAccessCode()
     {
         // Arrange
@@ -639,5 +663,17 @@ public class SessionServiceTests : IDisposable
         await _db.SaveChangesAsync();
 
         (await _service.GetCurrentStoryAsync("ENDED1")).Should().BeNull();
+    }
+
+    [Fact]
+    public async Task SetCardBackAsync_ShouldUpdateActiveSession()
+    {
+        var created = await _service.CreateSessionAsync("fibonacci");
+
+        var updated = await _service.SetCardBackAsync(created.SessionId, "art-deco");
+
+        updated.Should().BeTrue();
+        var session = await _db.Sessions.SingleAsync(s => s.Id == created.SessionId);
+        session.CardBack.Should().Be("art-deco");
     }
 }

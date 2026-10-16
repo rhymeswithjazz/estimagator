@@ -364,114 +364,6 @@
   }
 }
 
-@utility card-back {
-  /* Card back design - classic Bicycle-style playing card */
-  @apply absolute inset-0 rounded-lg;
-  background: #c41e3a;
-  border: 2px solid #fff;
-
-  &::before {
-    content: '';
-    @apply absolute;
-    inset: 3px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 4px;
-    /* Ornate inner border pattern */
-    background:
-      /* Corner flourishes - simulated with radial gradients */
-      radial-gradient(
-        ellipse 8px 8px at 6px 6px,
-        rgba(255, 255, 255, 0.4) 0%,
-        rgba(255, 255, 255, 0.4) 40%,
-        transparent 50%
-      ),
-      radial-gradient(
-        ellipse 8px 8px at calc(100% - 6px) 6px,
-        rgba(255, 255, 255, 0.4) 0%,
-        rgba(255, 255, 255, 0.4) 40%,
-        transparent 50%
-      ),
-      radial-gradient(
-        ellipse 8px 8px at 6px calc(100% - 6px),
-        rgba(255, 255, 255, 0.4) 0%,
-        rgba(255, 255, 255, 0.4) 40%,
-        transparent 50%
-      ),
-      radial-gradient(
-        ellipse 8px 8px at calc(100% - 6px) calc(100% - 6px),
-        rgba(255, 255, 255, 0.4) 0%,
-        rgba(255, 255, 255, 0.4) 40%,
-        transparent 50%
-      ),
-      /* Decorative edge dots */
-        radial-gradient(
-          circle 1.5px at 50% 4px,
-          rgba(255, 255, 255, 0.5) 0%,
-          rgba(255, 255, 255, 0.5) 100%,
-          transparent 100%
-        ),
-      radial-gradient(
-        circle 1.5px at 50% calc(100% - 4px),
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(255, 255, 255, 0.5) 100%,
-        transparent 100%
-      ),
-      radial-gradient(
-        circle 1.5px at 4px 50%,
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(255, 255, 255, 0.5) 100%,
-        transparent 100%
-      ),
-      radial-gradient(
-        circle 1.5px at calc(100% - 4px) 50%,
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(255, 255, 255, 0.5) 100%,
-        transparent 100%
-      );
-  }
-
-  &::after {
-    content: '';
-    @apply absolute;
-    inset: 8px;
-    border-radius: 3px;
-    /* Central oval medallion with decorative pattern */
-    background:
-      /* Center oval */
-      radial-gradient(
-        ellipse 70% 45% at 50% 50%,
-        rgba(255, 255, 255, 0.15) 0%,
-        rgba(255, 255, 255, 0.15) 80%,
-        transparent 81%
-      ),
-      /* Inner oval ring */
-        radial-gradient(
-          ellipse 55% 35% at 50% 50%,
-          transparent 0%,
-          transparent 75%,
-          rgba(255, 255, 255, 0.2) 76%,
-          rgba(255, 255, 255, 0.2) 85%,
-          transparent 86%
-        ),
-      /* Diamond/crosshatch overlay */
-        repeating-linear-gradient(
-          45deg,
-          transparent,
-          transparent 3px,
-          rgba(255, 255, 255, 0.08) 3px,
-          rgba(255, 255, 255, 0.08) 4px
-        ),
-      repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 3px,
-        rgba(255, 255, 255, 0.08) 3px,
-        rgba(255, 255, 255, 0.08) 4px
-      );
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-}
-
 @utility poker-table {
   /* Poker table felt - using green accent color */
   background:
@@ -1086,4 +978,174 @@
       calc(-50% + var(--e-dy) + var(--e-cy))
     );
   }
+}
+
+.card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.card-back-classic-red,
+.card-back-classic-blue {
+  background: var(--card-back-color);
+  border: 2px solid #fff;
+}
+.card-back-classic-red {
+  --card-back-color: #c41e3a;
+}
+.card-back-classic-blue {
+  --card-back-color: #1f4fa8;
+}
+.card-back-classic-red::before,
+.card-back-classic-blue::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid #fff9;
+  border-radius: 4px;
+  background:
+    radial-gradient(ellipse 8px 8px at 6px 6px, #fff6 40%, transparent 50%),
+    radial-gradient(ellipse 8px 8px at calc(100% - 6px) 6px, #fff6 40%, transparent 50%),
+    radial-gradient(ellipse 8px 8px at 6px calc(100% - 6px), #fff6 40%, transparent 50%),
+    radial-gradient(
+      ellipse 8px 8px at calc(100% - 6px) calc(100% - 6px),
+      #fff6 40%,
+      transparent 50%
+    );
+}
+.card-back-classic-red::after,
+.card-back-classic-blue::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 3px;
+  border: 1px solid #fff4;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 50%, #ffffff26 80%, transparent 81%),
+    radial-gradient(
+      ellipse 55% 35% at 50% 50%,
+      transparent 75%,
+      #fff3 76%,
+      #fff3 85%,
+      transparent 86%
+    ),
+    repeating-linear-gradient(45deg, transparent 0 3px, #ffffff14 3px 4px),
+    repeating-linear-gradient(-45deg, transparent 0 3px, #ffffff14 3px 4px);
+}
+
+.card-back-midnight-neon {
+  background: #0d0b1f;
+  border: 2px solid #ff3ea5;
+  box-shadow: inset 0 0 8px #ff3ea5aa;
+}
+.card-back-midnight-neon::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 7px, #29e7ff33 7px 8px),
+    repeating-linear-gradient(90deg, transparent 0 7px, #29e7ff33 7px 8px);
+}
+.card-back-midnight-neon::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border: 2px solid #29e7ff;
+  box-shadow:
+    0 0 6px #29e7ff,
+    inset 0 0 6px #29e7ff;
+}
+
+.card-back-art-deco,
+.card-back-scout-deco {
+  background: #111;
+  border: 2px solid #d4af37;
+}
+.card-back-art-deco::before,
+.card-back-scout-deco::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid #d4af3799;
+  border-radius: 3px;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    #d4af3733 0 10deg,
+    transparent 10deg 20deg
+  );
+}
+.card-back-scout-deco::before {
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    #d4af3726 0 10deg,
+    transparent 10deg 20deg
+  );
+}
+.card-back-art-deco::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 50%;
+  height: 34%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border: 2px solid #d4af37;
+  background: #111;
+}
+
+.card-back-retro-sunset {
+  background: linear-gradient(#2b1055 0 45%, #7597de 45% 46%, #2b1055 46%);
+  border: 2px solid #ffd166;
+}
+.card-back-retro-sunset::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 60%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: repeating-linear-gradient(#ffd166 0 4px, #ef476f 4px 5px);
+  mask: linear-gradient(#000 50%, transparent 50%);
+}
+.card-back-retro-sunset::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 54%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 7px, #ef476f88 7px 8px),
+    repeating-linear-gradient(0deg, transparent 0 5px, #ef476f88 5px 6px);
+}
+
+.card-back-scout-night {
+  background: #233d22;
+  border: 2px solid #f4f8ef;
+}
+.card-back-scout-night::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid #f4f8ef66;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(45deg, transparent 0 3px, #80b6491a 3px 4px),
+    repeating-linear-gradient(-45deg, transparent 0 3px, #80b6491a 3px 4px);
+}
+
+.card-back-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72%;
+  height: auto;
+  transform: translate(-50%, -50%);
 }

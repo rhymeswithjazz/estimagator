@@ -8,6 +8,8 @@ import {
   SessionInfo,
   GameState,
   DeckType,
+  CardBack,
+  DEFAULT_CARD_BACK,
   SessionHistoryResponse,
 } from '../models/session.models';
 
@@ -22,8 +24,9 @@ export class SessionService {
     deckType: DeckType = 'fibonacci',
     name?: string,
     timerDurationSeconds: number = 120,
+    cardBack: CardBack = DEFAULT_CARD_BACK,
   ): Promise<CreateSessionResponse> {
-    const request: CreateSessionRequest = { deckType, name, timerDurationSeconds };
+    const request: CreateSessionRequest = { deckType, name, timerDurationSeconds, cardBack };
     return firstValueFrom(this.http.post<CreateSessionResponse>(this.apiUrl, request));
   }
 

@@ -4,12 +4,14 @@ import { StoryEstimateComponent } from '../jira/story-estimate.component';
 import { Component, computed, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CardBack } from '../../core/models/session.models';
+import { CardBackPickerComponent } from '../../shared/components/card-back-picker.component';
 import { GameStateService } from '../../core/services/game-state.service';
 
 @Component({
   selector: 'app-settings-panel',
   standalone: true,
-  imports: [JiraImportComponent, StoryEstimateComponent, FormsModule],
+  imports: [JiraImportComponent, StoryEstimateComponent, FormsModule, CardBackPickerComponent],
   template: `
     <div class="fixed inset-0 z-50 flex justify-end" (click)="close.emit()">
       <!-- Backdrop -->
@@ -41,6 +43,18 @@ import { GameStateService } from '../../core/services/game-state.service';
 
         <!-- Panel Content -->
         <div class="flex-1 overflow-auto p-4 stack-y-6">
+          @if (isOrganizer()) {
+            <div class="stack-y-3">
+              <div class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Card Back
+              </div>
+              <app-card-back-picker
+                [selected]="gameState.cardBack()"
+                (selectedChange)="changeCardBack($event)"
+              />
+            </div>
+          }
+
           <!-- Story Queue Section (Organizer only) -->
           @if (isOrganizer()) {
             <div class="stack-y-3">
@@ -504,6 +518,14 @@ export class SettingsPanelComponent {
   readonly transferError = signal<string | null>(null);
   readonly showDeactivateConfirm = signal(false);
   readonly isDeactivating = signal(false);
+
+  async changeCardBack(cardBack: CardBack): Promise<void> {
+    try {
+      await this.gameState.setCardBack(cardBack);
+    } catch (err) {
+      console.error('Error changing card back:', err);
+    }
+  }
 
   // Story management methods
   openAddStories(): void {

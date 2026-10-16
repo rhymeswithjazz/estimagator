@@ -91,6 +91,7 @@ public class PokerPointsDbContext : DbContext
             entity.Property(e => e.Id).HasDefaultValueSql("gen_random_uuid()");
             entity.Property(e => e.AccessCode).HasMaxLength(20).IsRequired();
             entity.Property(e => e.DeckType).HasMaxLength(50).HasDefaultValue("fibonacci");
+            entity.Property(e => e.CardBack).HasMaxLength(50).HasDefaultValue("classic-red");
             entity.Property(e => e.GuestHostTokenHash).HasMaxLength(64);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("NOW()");
