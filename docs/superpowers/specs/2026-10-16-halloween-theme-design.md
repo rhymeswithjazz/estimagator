@@ -38,7 +38,7 @@ In `styles.css`, a `.halloween .poker-table` rule, next to the existing `.dark` 
 
 ## Consensus celebration
 
-When the reveal shows everyone agreed, Halloween players get the same confetti timing as everyone else, but the pieces are 🎃 🦇 🕷️ 👻 with orange, purple and green paper. The table's glow flickers orange like a candle for the three seconds. The flicker is off for players whose system asks for reduced motion. Everyone else keeps the normal confetti.
+When the reveal shows everyone agreed, Halloween players get the same confetti timing as everyone else, but the pieces are only 🎃 🦇 🕷️ 👻 emoji, with no paper. The table's glow flickers orange like a candle for the three seconds. The flicker is off for players whose system asks for reduced motion. Everyone else keeps the normal confetti.
 
 ## Voting cards
 

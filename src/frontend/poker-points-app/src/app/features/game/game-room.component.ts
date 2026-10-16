@@ -40,7 +40,6 @@ const CONFETTI_COLORS = [
   '#FFEAA7',
   '#DDA0DD',
 ];
-const HALLOWEEN_CONFETTI_COLORS = ['#f97316', '#a855f7', '#65a30d'];
 const HALLOWEEN_CONFETTI_EMOJI = ['🎃', '🦇', '🕷️', '👻'];
 const HALLOWEEN_CONFETTI_SCALAR = 1.6;
 
@@ -254,11 +253,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     const duration = 3000;
     const end = Date.now() + duration;
 
-    const halloween = this.themeService.isHalloween();
-    const colors = halloween ? HALLOWEEN_CONFETTI_COLORS : CONFETTI_COLORS;
-    const style = halloween
-      ? { colors, shapes: this.getHalloweenConfettiShapes(), scalar: HALLOWEEN_CONFETTI_SCALAR }
-      : { colors };
+    const style = this.themeService.isHalloween()
+      ? { shapes: this.getHalloweenConfettiShapes(), scalar: HALLOWEEN_CONFETTI_SCALAR }
+      : { colors: CONFETTI_COLORS };
 
     const frame = () => {
       confetti({
@@ -293,12 +290,9 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   }
 
   private getHalloweenConfettiShapes(): confetti.Shape[] {
-    this.halloweenConfettiShapes ??= [
-      ...HALLOWEEN_CONFETTI_EMOJI.map((text) =>
-        confetti.shapeFromText({ text, scalar: HALLOWEEN_CONFETTI_SCALAR }),
-      ),
-      'circle',
-    ];
+    this.halloweenConfettiShapes ??= HALLOWEEN_CONFETTI_EMOJI.map((text) =>
+      confetti.shapeFromText({ text, scalar: HALLOWEEN_CONFETTI_SCALAR }),
+    );
     return this.halloweenConfettiShapes;
   }
 
