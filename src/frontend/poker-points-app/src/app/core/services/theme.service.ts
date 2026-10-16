@@ -18,11 +18,17 @@ export class ThemeService {
   private readonly mediaQuery =
     typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
-  readonly halloweenAvailable = inject(CURRENT_DATE)().getMonth() === OCTOBER;
+  private readonly isOctober = inject(CURRENT_DATE)().getMonth() === OCTOBER;
+  private readonly inGame = signal(false);
+  readonly halloweenAvailable = computed(() => this.isOctober && this.inGame());
   readonly preference = signal<ThemePreference>(this.getStoredPreference());
   readonly effectivePreference = computed<ThemePreference>(() => {
     const preference = this.preference();
-    return preference === 'halloween' && !this.halloweenAvailable ? 'system' : preference;
+    if (preference !== 'halloween' || this.halloweenAvailable()) {
+      return preference;
+    }
+
+    return this.isOctober ? 'dark' : 'system';
   });
   readonly isHalloween = computed(() => this.effectivePreference() === 'halloween');
   private readonly systemTheme = signal<ResolvedTheme>(this.getSystemTheme());
@@ -43,6 +49,10 @@ export class ThemeService {
     effect(() => {
       this.applyTheme(this.resolvedTheme(), this.effectivePreference(), this.isHalloween());
     });
+  }
+
+  setInGame(inGame: boolean): void {
+    this.inGame.set(inGame);
   }
 
   setPreference(preference: ThemePreference): void {

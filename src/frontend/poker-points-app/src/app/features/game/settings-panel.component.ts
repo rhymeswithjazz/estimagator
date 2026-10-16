@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { CardBack } from '../../core/models/session.models';
 import { CardBackPickerComponent } from '../../shared/components/card-back-picker.component';
 import { GameStateService } from '../../core/services/game-state.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -52,6 +53,11 @@ import { GameStateService } from '../../core/services/game-state.service';
                 [selected]="gameState.cardBack()"
                 (selectedChange)="changeCardBack($event)"
               />
+              @if (isHalloween()) {
+                <p class="text-xs text-gray-500">
+                  You see Jack-o'-Lanterns; everyone else sees this back.
+                </p>
+              }
             </div>
           }
 
@@ -492,6 +498,7 @@ export class SettingsPanelComponent {
 
   // Game state
   readonly isOrganizer = this.gameState.isOrganizer;
+  readonly isHalloween = inject(ThemeService).isHalloween;
   readonly storyQueue = this.gameState.storyQueue;
   readonly sessionCode = this.gameState.sessionCode;
   readonly participants = this.gameState.participants;

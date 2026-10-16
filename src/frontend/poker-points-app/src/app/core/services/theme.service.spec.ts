@@ -29,9 +29,10 @@ describe('ThemeService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('applies dark and halloween classes when halloween is picked in October', () => {
+  it('applies dark and halloween classes when halloween is picked in October in a game', () => {
     localStorage.setItem('poker-points-theme', 'halloween');
     const service = createService(october);
+    service.setInGame(true);
     TestBed.tick();
 
     expect(service.isHalloween()).toBe(true);
@@ -40,12 +41,25 @@ describe('ThemeService', () => {
     expect(root.classList).toContain('halloween');
   });
 
+  it('treats a saved halloween pick as dark outside a game and keeps it saved', () => {
+    localStorage.setItem('poker-points-theme', 'halloween');
+    const service = createService(october);
+    TestBed.tick();
+
+    expect(service.halloweenAvailable()).toBe(false);
+    expect(service.effectivePreference()).toBe('dark');
+    expect(root.classList).toContain('dark');
+    expect(root.classList).not.toContain('halloween');
+    expect(localStorage.getItem('poker-points-theme')).toBe('halloween');
+  });
+
   it('treats a saved halloween pick as system outside October and keeps it saved', () => {
     localStorage.setItem('poker-points-theme', 'halloween');
     const service = createService(november);
     TestBed.tick();
 
-    expect(service.halloweenAvailable).toBe(false);
+    service.setInGame(true);
+    expect(service.halloweenAvailable()).toBe(false);
     expect(service.effectivePreference()).toBe('system');
     expect(service.isHalloween()).toBe(false);
     expect(root.classList).not.toContain('halloween');
@@ -54,6 +68,7 @@ describe('ThemeService', () => {
 
   it('drops the halloween class when switching back to light', () => {
     const service = createService(october);
+    service.setInGame(true);
     service.setPreference('halloween');
     TestBed.tick();
     service.setPreference('light');

@@ -236,6 +236,8 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   );
 
   constructor() {
+    this.themeService.setInGame(true);
+
     effect(() => {
       if (this.consensusRevealed()) {
         this.triggerConfetti();
@@ -478,6 +480,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.themeService.setInGame(false);
     this.cancelEmojiPaletteClose();
     this.cancelEmojiReactionPaletteClose();
     void this.gameState.disconnect();
