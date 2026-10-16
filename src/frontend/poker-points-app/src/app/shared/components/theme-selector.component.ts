@@ -101,6 +101,18 @@ const HALLOWEEN_OPTION: ThemeOption = {
         flex: 0 0 auto;
       }
 
+      :host(.theme-selector--icons) .theme-selector__label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       @media (max-width: 640px) {
         .theme-selector__label {
           position: absolute;
