@@ -520,7 +520,11 @@ export class SettingsPanelComponent {
   readonly isDeactivating = signal(false);
 
   async changeCardBack(cardBack: CardBack): Promise<void> {
-    await this.gameState.setCardBack(cardBack);
+    try {
+      await this.gameState.setCardBack(cardBack);
+    } catch (err) {
+      console.error('Error changing card back:', err);
+    }
   }
 
   // Story management methods

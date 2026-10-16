@@ -1081,6 +1081,13 @@
     transparent 10deg 20deg
   );
 }
+.card-back-scout-deco::before {
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    #d4af3726 0 10deg,
+    transparent 10deg 20deg
+  );
+}
 .card-back-art-deco::after {
   content: '';
   position: absolute;

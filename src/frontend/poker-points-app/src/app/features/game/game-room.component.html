@@ -438,7 +438,6 @@
                   getParticipantVote(voter.id)?.cardValue ?? '-'
                 }}</span>
               } @else if (hasParticipantVoted(voter.id)) {
-                <!-- Face down card -->
                 <app-card-back
                   [back]="cardBack()"
                   data-testid="table-card-back"

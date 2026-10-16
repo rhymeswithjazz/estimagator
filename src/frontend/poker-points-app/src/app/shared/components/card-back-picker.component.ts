@@ -7,12 +7,11 @@ import { CardBackComponent } from './card-back.component';
   standalone: true,
   imports: [CardBackComponent],
   template: `
-    <div class="flex flex-wrap gap-3" role="radiogroup" aria-label="Card back">
+    <div class="flex flex-wrap gap-2" role="group" aria-label="Card back">
       @for (back of backs; track back.id) {
         <button
           type="button"
-          role="radio"
-          [attr.aria-checked]="selected() === back.id"
+          [attr.aria-pressed]="selected() === back.id"
           [attr.aria-label]="back.label"
           [attr.title]="back.label"
           [attr.data-testid]="'card-back-option-' + back.id"

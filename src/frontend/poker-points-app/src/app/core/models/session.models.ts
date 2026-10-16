@@ -3,7 +3,7 @@ export interface CreateSessionRequest {
   deckType?: string;
   name?: string;
   timerDurationSeconds?: number;
-  cardBack?: string;
+  cardBack?: CardBack;
 }
 
 export interface CreateSessionResponse {
