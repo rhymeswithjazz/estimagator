@@ -74,7 +74,10 @@ public static class EmojiThrowOptions
         "💩",
         "🍅",
         "🪨",
-        "🥚"
+        "🥚",
+        "🎃",
+        "🦇",
+        "\U0001F577\uFE0F"
     };
 }
 

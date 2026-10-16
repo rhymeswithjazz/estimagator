@@ -400,6 +400,9 @@ public class PokerHubTests
     [InlineData("🍅")]
     [InlineData("🪨")]
     [InlineData("🥚")]
+    [InlineData("🎃")]
+    [InlineData("🦇")]
+    [InlineData("\U0001F577\uFE0F")]
     public async Task ThrowEmoji_ShouldAllowCuratedThrowOptions(string emoji)
     {
         // Arrange
