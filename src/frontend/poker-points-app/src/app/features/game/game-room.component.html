@@ -439,9 +439,9 @@
                 }}</span>
               } @else if (hasParticipantVoted(voter.id)) {
                 <app-card-back
-                  [back]="cardBack()"
+                  [back]="tableCardBack()"
                   data-testid="table-card-back"
-                  [attr.data-card-back]="cardBack()"
+                  [attr.data-card-back]="tableCardBack()"
                 />
               } @else {
                 <!-- No vote yet - empty card placeholder -->

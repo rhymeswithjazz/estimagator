@@ -326,6 +326,14 @@ export type CardBack = (typeof CARD_BACKS)[number]['id'];
 
 export const DEFAULT_CARD_BACK: CardBack = 'classic-red';
 
+export const HALLOWEEN_CARD_BACK = 'jack-o-lantern';
+
+export type TableCardBack = CardBack | typeof HALLOWEEN_CARD_BACK;
+
+export function getTableCardBack(roomBack: CardBack, isHalloween: boolean): TableCardBack {
+  return isHalloween ? HALLOWEEN_CARD_BACK : roomBack;
+}
+
 export function toCardBack(value: string | null | undefined): CardBack {
   return CARD_BACKS.find((back) => back.id === value)?.id ?? DEFAULT_CARD_BACK;
 }
