@@ -1,11 +1,11 @@
 import { DOCUMENT } from '@angular/common';
 import { computed, effect, inject, Injectable, InjectionToken, signal } from '@angular/core';
+import { getSeason, isSeason, Season, SEASONS } from '../models/season.models';
 
-export type ThemePreference = 'light' | 'dark' | 'system' | 'halloween';
+export type ThemePreference = 'light' | 'dark' | 'system' | Season;
 export type ResolvedTheme = 'light' | 'dark';
 
 const THEME_STORAGE_KEY = 'poker-points-theme';
-const OCTOBER = 9;
 
 export const CURRENT_DATE = new InjectionToken<() => Date>('CURRENT_DATE', {
   providedIn: 'root',
@@ -18,19 +18,22 @@ export class ThemeService {
   private readonly mediaQuery =
     typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
-  private readonly isOctober = inject(CURRENT_DATE)().getMonth() === OCTOBER;
+  private readonly currentSeason = getSeason(inject(CURRENT_DATE)());
   private readonly inGame = signal(false);
-  readonly halloweenAvailable = computed(() => this.isOctober && this.inGame());
+  readonly availableSeason = computed(() => (this.inGame() ? this.currentSeason : null));
   readonly preference = signal<ThemePreference>(this.getStoredPreference());
   readonly effectivePreference = computed<ThemePreference>(() => {
     const preference = this.preference();
-    if (preference !== 'halloween' || this.halloweenAvailable()) {
+    if (!isSeason(preference) || preference === this.availableSeason()) {
       return preference;
     }
 
-    return this.isOctober ? 'dark' : 'system';
+    return preference === this.currentSeason ? 'dark' : 'system';
   });
-  readonly isHalloween = computed(() => this.effectivePreference() === 'halloween');
+  readonly activeSeason = computed<Season | null>(() => {
+    const preference = this.effectivePreference();
+    return isSeason(preference) ? preference : null;
+  });
   private readonly systemTheme = signal<ResolvedTheme>(this.getSystemTheme());
   readonly resolvedTheme = computed<ResolvedTheme>(() => {
     const preference = this.effectivePreference();
@@ -38,7 +41,7 @@ export class ThemeService {
       return this.systemTheme();
     }
 
-    return preference === 'halloween' ? 'dark' : preference;
+    return isSeason(preference) ? 'dark' : preference;
   });
 
   constructor() {
@@ -47,7 +50,7 @@ export class ThemeService {
     });
 
     effect(() => {
-      this.applyTheme(this.resolvedTheme(), this.effectivePreference(), this.isHalloween());
+      this.applyTheme(this.resolvedTheme(), this.effectivePreference(), this.activeSeason());
     });
   }
 
@@ -71,7 +74,9 @@ export class ThemeService {
     }
 
     const storedPreference = localStorage.getItem(THEME_STORAGE_KEY);
-    return this.isThemePreference(storedPreference) ? storedPreference : 'system';
+    return storedPreference !== null && this.isThemePreference(storedPreference)
+      ? storedPreference
+      : 'system';
   }
 
   private getSystemTheme(): ResolvedTheme {
@@ -81,17 +86,19 @@ export class ThemeService {
   private applyTheme(
     resolvedTheme: ResolvedTheme,
     preference: ThemePreference,
-    isHalloween: boolean,
+    activeSeason: Season | null,
   ): void {
     const root = this.document.documentElement;
 
     root.classList.toggle('dark', resolvedTheme === 'dark');
-    root.classList.toggle('halloween', isHalloween);
+    for (const season of SEASONS) {
+      root.classList.toggle(season, season === activeSeason);
+    }
     root.dataset['theme'] = preference;
     root.style.colorScheme = resolvedTheme;
   }
 
-  private isThemePreference(value: string | null): value is ThemePreference {
-    return value === 'light' || value === 'dark' || value === 'system' || value === 'halloween';
+  private isThemePreference(value: string): value is ThemePreference {
+    return value === 'light' || value === 'dark' || value === 'system' || isSeason(value);
   }
 }

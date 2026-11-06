@@ -8,6 +8,13 @@ import { CardBack } from '../../core/models/session.models';
 import { CardBackPickerComponent } from '../../shared/components/card-back-picker.component';
 import { GameStateService } from '../../core/services/game-state.service';
 import { ThemeService } from '../../core/services/theme.service';
+import type { Season } from '../../core/models/season.models';
+
+const SEASONAL_BACK_NAMES: Record<Season, string> = {
+  halloween: "Jack-o'-Lanterns",
+  thanksgiving: 'harvest plaid',
+  christmas: 'candy canes',
+};
 
 @Component({
   selector: 'app-settings-panel',
@@ -53,9 +60,9 @@ import { ThemeService } from '../../core/services/theme.service';
                 [selected]="gameState.cardBack()"
                 (selectedChange)="changeCardBack($event)"
               />
-              @if (isHalloween()) {
+              @if (seasonalBackName(); as backName) {
                 <p class="text-xs text-gray-500">
-                  You see Jack-o'-Lanterns; everyone else sees this back.
+                  You see {{ backName }}; everyone else sees this back.
                 </p>
               }
             </div>
@@ -498,7 +505,11 @@ export class SettingsPanelComponent {
 
   // Game state
   readonly isOrganizer = this.gameState.isOrganizer;
-  readonly isHalloween = inject(ThemeService).isHalloween;
+  private readonly activeSeason = inject(ThemeService).activeSeason;
+  readonly seasonalBackName = computed(() => {
+    const season = this.activeSeason();
+    return season ? SEASONAL_BACK_NAMES[season] : null;
+  });
   readonly storyQueue = this.gameState.storyQueue;
   readonly sessionCode = this.gameState.sessionCode;
   readonly participants = this.gameState.participants;

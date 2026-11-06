@@ -6,6 +6,7 @@ import { ThemeSelectorComponent } from './theme-selector.component';
 
 const october = new Date(2026, 9, 16);
 const november = new Date(2026, 10, 1);
+const december = new Date(2026, 11, 1);
 
 async function renderSelector(today: Date, inGame = true) {
   const view = await render(ThemeSelectorComponent, {
@@ -26,7 +27,7 @@ describe('ThemeSelectorComponent', () => {
 
   afterEach(() => {
     localStorage.clear();
-    document.documentElement.classList.remove('dark', 'halloween');
+    document.documentElement.classList.remove('dark', 'halloween', 'thanksgiving', 'christmas');
     vi.unstubAllGlobals();
   });
 
@@ -34,6 +35,16 @@ describe('ThemeSelectorComponent', () => {
     await renderSelector(october);
 
     expect(screen.getByRole('button', { name: 'Use Halloween theme' })).toBeInTheDocument();
+  });
+
+  it.each([
+    ['November', november, 'Use Thanksgiving theme'],
+    ['December', december, 'Use Christmas theme'],
+  ] as const)('shows only the %s season in a game', async (_month, today, name) => {
+    await renderSelector(today);
+
+    expect(screen.getByRole('button', { name })).toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toHaveLength(4);
   });
 
   it('hides it outside a game and marks Dark active for a saved halloween pick', async () => {
