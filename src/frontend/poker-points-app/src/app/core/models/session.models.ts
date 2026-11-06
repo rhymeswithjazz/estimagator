@@ -1,4 +1,5 @@
 import type { JiraLink } from '../services/jira.service';
+import type { Season } from './season.models';
 export interface CreateSessionRequest {
   deckType?: string;
   name?: string;
@@ -149,6 +150,12 @@ export const EGG_THROW_OPTION = '🥚';
 export const PUMPKIN_THROW_OPTION = '🎃';
 export const BAT_THROW_OPTION = '🦇';
 export const SPIDER_THROW_OPTION = '\u{1F577}\u{FE0F}';
+export const TURKEY_THROW_OPTION = '🦃';
+export const PIE_THROW_OPTION = '🥧';
+export const CORN_THROW_OPTION = '🌽';
+export const SNOWBALL_THROW_OPTION = '\u{2744}\u{FE0F}';
+export const GIFT_THROW_OPTION = '🎁';
+export const COOKIE_THROW_OPTION = '🍪';
 export const EMOJI_THROW_OPTIONS = [
   DART_THROW_OPTION,
   AIRPLANE_THROW_OPTION,
@@ -159,13 +166,13 @@ export const EMOJI_THROW_OPTIONS = [
   ROCK_THROW_OPTION,
   EGG_THROW_OPTION,
 ] as const;
-export const HALLOWEEN_THROW_OPTIONS = [
-  PUMPKIN_THROW_OPTION,
-  BAT_THROW_OPTION,
-  SPIDER_THROW_OPTION,
-] as const;
+export const SEASONAL_THROW_OPTIONS = {
+  halloween: [PUMPKIN_THROW_OPTION, BAT_THROW_OPTION, SPIDER_THROW_OPTION],
+  thanksgiving: [TURKEY_THROW_OPTION, PIE_THROW_OPTION, CORN_THROW_OPTION],
+  christmas: [SNOWBALL_THROW_OPTION, GIFT_THROW_OPTION, COOKIE_THROW_OPTION],
+} as const satisfies Record<Season, readonly string[]>;
 export type EmojiThrowOption =
-  (typeof EMOJI_THROW_OPTIONS)[number] | (typeof HALLOWEEN_THROW_OPTIONS)[number];
+  (typeof EMOJI_THROW_OPTIONS)[number] | (typeof SEASONAL_THROW_OPTIONS)[Season][number];
 export type EmojiThrowProfile = 'dart' | 'airplane' | 'rock' | 'default';
 export type EmojiThrowIconKind = 'dart' | 'airplane' | 'paper-ball' | 'emoji';
 
@@ -240,6 +247,42 @@ export const EMOJI_THROW_OPTION_METADATA: Record<EmojiThrowOption, EmojiThrowOpt
   [SPIDER_THROW_OPTION]: {
     value: SPIDER_THROW_OPTION,
     label: 'spider',
+    iconKind: 'emoji',
+    profile: 'default',
+  },
+  [TURKEY_THROW_OPTION]: {
+    value: TURKEY_THROW_OPTION,
+    label: 'turkey',
+    iconKind: 'emoji',
+    profile: 'rock',
+  },
+  [PIE_THROW_OPTION]: {
+    value: PIE_THROW_OPTION,
+    label: 'pie',
+    iconKind: 'emoji',
+    profile: 'default',
+  },
+  [CORN_THROW_OPTION]: {
+    value: CORN_THROW_OPTION,
+    label: 'corn',
+    iconKind: 'emoji',
+    profile: 'default',
+  },
+  [SNOWBALL_THROW_OPTION]: {
+    value: SNOWBALL_THROW_OPTION,
+    label: 'snowball',
+    iconKind: 'emoji',
+    profile: 'default',
+  },
+  [GIFT_THROW_OPTION]: {
+    value: GIFT_THROW_OPTION,
+    label: 'gift',
+    iconKind: 'emoji',
+    profile: 'rock',
+  },
+  [COOKIE_THROW_OPTION]: {
+    value: COOKIE_THROW_OPTION,
+    label: 'cookie',
     iconKind: 'emoji',
     profile: 'default',
   },
@@ -326,12 +369,16 @@ export type CardBack = (typeof CARD_BACKS)[number]['id'];
 
 export const DEFAULT_CARD_BACK: CardBack = 'classic-red';
 
-export const HALLOWEEN_CARD_BACK = 'jack-o-lantern';
+export const SEASONAL_CARD_BACKS = {
+  halloween: 'jack-o-lantern',
+  thanksgiving: 'harvest-plaid',
+  christmas: 'candy-cane',
+} as const satisfies Record<Season, string>;
 
-export type TableCardBack = CardBack | typeof HALLOWEEN_CARD_BACK;
+export type TableCardBack = CardBack | (typeof SEASONAL_CARD_BACKS)[Season];
 
-export function getTableCardBack(roomBack: CardBack, isHalloween: boolean): TableCardBack {
-  return isHalloween ? HALLOWEEN_CARD_BACK : roomBack;
+export function getTableCardBack(roomBack: CardBack, season: Season | null): TableCardBack {
+  return season ? SEASONAL_CARD_BACKS[season] : roomBack;
 }
 
 export function toCardBack(value: string | null | undefined): CardBack {

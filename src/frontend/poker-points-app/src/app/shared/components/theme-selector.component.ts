@@ -1,4 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
+import { Season } from '../../core/models/season.models';
 import { ThemePreference, ThemeService } from '../../core/services/theme.service';
 
 type ThemeOption = {
@@ -8,12 +9,27 @@ type ThemeOption = {
   iconPath: string;
 };
 
-const HALLOWEEN_OPTION: ThemeOption = {
-  value: 'halloween',
-  label: 'Halloween',
-  title: 'Use Halloween theme',
-  iconPath:
-    'M12 7V4.5m0 0c.6-.8 1.6-1.2 2.5-1M12 7c-4.4 0-8 2.9-8 6.5S7.6 20 12 20s8-2.9 8-6.5S16.4 7 12 7zm0 0c-1.7 1.3-2.75 3.8-2.75 6.5S10.3 18.7 12 20m0-13c1.7 1.3 2.75 3.8 2.75 6.5S13.7 18.7 12 20',
+const SEASON_OPTIONS: Record<Season, ThemeOption> = {
+  halloween: {
+    value: 'halloween',
+    label: 'Halloween',
+    title: 'Use Halloween theme',
+    iconPath:
+      'M12 7V4.5m0 0c.6-.8 1.6-1.2 2.5-1M12 7c-4.4 0-8 2.9-8 6.5S7.6 20 12 20s8-2.9 8-6.5S16.4 7 12 7zm0 0c-1.7 1.3-2.75 3.8-2.75 6.5S10.3 18.7 12 20m0-13c1.7 1.3 2.75 3.8 2.75 6.5S13.7 18.7 12 20',
+  },
+  thanksgiving: {
+    value: 'thanksgiving',
+    label: 'Thanksgiving',
+    title: 'Use Thanksgiving theme',
+    iconPath:
+      'M12 21v-6m0 0-4 2 .5-3-3.5-1 2-1.5-2.5-3 3.5.5 1-3.5L11 8l1-5 1 5 1.5-2.5 1 3.5 3.5-.5-2.5 3 2 1.5-3.5 1 .5 3z',
+  },
+  christmas: {
+    value: 'christmas',
+    label: 'Christmas',
+    title: 'Use Christmas theme',
+    iconPath: 'M12 3l5 6h-3l4 5h-3l3 4H6l3-4H6l4-5H7l5-6zm0 15v3',
+  },
 };
 
 @Component({
@@ -178,11 +194,10 @@ export class ThemeSelectorComponent {
     },
   ];
 
-  readonly options = computed(() =>
-    this.themeService.halloweenAvailable()
-      ? [...this.baseOptions, HALLOWEEN_OPTION]
-      : this.baseOptions,
-  );
+  readonly options = computed(() => {
+    const season = this.themeService.availableSeason();
+    return season ? [...this.baseOptions, SEASON_OPTIONS[season]] : this.baseOptions;
+  });
 
   setTheme(preference: ThemePreference): void {
     this.themeService.setPreference(preference);

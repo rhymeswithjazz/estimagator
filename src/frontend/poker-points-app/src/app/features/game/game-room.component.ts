@@ -20,6 +20,7 @@ import { GameStateService } from '../../core/services/game-state.service';
 import { SignalRService } from '../../core/services/signalr.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import type { Season } from '../../core/models/season.models';
 import { getTableCardBack, Participant, Vote } from '../../core/models/session.models';
 import { SettingsPanelComponent } from './settings-panel.component';
 import { StoryHistoryPanelComponent } from './story-history-panel.component';
@@ -40,8 +41,12 @@ const CONFETTI_COLORS = [
   '#FFEAA7',
   '#DDA0DD',
 ];
-const HALLOWEEN_CONFETTI_EMOJI = ['🎃', '🦇', '🕷️', '👻'];
-const HALLOWEEN_CONFETTI_SCALAR = 1.6;
+const SEASONAL_CONFETTI_EMOJI: Record<Season, readonly string[]> = {
+  halloween: ['🎃', '🦇', '🕷️', '👻'],
+  thanksgiving: ['🍂', '🍁', '🦃', '🥧'],
+  christmas: ['❄️', '🎄', '🎁', '⭐'],
+};
+const SEASONAL_CONFETTI_SCALAR = 1.6;
 
 @Component({
   selector: 'app-game-room',
@@ -106,7 +111,7 @@ export class GameRoomComponent implements OnInit, OnDestroy {
   readonly currentStory = this.gameState.currentStory;
   readonly deckValues = this.gameState.deckValues;
   readonly tableCardBack = computed(() =>
-    getTableCardBack(this.gameState.cardBack(), this.themeService.isHalloween()),
+    getTableCardBack(this.gameState.cardBack(), this.themeService.activeSeason()),
   );
   readonly myVote = this.gameState.myVote;
   readonly canVote = this.gameState.canVote;
@@ -249,14 +254,15 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     });
   }
 
-  private halloweenConfettiShapes?: confetti.Shape[];
+  private readonly seasonalConfettiShapes = new Map<Season, confetti.Shape[]>();
 
   private triggerConfetti(): void {
     const duration = 3000;
     const end = Date.now() + duration;
 
-    const style = this.themeService.isHalloween()
-      ? { shapes: this.getHalloweenConfettiShapes(), scalar: HALLOWEEN_CONFETTI_SCALAR }
+    const season = this.themeService.activeSeason();
+    const style = season
+      ? { shapes: this.getSeasonalConfettiShapes(season), scalar: SEASONAL_CONFETTI_SCALAR }
       : { colors: CONFETTI_COLORS };
 
     const frame = () => {
@@ -291,11 +297,15 @@ export class GameRoomComponent implements OnInit, OnDestroy {
     frame();
   }
 
-  private getHalloweenConfettiShapes(): confetti.Shape[] {
-    this.halloweenConfettiShapes ??= HALLOWEEN_CONFETTI_EMOJI.map((text) =>
-      confetti.shapeFromText({ text, scalar: HALLOWEEN_CONFETTI_SCALAR }),
-    );
-    return this.halloweenConfettiShapes;
+  private getSeasonalConfettiShapes(season: Season): confetti.Shape[] {
+    let shapes = this.seasonalConfettiShapes.get(season);
+    if (!shapes) {
+      shapes = SEASONAL_CONFETTI_EMOJI[season].map((text) =>
+        confetti.shapeFromText({ text, scalar: SEASONAL_CONFETTI_SCALAR }),
+      );
+      this.seasonalConfettiShapes.set(season, shapes);
+    }
+    return shapes;
   }
 
   // Get vote for a specific participant (after reveal)

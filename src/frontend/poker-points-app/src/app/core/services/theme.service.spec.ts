@@ -4,6 +4,8 @@ import { CURRENT_DATE, ThemeService } from './theme.service';
 
 const october = new Date(2026, 9, 16);
 const november = new Date(2026, 10, 1);
+const december = new Date(2026, 11, 31);
+const january = new Date(2027, 0, 1);
 
 function createService(today: Date): ThemeService {
   TestBed.configureTestingModule({
@@ -24,57 +26,72 @@ describe('ThemeService', () => {
 
   afterEach(() => {
     localStorage.clear();
-    root.classList.remove('dark', 'halloween');
+    root.classList.remove('dark', 'halloween', 'thanksgiving', 'christmas');
     TestBed.resetTestingModule();
     vi.unstubAllGlobals();
   });
 
-  it('applies dark and halloween classes when halloween is picked in October in a game', () => {
-    localStorage.setItem('poker-points-theme', 'halloween');
-    const service = createService(october);
+  it.each([
+    ['October', october, 'halloween'],
+    ['November', november, 'thanksgiving'],
+    ['December', december, 'christmas'],
+    ['January', january, null],
+  ] as const)('offers the %s season in a game', (_month, today, season) => {
+    const service = createService(today);
+    service.setInGame(true);
+
+    expect(service.availableSeason()).toBe(season);
+  });
+
+  it.each([
+    ['halloween', october],
+    ['thanksgiving', november],
+    ['christmas', december],
+  ] as const)('applies dark and the %s class when picked in season in a game', (season, today) => {
+    localStorage.setItem('poker-points-theme', season);
+    const service = createService(today);
     service.setInGame(true);
     TestBed.tick();
 
-    expect(service.isHalloween()).toBe(true);
+    expect(service.activeSeason()).toBe(season);
     expect(service.resolvedTheme()).toBe('dark');
     expect(root.classList).toContain('dark');
-    expect(root.classList).toContain('halloween');
+    expect(root.classList).toContain(season);
   });
 
-  it('treats a saved halloween pick as dark outside a game and keeps it saved', () => {
-    localStorage.setItem('poker-points-theme', 'halloween');
-    const service = createService(october);
-    TestBed.tick();
-
-    expect(service.halloweenAvailable()).toBe(false);
-    expect(service.effectivePreference()).toBe('dark');
-    expect(root.classList).toContain('dark');
-    expect(root.classList).not.toContain('halloween');
-    expect(localStorage.getItem('poker-points-theme')).toBe('halloween');
-  });
-
-  it('treats a saved halloween pick as system outside October and keeps it saved', () => {
-    localStorage.setItem('poker-points-theme', 'halloween');
+  it('treats an in-season pick as dark outside a game and keeps it saved', () => {
+    localStorage.setItem('poker-points-theme', 'thanksgiving');
     const service = createService(november);
     TestBed.tick();
 
+    expect(service.availableSeason()).toBeNull();
+    expect(service.effectivePreference()).toBe('dark');
+    expect(root.classList).toContain('dark');
+    expect(root.classList).not.toContain('thanksgiving');
+    expect(localStorage.getItem('poker-points-theme')).toBe('thanksgiving');
+  });
+
+  it('treats an out-of-season pick as system and keeps it saved', () => {
+    localStorage.setItem('poker-points-theme', 'halloween');
+    const service = createService(november);
     service.setInGame(true);
-    expect(service.halloweenAvailable()).toBe(false);
+    TestBed.tick();
+
     expect(service.effectivePreference()).toBe('system');
-    expect(service.isHalloween()).toBe(false);
+    expect(service.activeSeason()).toBeNull();
     expect(root.classList).not.toContain('halloween');
     expect(localStorage.getItem('poker-points-theme')).toBe('halloween');
   });
 
-  it('drops the halloween class when switching back to light', () => {
-    const service = createService(october);
+  it('drops the season class when switching back to light', () => {
+    const service = createService(december);
     service.setInGame(true);
-    service.setPreference('halloween');
+    service.setPreference('christmas');
     TestBed.tick();
     service.setPreference('light');
     TestBed.tick();
 
-    expect(root.classList).not.toContain('halloween');
+    expect(root.classList).not.toContain('christmas');
     expect(root.classList).not.toContain('dark');
   });
 });

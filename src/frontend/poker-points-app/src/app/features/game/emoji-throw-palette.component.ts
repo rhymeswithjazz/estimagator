@@ -11,7 +11,7 @@ import {
 import {
   EMOJI_THROW_OPTIONS,
   getEmojiThrowOptionMetadata,
-  HALLOWEEN_THROW_OPTIONS,
+  SEASONAL_THROW_OPTIONS,
 } from '../../core/models/session.models';
 import { ThemeService } from '../../core/services/theme.service';
 import { EmojiThrowIconComponent } from './emoji-throw-icon.component';
@@ -90,11 +90,12 @@ export class EmojiThrowPaletteComponent {
 
   private readonly themeService = inject(ThemeService);
 
-  readonly emojiThrowOptions = computed(() =>
-    this.themeService.isHalloween()
-      ? [...EMOJI_THROW_OPTIONS, ...HALLOWEEN_THROW_OPTIONS]
-      : EMOJI_THROW_OPTIONS,
-  );
+  readonly emojiThrowOptions = computed(() => {
+    const season = this.themeService.activeSeason();
+    return season
+      ? [...EMOJI_THROW_OPTIONS, ...SEASONAL_THROW_OPTIONS[season]]
+      : EMOJI_THROW_OPTIONS;
+  });
 
   selectEmoji(emoji: string, event: Event): void {
     event.stopPropagation();
