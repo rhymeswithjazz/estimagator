@@ -13,8 +13,10 @@ RUN npm ci
 COPY . .
 RUN npm run build -- --configuration=production
 
-# Runtime stage - nginx unprivileged for non-root execution
-FROM nginxinc/nginx-unprivileged:alpine AS runtime
+# Runtime stage - official nginx image, run as a non-root user. nginx.conf keeps
+# the pid and temp files in /tmp and listens on 8080, so no root is needed.
+# (nginxinc/nginx-unprivileged lags behind official security releases.)
+FROM nginx:alpine AS runtime
 
 # Switch to root to fix permissions for custom UID
 USER root
